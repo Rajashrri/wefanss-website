@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Berlin';
+    src: url('Berlin-ExtraBold.eot');
+    src: url('Berlin-ExtraBold.eot?#iefix') format('embedded-opentype'),
+        url('Berlin-ExtraBold.woff2') format('woff2'),
+        url('Berlin-ExtraBold.woff') format('woff'),
+        url('Berlin-ExtraBold.svg#Berlin-ExtraBold') format('svg');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Berlin';
+    src: url('Berlin-Bold.eot');
+    src: url('Berlin-Bold.eot?#iefix') format('embedded-opentype'),
+        url('Berlin-Bold.woff2') format('woff2'),
+        url('Berlin-Bold.woff') format('woff'),
+        url('Berlin-Bold.svg#Berlin-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Berlin';
+    src: url('Berlin-Regular.eot');
+    src: url('Berlin-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Berlin-Regular.woff2') format('woff2'),
+        url('Berlin-Regular.woff') format('woff'),
+        url('Berlin-Regular.svg#Berlin-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Berlin';
+    src: url('Berlin-Light.eot');
+    src: url('Berlin-Light.eot?#iefix') format('embedded-opentype'),
+        url('Berlin-Light.woff2') format('woff2'),
+        url('Berlin-Light.woff') format('woff'),
+        url('Berlin-Light.svg#Berlin-Light') format('svg');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
