@@ -23,7 +23,7 @@ const FilterCatogeries = ({
   const [selectedAge, setSelectedAge] = useState([]);
 
   const allLanguages = ["Hindi", "English", "Marathi"];
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const ageOptions = [
     "60 & Above",
     "50 to 60 years",
@@ -58,12 +58,9 @@ const FilterCatogeries = ({
     ? new Date().getFullYear() -
       new Date(item.personalDetails.dob).getFullYear()
     : 25,
-
-  img:
-    item?.identityProfile?.image ||
-    item?.image ||
-    "/catogary/cat1.jpg",
-
+  img: item?.identityProfile?.categoryImage
+          ? `${API_BASE}${item.identityProfile.categoryImage}`
+          : "/catogary/cat1.jpg",
   link: `/profiles/${item?.identityProfile?.slug || ""}`,
 }));
 
