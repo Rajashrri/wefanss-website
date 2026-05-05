@@ -15,6 +15,10 @@ const frontApi = axios.create({
   },
 });
 
+export const getCelebrityBySlug = (slug) => {
+  return frontApi.get(`/celebrity/${slug}`);
+};
+
 // =====================================
 // RESPONSE INTERCEPTOR
 // =====================================

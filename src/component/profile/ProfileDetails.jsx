@@ -1,5 +1,5 @@
 import { Bookmark, Share } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
@@ -17,6 +17,11 @@ import Profilecard from "../card/Profilecard";
 import MobileProfileCard from "../card/MobileProfileCard";
 // import { ChevronDown } from "lucide-react";
 import { MyContext } from "../hooks/MyContext ";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
+import { getCelebrityBySlug } from "../../utils/frontApi";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const sidebarData = [
   {
@@ -199,43 +204,8 @@ export const sidebarData = [
 
 ];
 
-const profileData = [
-  {
-    id: 1,
-    title: "Basic Info",
-    type: "basicInfo",
-    items: [
-      { label: "Born", value: "9 September 1967 (age 58), Delhi, India" },
-      { label: "Died", value: "9 September 1967 (age 58), Delhi, India" },
-      { label: "Occupations", value: "Actor, Producer" },
-      { label: "Citizenship", value: "Indian (until 2011), Canadian (2011–2023)" },
-      { label: "subtitles Active", value: "1991 – Present" },
-      { label: "Spouse", value: "Twinkle Khanna (m. 2001)" },
-      { label: "Children", value: "Shweta Bachchan Nanda, Abhishek Bachchan" }
-    ]
-  },
 
 
-];
-
-const ActorData = {
-
-
-
-  id: 1,
-  title: "Personal Details",
-  type: "personalDetails",
-  Name: "Akshay Kumar",
-  Roles: ["Producer", " Writer", " Actor"],
-  Rank: "22",
-  Languages: ["English", "Marathi"],
-  BirthDate: "9 September 1967",
-  BirthPlace: "Amritsar, Punjab, India",
-  profileimg:"/actor/profile.png",
-  discription:"Akshay Kumar (born September 9, 1967, Amritsar, Punjab, India) is an Indian actor and producer, chiefly known for his work in Bollywood comedies and action films. Kumar, whose career spans more than three decades, has starred in more"
-
-
-};
 
 const watchData = {
   id: 1,
@@ -439,6 +409,8 @@ const media = [
 
 
 export default function AkshayProfile() {
+    const { slug } = useParams(); // URL se slug milega
+
   const [active, setActive] = useState(false)
   const [openIndexes, setOpenIndexes] = useState(
     sidebarData.map((_, index) => index) // all open by default
@@ -446,7 +418,19 @@ export default function AkshayProfile() {
   const [openRight, setOpenRight] = useState(0);
   const [openShare, setOpenShare] = useState(false);
   const [follow, setfollow] = useState(false);
-  
+    const [ActorData, setActorData] = useState({
+    id: "",
+    title: "Personal Details",
+    type: "personalDetails",
+    Name: "",
+    Roles: [],
+    Rank: "",
+    Languages: [],
+    BirthDate: "",
+    BirthPlace: "",
+    profileimg: "",
+    discription: ""
+  });
 
 
   const toggleRight = (id) => {
@@ -462,8 +446,229 @@ export default function AkshayProfile() {
   };
 
 
+  // ✅ API call only once
+  useEffect(() => {
+    getActorData();
+  }, []);
+
+  const getActorData = async () => {
+    try {
+      const res = await  getCelebrityBySlug(slug);
+      const item = res.data.data;
+
+      setActorData({
+        id: item?._id || "",
+        title: "Personal Details",
+        type: "personalDetails",
+
+        Name: item?.identityProfile?.name || "",
+
+      // ✅ role ki jagah profession show karo
+      Roles:
+        item?.professionalIdentity?.professionNames
+          ?.split(", ")
+          ?.filter(Boolean) || [],
+        Rank: item?.publicAttributes?.rank || "",
+  Languages:
+    item?.professionalIdentity?.languages
+      ?.map((row) => row.name)
+      ?.filter(Boolean) || [],
+          BirthDate: item?.personalDetails?.dob || "",
+        BirthPlace: item?.personalDetails?.birthplace || "",
+
+profileimg: item?.identityProfile?.image
+  ? `${API_BASE}${item.identityProfile.image}`
+  : "/catogary/cat1.jpg",      
+    discription: item?.identityProfile?.shortinfo || "",
+   // ✅ getActorData me add karo
+DeathDate: item?.lifeStatus?.dateOfDeath || "",
+DeathPlace: item?.lifeStatus?.placeOfDeath || "",
+Nationality:
+        item?.personalDetails?.nationality || "",
+
+// ❌ father/mother object hai, array nahi hai
+// ✅ correct code:
+
+Father:
+  item?.familyRelationships?.father?.name || "",
+
+Mother:
+  item?.familyRelationships?.mother?.name || "",
+
+Spouse:
+  item?.familyRelationships?.spouses
+    ?.map((row) => row.name)
+    ?.filter(Boolean)
+    ?.join(", ") || "",
+
+Children:
+  item?.familyRelationships?.children
+    ?.map((row) => row.name)
+    ?.filter(Boolean) || [],
+
+Siblings:
+  item?.familyRelationships?.siblings
+    ?.map((row) => row.name)
+    ?.filter(Boolean) || [],
+ 
 
 
+      // Career Years ✅
+      careerStartYear:
+        item?.professionalIdentity?.careerStartYear || "",
+
+      careerEndYear:
+        item?.professionalIdentity?.careerEndYear || "",
+
+      isCareerOngoing:
+        item?.professionalIdentity?.isCareerOngoing || false,
+
+      });
+
+    } catch (error) {
+      console.log("Actor API Error:", error);
+    }
+  };
+const profileData = [
+  {
+    id: 1,
+    title: "Basic Info",
+    type: "basicInfo",
+    items: [
+{
+  label: "Born",
+  value: `${
+    ActorData.BirthDate
+      ? `${new Date(ActorData.BirthDate).getDate()} ${new Date(
+          ActorData.BirthDate
+        ).toLocaleString("default", { month: "long" })} ${new Date(
+          ActorData.BirthDate
+        ).getFullYear()}`
+      : "-"
+  }${
+    ActorData.BirthDate
+      ? ` (age ${
+          new Date().getFullYear() -
+          new Date(ActorData.BirthDate).getFullYear()
+        })`
+      : ""
+  }${
+    ActorData.BirthPlace ? `, ${ActorData.BirthPlace}` : ""
+  }`,
+},
+
+
+// ✅ profileData me conditional add karo
+...(ActorData.DeathDate
+  ? [
+      {
+        label: "Died",
+        value: `${
+          new Date(ActorData.DeathDate).getDate()
+        } ${new Date(
+          ActorData.DeathDate
+        ).toLocaleString("default", {
+          month: "long",
+        })} ${new Date(
+          ActorData.DeathDate
+        ).getFullYear()}${
+          ActorData.BirthDate
+            ? ` (age ${
+                new Date(
+                  ActorData.DeathDate
+                ).getFullYear() -
+                new Date(
+                  ActorData.BirthDate
+                ).getFullYear()
+              })`
+            : ""
+        }${
+          ActorData.DeathPlace
+            ? `, ${ActorData.DeathPlace}`
+            : ""
+        }`,
+      },
+    ]
+  : []),
+
+      {
+        label: "Occupations",
+        value: ActorData.Roles?.join(", ") || "-",
+      },
+{
+        label: "Nationality ",
+       value: ActorData.Nationality || "-",
+      },
+      {
+        label: "Citizenship",
+        value: ActorData.Citizenship || "-",
+      },
+
+    {
+  label: "Active Years",
+  value: ActorData.careerStartYear
+    ? `${
+        ActorData.careerStartYear
+      } - ${
+        ActorData.isCareerOngoing
+          ? "Present"
+          : ActorData.careerEndYear || "-"
+      }`
+    : "-",
+},
+
+      // ✅ profileData items me Family section dynamic banao
+
+...(ActorData.Mother
+  ? [
+      {
+        label: "Mother",
+        value: ActorData.Mother,
+      },
+    ]
+  : []),
+
+...(ActorData.Father
+  ? [
+      {
+        label: "Father",
+        value: ActorData.Father,
+      },
+    ]
+  : []),
+
+// Spouse (sirf name ho tabhi show)
+...(ActorData.Spouse
+  ? [
+      {
+        label: "Spouse",
+        value: ActorData.Spouse,
+      },
+    ]
+  : []),
+
+// Children (array ho aur data ho tabhi show)
+...(ActorData.Children?.length
+  ? [
+      {
+        label: "Children",
+        value: ActorData.Children.join(", "),
+      },
+    ]
+  : []),
+
+// Siblings (array ho aur data ho tabhi show)
+...(ActorData.Siblings?.length
+  ? [
+      {
+        label: "Siblings",
+        value: ActorData.Siblings.join(", "),
+      },
+    ]
+  : []),
+    ]
+  }
+];
   return (
     <MyContext.Provider value={{ active, setActive }}>
     <div
