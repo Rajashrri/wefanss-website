@@ -23,6 +23,26 @@ import { useParams } from "react-router-dom";
 import { getCelebrityBySlug } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
+ const getImageUrl = (path) => {
+  if (!path) return "/no-image.png";
+
+  // remove localhost if mistakenly added
+  if (path.includes("res.cloudinary.com")) {
+    const cloudinaryIndex = path.indexOf("https://res.cloudinary.com");
+
+    if (cloudinaryIndex !== -1) {
+      return path.substring(cloudinaryIndex);
+    }
+  }
+
+  // if already normal full url
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  // local image
+  return `http://localhost:8000${path.startsWith("/") ? path : "/" + path}`;
+};
 export const sidebarData = [
   {
     id: 1,
@@ -476,9 +496,7 @@ export default function AkshayProfile() {
           BirthDate: item?.personalDetails?.dob || "",
         BirthPlace: item?.personalDetails?.birthplace || "",
 
-profileimg: item?.identityProfile?.image
-  ? `${API_BASE}${item.identityProfile.image}`
-  : "/catogary/cat1.jpg",      
+profileimg: getImageUrl(item?.identityProfile?.image),     
     discription: item?.identityProfile?.shortinfo || "",
    // ✅ getActorData me add karo
 DeathDate: item?.lifeStatus?.dateOfDeath || "",

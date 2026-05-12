@@ -7,6 +7,7 @@ const CatogeriesCard = ({ data }) => {
   const [saveCollection, setSaveCollection] = useState(false);
   const [createCollection, setCreateCollection] = useState(false);
   const [follow, setFollow] = useState(true);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   // Close all popups helper
   const closeAll = () => {
@@ -14,7 +15,29 @@ const CatogeriesCard = ({ data }) => {
     setSaveCollection(false);
     setCreateCollection(false);
   };
+ // ✅ Correct Vite env variable
 
+ // ✅ FIX IMAGE URL
+  const getImageUrl = (path) => {
+  if (!path) return "/no-image.png";
+
+  // remove localhost if mistakenly added
+  if (path.includes("res.cloudinary.com")) {
+    const cloudinaryIndex = path.indexOf("https://res.cloudinary.com");
+
+    if (cloudinaryIndex !== -1) {
+      return path.substring(cloudinaryIndex);
+    }
+  }
+
+  // if already normal full url
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  // local image
+  return `http://localhost:8000${path.startsWith("/") ? path : "/" + path}`;
+};
   return (
     <div className={`relative w-full bg-[#F4FBFF] rounded-[8px] p-3 space-y-3 ${data.cardcalss}`}>
 
@@ -24,7 +47,7 @@ const CatogeriesCard = ({ data }) => {
         {/* Image */}
         <div className="w-full h-[340px] overflow-hidden rounded-lg">
           <img
-            src={data.img}
+             src={getImageUrl(data.img)}   // ✅ use function here
             alt={data.name}
             className="w-full h-full object-cover"
           />
@@ -37,7 +60,7 @@ const CatogeriesCard = ({ data }) => {
           </h2>
 
           <p className="text-[#757575] text-[16px] primary-font font-[500] flex justify-between">
-            <span>{data.totalMovies}+ Movies</span>
+            <span>{data.totalMovies}+ Moviesvv</span>
             <span>{data.totalAwards}+ Awards</span>
           </p>
         </div>
