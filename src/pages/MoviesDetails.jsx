@@ -1,4 +1,4 @@
-    import React from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -15,6 +15,18 @@ import ListenCard from "../component/card/ListenCard";
 
 
 const MoviesDetails = ({context}) => {
+
+      const [popupData, setPopupData] = useState(null);
+
+  const openPopup = (item) => {
+    setPopupData(item);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closePopup = () => {
+    setPopupData(null);
+    document.body.style.overflow = "auto";
+  };
     return (
         <>
             <div className="relative bg-[#fff]">
@@ -169,29 +181,29 @@ const MoviesDetails = ({context}) => {
                                 {/* Year */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] min-w-[120px]">
                                 <h4 className="text-[#757575] text-[16px] primary-font">Year</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.year}</h2>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.year}</h2>
                                 </div>
 
                                 {/* Election */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] min-w-[300px]">
-                                <h4 className="text-[#757575] text-[16px] primary-font">Election</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.election}</h2>
+                                <h4 className="text-[#757575] text-[16px] primary-font">Election Type</h4>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.election}</h2>
                                 </div>
 
                                 {/* Party */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
-                                <h4 className="text-[#757575] text-[16px] primary-font">Party</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.party}</h2>
+                                <h4 className="text-[#757575] text-[16px] primary-font">Affiliation</h4>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.party}</h2>
                                 </div>
 
                                 {/* Result */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
                                 <h4 className="text-[#757575] text-[16px] primary-font">Result</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.result}</h2>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.result}</h2>
                                 </div>
 
                                 {/* Button */}
-                                <a href="#!" className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center">
+                                <a href="#!"  onClick={() => openPopup(item)} className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center">
                                     <div className="flex flex-col justify-center items-center">
                                         <div className="text-[18px] mb-[4px]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -246,26 +258,26 @@ const MoviesDetails = ({context}) => {
 
                                 {/* Year */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
-                                <h4 className="text-[#757575] text-[16px] primary-font">Department</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.Department}</h2>
+                                <h4 className="text-[#757575] text-[16px] primary-font">Position</h4>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.Department}</h2>
                                 </div>
 
                                
 
                                 {/* Party */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
-                                <h4 className="text-[#757575] text-[16px] primary-font">Party</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.party}</h2>
+                                <h4 className="text-[#757575] text-[16px] primary-font">Affiliation</h4>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.party}</h2>
                                 </div>
 
                                 {/* Result */}
                                 <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
-                                <h4 className="text-[#757575] text-[16px] primary-font">Held office</h4>
-                                <h2 className="berlin text-[36px] mt-[4px]">{item.Heldoffice}</h2>
+                                <h4 className="text-[#757575] text-[16px] primary-font">Term</h4>
+                                <h2 className="berlin text-[24px] mt-[4px]">{item.Heldoffice}</h2>
                                 </div>
 
                                 {/* Button */}
-                                <a href="#!" className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center">
+                                <a href="#!" onClick={() => openPopup(item)} className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center">
                                     <div className="flex flex-col justify-center items-center">
                                         <div className="text-[18px] mb-[4px]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -377,6 +389,65 @@ const MoviesDetails = ({context}) => {
                     </>
                 )}
                 
+
+
+
+
+                {/* **************** Popup  ********************** */}
+
+                  {popupData && (
+          <div className="fixed inset-0 z-[9999] bg-[#00000080] overflow-scroll flex justify-center items-center px-4">
+
+            <div className="bg-white rounded-[12px] max-w-[700px] w-full p-[40px] relative animate-popup">
+
+              {/* CLOSE */}
+              <button
+                onClick={closePopup}
+                className="absolute top-4 right-4 text-[28px] leading-none"
+              >
+                ×
+              </button>
+
+               <div className="pr-[24px]">
+                                <img
+                                    src="/actor/eknath.png"
+                                    alt=""
+                                    className="h-[72px] w-[60px] object-cover md:rounded-0 rounded-[8px]"
+                                />
+                                </div>
+                                <h3  className="text-[20px] mt-[10px] berlin mb-[20px] text-[#1E1E1E] berlin">Eknath Shinde</h3>
+
+              <h2 className="text-[35px] berlin mb-4 text-[#1E1E1E] font-[400] berlin">
+                {popupData.election || popupData.Department}
+              </h2>
+
+              <div className="space-y-3 text-[18px] primary-font text-[#222]">
+
+               <div className="flex gap-[12px] flex-wrap items-center"> {popupData.year &&<> <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]"> {popupData.year}</p><svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
+                <circle cx="2" cy="2" r="2" fill="#5A5A5A"/>
+                </svg></>}
+               
+                <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">Mumbai North Central</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
+                <circle cx="2" cy="2" r="2" fill="#5A5A5A"/>
+                </svg>
+                {popupData.party && <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">{popupData.party}</p>}
+             
+                </div>
+                {popupData.result && <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]"> Result: {popupData.result}</p>}
+                {popupData.Heldoffice && (
+                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">Held Office: {popupData.Heldoffice}</p>
+                )}
+                <p className="mt-[20px] text-[#757575] primary-font text-[16px] font-[600]">
+                  Eknath Shinde is preparing for the upcoming Lok Sabha elections with the goal of achieving a notable win. He is concentrating on local concerns and community growth, aiming to engage voters through creative campaigns and grassroots initiatives. His approach involves utilizing social media to attract younger voters while showcasing his accomplishments in public service. As the election date nears, his team is diligently working to ensure his message resonates throughout the constituency.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
                    
 
                
