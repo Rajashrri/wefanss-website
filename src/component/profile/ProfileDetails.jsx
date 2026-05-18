@@ -19,7 +19,7 @@ import MobileProfileCard from "../card/MobileProfileCard";
 import { MyContext } from "../hooks/MyContext ";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import Biography from "./Biography";
 import { getCelebrityBySlug } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -436,13 +436,13 @@ export default function AkshayProfile() {
     sidebarData.map((_, index) => index) // all open by default
   );
   const [openRight, setOpenRight] = useState(0);
-  const [openShare, setOpenShare] = useState(false);
-  const [follow, setfollow] = useState(false);
+
     const [ActorData, setActorData] = useState({
     id: "",
     title: "Personal Details",
     type: "personalDetails",
     Name: "",
+      Biography: "", // ✅ add
     Roles: [],
     Rank: "",
     Languages: [],
@@ -480,9 +480,9 @@ export default function AkshayProfile() {
         id: item?._id || "",
         title: "Personal Details",
         type: "personalDetails",
-
         Name: item?.identityProfile?.name || "",
 
+Biography: item?.identityProfile?.biography || "",
       // ✅ role ki jagah profession show karo
       Roles:
         item?.professionalIdentity?.professionNames
@@ -838,6 +838,8 @@ const profileData = [
           <Profilecard ActorData={ActorData}/>
 
           <ActorTabs/>
+
+
           <div className="md:px-[16px] px-[10px] py-[20px] rounded-[8px] space-y-4 bg-[#fff]">
             <div>
               <h3 className="flex gap-2 items-center berlin text-[#1E1E1E] md:text-[24px] text-[20px] text-[400]"><svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg">
