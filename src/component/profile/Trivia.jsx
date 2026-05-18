@@ -1,64 +1,154 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
+import {
+  getCelebrityBySlug,
+  getTriviaByCelebrity,
+} from "../../utils/frontApi";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+const getImageUrl = (path) => {
+  if (!path) return "/no-image.png";
+
+  // cloudinary
+  if (path.includes("res.cloudinary.com")) {
+    return path;
+  }
+
+  // full url
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://")
+  ) {
+    return path;
+  }
+
+  // local trivia image
+  return `${API_BASE}/trivia/${path}`;
+};
 
 const Trivia = () => {
-
+  const { slug } = useParams();
 
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("Filter");
+
+  // ✅ selected category
+  const [selected, setSelected] = useState("All");
+
+  const [triviaData, setTriviaData] = useState([]);
 
   const dropdownRef = useRef(null);
 
-  // close on outside click
+  useEffect(() => {
+    getTriviaData();
+  }, [slug]);
+
+  // close outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!dropdownRef.current?.contains(e.target)) {
         setOpen(false);
       }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+
+    document.addEventListener(
+      "click",
+      handleClickOutside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "click",
+        handleClickOutside
+      );
   }, []);
 
-  const options = [
-    "Filter",
-    "Filter",
-    "Filter",
-    "Filter"
+  const getTriviaData = async () => {
+    try {
+      // celebrity by slug
+      const celebRes = await getCelebrityBySlug(slug);
+
+      const celebrityId =
+        celebRes?.data?.data?._id;
+
+      if (!celebrityId) return;
+
+      // trivia fetch
+      const res = await getTriviaByCelebrity(
+        celebrityId
+      );
+
+      setTriviaData(res?.data?.data || []);
+    } catch (error) {
+      console.log("Trivia Error:", error);
+    }
+  };
+
+  // ✅ unique categories for filter
+  const categoryOptions = [
+    "All",
+    ...new Set(
+      triviaData.map(
+        (item) => item.categoryName
+      )
+    ),
   ];
+
+  // ✅ filter data
+  const filteredTrivia =
+    selected === "All"
+      ? triviaData
+      : triviaData.filter(
+          (item) =>
+            item.categoryName === selected
+        );
+
   return (
-    <div className="mt-4 md:overflow-y-auto h-screen  no-scrollbar">
-       {/* ✅ CUSTOM SELECT */}
-      <div className="filter relative w-fit mb-[24px]" ref={dropdownRef}>
-        
+    <div className="mt-4 md:overflow-y-auto h-screen no-scrollbar">
+
+      {/* FILTER */}
+      <div
+        className="filter relative w-fit mb-[24px]"
+        ref={dropdownRef}
+      >
         <button
           onClick={() => setOpen(!open)}
-          className="bg-[#4285F4] px-[24px] hover:cursor-pointer py-[12px]  primary-font font-semibold text-white rounded-[8px] flex items-center"
+          className="bg-[#4285F4] px-[24px] py-[12px] primary-font font-semibold text-white rounded-[8px] flex items-center"
         >
           {selected}
+
           <svg
-            className={`ms-[8px] transition-transform ${open ? "rotate-180" : ""}`}
+            className={`ms-[8px] transition-transform ${
+              open ? "rotate-180" : ""
+            }`}
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="20"
             viewBox="0 0 20 20"
             fill="none"
           >
-            <path d="M4.79883 12L9.59883 7.2L14.3988 12" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M4.79883 12L9.59883 7.2L14.3988 12"
+              stroke="white"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
 
-        {/* Dropdown */}
+        {/* DROPDOWN */}
         {open && (
           <ul className="absolute left-0 mt-2 p-1 w-full bg-white rounded-[8px] shadow-lg overflow-hidden z-50">
-            {options.map((item, index) => (
+            {categoryOptions.map((item, index) => (
               <li
                 key={index}
                 onClick={() => {
                   setSelected(item);
                   setOpen(false);
                 }}
-                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-center hover:cursor-pointer flex justify-center text-[#000] rounded-[8px] flex items-center"
+                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-center cursor-pointer rounded-[8px]"
               >
                 {item}
               </li>
@@ -66,43 +156,47 @@ const Trivia = () => {
           </ul>
         )}
       </div>
-       
 
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Personal Life
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-      <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-       <hr className="my-4 text-[#4285F429]" />
-           <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Movies
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-          <hr className="my-4 text-[#4285F429]" />
-       <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Personal Life
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-      <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-       <hr className="my-4 text-[#4285F429]" />
-           <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Movies
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-          <hr className="my-4 text-[#4285F429]" />
-       <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Personal Life
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-      <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-       <hr className="my-4 text-[#4285F429]" />
-           <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Movies
-      </h3>
-      <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">Worked as a chef in resturant in Bankok</h4>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
+      {/* TRIVIA LIST */}
+      {filteredTrivia?.length > 0 ? (
+        filteredTrivia.map((item) => (
+          <div key={item._id}>
+
+            {/* TITLE */}
+            <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
+              {item.title}
+            </h3>
+
+            {/* ✅ CATEGORY NAME */}
+            <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">
+              {item.categoryName}
+            </h4>
+
+            {/* IMAGE */}
+            {item.media && (
+              <img
+                src={getImageUrl(item.media)}
+                alt={item.title}
+                className="w-full rounded-[8px] my-3"
+              />
+            )}
+
+            {/* DESCRIPTION */}
+            <div
+              className="text-[14px] font-[400] primary-font mt-3 leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: item.description,
+              }}
+            />
+
+            <hr className="my-4 text-[#4285F429]" />
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-[#868484]">
+          No trivia found
+        </p>
+      )}
     </div>
   );
 };

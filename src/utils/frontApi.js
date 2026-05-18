@@ -43,4 +43,12 @@ frontApi.interceptors.response.use(
   }
 );
 
+// ✅ get timeline by celebrity id
+export const getTimelineByCelebrity = (celebrityId) => {
+  return frontApi.get(`/timeline/${celebrityId}`);
+};
+// ✅ get trivia by celebrity
+export const getTriviaByCelebrity = (celebrityId) => {
+  return frontApi.get(`/trivia/${celebrityId}`);
+};
 export default frontApi;

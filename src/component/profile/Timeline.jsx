@@ -1,49 +1,101 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
+import {
+  getCelebrityBySlug,
+  getTimelineByCelebrity,
+} from "../../utils/frontApi";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+const getImageUrl = (path) => {
+  if (!path) return "/no-image.png";
+
+  // cloudinary
+  if (path.includes("res.cloudinary.com")) {
+    return path;
+  }
+
+  // full url
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://")
+  ) {
+    return path;
+  }
+
+  // local timeline image
+  return `${API_BASE}/timeline/${path}`;
+};
 const Timeline = () => {
+  const { slug } = useParams();
+
+  const [timelineData, setTimelineData] = useState([]);
+
+  useEffect(() => {
+    getTimelineData();
+  }, [slug]);
+
+  const getTimelineData = async () => {
+    try {
+      // ✅ celebrity find by slug
+      const celebRes = await getCelebrityBySlug(slug);
+
+      const celebrityId = celebRes?.data?.data?._id;
+
+      if (!celebrityId) return;
+
+      // ✅ timeline fetch by celebrity id
+      const res = await getTimelineByCelebrity(
+        celebrityId
+      );
+
+      setTimelineData(res?.data?.data || []);
+    } catch (error) {
+      console.log("Timeline Error:", error);
+    }
+  };
+
   return (
-    <div className="mt-4 md:overflow-y-auto h-screen  no-scrollbar">
-      <span className="text-[#868484] text-[14px] primary-font">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Debut, breakthrough and action films
-      </h3>
-      <img src="/actor/timeline.png" className="py-3 w-full" alt="" />
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-        <span className="text-[#868484] text-[14px] primary-font mt-4 block">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-       Debut, breakthrough and action films
-      </h3>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
+    <div className="mt-4 md:overflow-y-auto h-screen no-scrollbar">
+      {timelineData?.length > 0 ? (
+        timelineData.map((item) => (
+          <div key={item._id} className="mb-8">
+            {/* ✅ Years */}
+            <span className="text-[#868484] text-[14px] primary-font">
+              {item.fromYear} - {item.toYear}
+            </span>
 
-        <span className="text-[#868484] text-[14px] primary-font mt-4 block">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-      Debut, breakthrough and action films
-      </h3>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-          <span className="text-[#868484] text-[14px] primary-font">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Debut, breakthrough and action films
-      </h3>
-      <img src="/actor/timeline.png" className="py-3 w-full" alt="" />
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-        <span className="text-[#868484] text-[14px] primary-font mt-4 block">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-       Debut, breakthrough and action films
-      </h3>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-  <span className="text-[#868484] text-[14px] primary-font">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-        Debut, breakthrough and action films
-      </h3>
-      <img src="/actor/timeline.png" className="py-3 w-full" alt="" />
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor  <br /> opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
-        <span className="text-[#868484] text-[14px] primary-font mt-4 block">1991–1999</span>
-      <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
-       Debut, breakthrough and action films
-      </h3>
-       <p className="text-[14px] font-[400] primary-font mt-3 leading-relaxed">Kumar made his first appearance as the lead actor opposite Raakhee and Shantipriya in Saugandh (1991). In the same year, he acted in Kishore Vyas-directed Dancer, which received poor reviews.[36] The following year he starred in Abbas Mustan-directed suspense thriller, Khiladi, widely considered his breakthrough role.[37][38] A review in The Indian Express called the film "an engrossing thriller" and described  in the lead part, noting his physical appearance, strong screen presence, and commending him for being "perfectly at ease".[39] His next release was the Raj Sippy-directed detective film Mr. Bond, based on James Bond.[40] His last release of 1992 was Deedar. It failed to perform well at the box office.</p>
+            {/* ✅ Title */}
+            <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E] mt-1">
+              {item.title}
+            </h3>
 
-    
+            {/* ✅ Timeline Image */}
+            {item.media && (
+              <img
+                src={getImageUrl(item.media)}
+                className="py-3 w-full rounded-[8px]"
+                alt={item.title}
+              />
+            )}
+
+            {/* ✅ Description */}
+            <div
+              className="text-[14px] font-[400] primary-font mt-3 leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: item.description,
+              }}
+            />
+
+            <hr className="my-6 text-[#4285F429]" />
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-[#868484]">
+          No timeline found
+        </p>
+      )}
     </div>
   );
 };
