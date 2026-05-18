@@ -20,7 +20,7 @@ import { MyContext } from "../hooks/MyContext ";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Biography from "./Biography";
-import { getCelebrityBySlug } from "../../utils/frontApi";
+import { getCelebrityBySlug,getReferencesByCelebrity,getRelatedPersonalitiesByCelebrity } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
  const getImageUrl = (path) => {
@@ -431,11 +431,45 @@ const media = [
 export default function AkshayProfile() {
     const { slug } = useParams(); // URL se slug milega
 
+  const [relatedPersonalities, setRelatedPersonalities] = useState([]);
+
   const [active, setActive] = useState(false)
+
+  const [openRight, setOpenRight] = useState(0);
+const [referencesData, setReferencesData] =
+  useState([]);
+
+const sidebarData = [
+    {
+      id: 1,
+      type: "profile",
+      title: "Akshay Kumar",
+      sections: [
+        "Biography",
+        "Timeline",
+      ],
+    },
+
+    {
+      id: 5,
+      type: "hitSongs",
+      title: "Related Personalities",
+      items: relatedPersonalities.map((item) => ({
+        id: item._id,
+        name:
+          item.relatedCelebrity?.identityProfile?.name || "",
+        subtitle: item.relationshipType || "",
+        image: getImageUrl(
+          item.relatedCelebrity?.identityProfile?.image
+        ),
+        slug:
+          item.relatedCelebrity?.identityProfile?.slug || "",
+      })),
+    },
+  ];
   const [openIndexes, setOpenIndexes] = useState(
     sidebarData.map((_, index) => index) // all open by default
   );
-  const [openRight, setOpenRight] = useState(0);
 
     const [ActorData, setActorData] = useState({
     id: "",
@@ -467,10 +501,35 @@ export default function AkshayProfile() {
 
 
   // ✅ API call only once
-  useEffect(() => {
-    getActorData();
-  }, []);
 
+
+useEffect(() => {
+  getActorData();
+}, [slug]);
+const fetchRelatedPersonalities = async (id) => {
+  try {
+    const res =
+      await getRelatedPersonalitiesByCelebrity(id);
+
+    setRelatedPersonalities(res?.data?.data || []);
+  } catch (error) {
+    console.log(
+      "Related Personalities Error:",
+      error
+    );
+  }
+};
+  const fetchReferences = async () => {
+  try {
+    const res = await getReferencesByCelebrity(
+      ActorData.id
+    );
+
+    setReferencesData(res?.data?.data || []);
+  } catch (error) {
+    console.log("Reference Error:", error);
+  }
+};
   const getActorData = async () => {
     try {
       const res = await  getCelebrityBySlug(slug);
@@ -542,7 +601,11 @@ Siblings:
         item?.professionalIdentity?.isCareerOngoing || false,
 
       });
-
+ // ✅ fetch related personalities here
+    if (item?._id) {
+      fetchRelatedPersonalities(item._id);
+      fetchReferences(item._id);
+    }
     } catch (error) {
       console.log("Actor API Error:", error);
     }
@@ -1081,14 +1144,31 @@ const profileData = [
            <div className="md:px-[20px] px-[10px] py-[20px] mt-4 rounded-[8px] space-y-4 bg-[#fff]">
             <div>
               <h3 className="flex gap-2 items-center berlin text-[#1E1E1E] md:text-[24px] text-[20px] text-[400]">References</h3>
-                  <ol className="detaillist">
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Kala, Anusha (9 September 2022). " <a href="">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</a> ". Filmfare. Archived from the original on 9 September 2022. Retrieved 19 July 2024.</li>
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Akshay Kumar, a prominent figure in Bollywood, has captivated audiences with his versatile roles and charismatic screen presence. Known as ' <a href="">Khiladi Kumar</a> ', he has evolved from action hero to a celebrated actor in various genres, showcasing his talent on his birthday each year.</li>
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Celebrated as one of India's most bankable stars, <a href="#!">Akshay Kumar's journey in cinema</a> is marked by his dedication and diverse filmography. Each year, fans honor his contributions to the film industry, reflecting on his growth from a martial arts expert to a beloved actor.</li>
-                  </ol>
-                  <Link to="#!" className="text-[#4285F4] w-full block text-[14px] text-center font-primary font-[700] mt-2 cursor-pointer hover:underline">
-                              see more
-                            </Link>
+                <ol className="detaillist list-decimal pl-5">
+  {referencesData?.length > 0 ? (
+    referencesData.map((item) => (
+      <li
+        key={item._id}
+        className="mt-2 primary-font text-[16px] text-[#1E1E1E] font-[400]"
+      >
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noreferrer"
+          className="text-[#4285F4] hover:underline"
+        >
+          {item.title}
+        </a>{" "}
+        ({item.type})
+      </li>
+    ))
+  ) : (
+    <p className="text-[#868484]">
+      No references found
+    </p>
+  )}
+</ol>
+                 
              
               <hr className="my-4 text-[#4285F429]" />
 

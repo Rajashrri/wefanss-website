@@ -51,4 +51,13 @@ export const getTimelineByCelebrity = (celebrityId) => {
 export const getTriviaByCelebrity = (celebrityId) => {
   return frontApi.get(`/trivia/${celebrityId}`);
 };
+
+export const getReferencesByCelebrity = (id) => {
+  return frontApi.get(`/references/${id}`);
+};
+
+export const getRelatedPersonalitiesByCelebrity = (id) => {
+  return frontApi.get(`/related-personalities/${id}`);
+};
+
 export default frontApi;
