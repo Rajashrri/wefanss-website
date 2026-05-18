@@ -1145,7 +1145,7 @@ const profileData = [
             <div>
               <h3 className="flex gap-2 items-center berlin text-[#1E1E1E] md:text-[24px] text-[20px] text-[400]">References</h3>
                 <ol className="detaillist list-decimal pl-5">
-  {referencesData?.length > 0 ? (
+  {/* {referencesData?.length > 0 ? (
     referencesData.map((item) => (
       <li
         key={item._id}
@@ -1157,16 +1157,31 @@ const profileData = [
           rel="noreferrer"
           className="text-[#4285F4] hover:underline"
         >
-          {item.title}
-        </a>{" "}
+          {item.title}{" "}
         ({item.type})
+        </a>
       </li>
     ))
   ) : (
     <p className="text-[#868484]">
       No references found
     </p>
-  )}
+  )} */}
+
+      <li
+        className="mt-2 primary-font text-[16px] text-[#1E1E1E] font-[400]"
+      >
+        <a
+          href='#!'
+          target="_blank"
+          rel="noreferrer"
+          className="text-[16px] text-[#1E1E1E] font-[400] underline"
+        >
+          Kala, Anusha (9 September 2022). " <span className="text-[#4285F4]">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</span> ". Filmfare. Archived from the original on 9 September 2022. Retrieved 19 July 2024. (News)
+        
+        </a>
+      </li>
+   
 </ol>
                  
              
