@@ -1175,7 +1175,7 @@ const profileData = [
           href='#!'
           target="_blank"
           rel="noreferrer"
-          className="text-[16px] text-[#1E1E1E] font-[400] underline"
+          className="text-[16px] !text-[#1E1E1E] font-[400] underline"
         >
           Kala, Anusha (9 September 2022). " <span className="text-[#4285F4]">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</span> ". Filmfare. Archived from the original on 9 September 2022. Retrieved 19 July 2024. (News)
         
