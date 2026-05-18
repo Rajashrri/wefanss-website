@@ -1180,9 +1180,9 @@ const profileData = [
         
              Kala, Anusha (9 September 2022). 
           
-         " <span className="text-[#4285F4]">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</span> ". (News)
+         " <span className="text-[#4285F4]">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</span> ". 
         
-        </a>
+        </a>(News)
       </li>
    
 </ol>
