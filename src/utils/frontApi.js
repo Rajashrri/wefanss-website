@@ -60,4 +60,10 @@ export const getRelatedPersonalitiesByCelebrity = (id) => {
   return frontApi.get(`/related-personalities/${id}`);
 };
 
+export const getFeaturedMoviesByCelebrity = (celebrityId) => {
+  return frontApi.get(`/featured-movies/${celebrityId}`);
+};
+export const getFeaturedSeriesByCelebrity = (celebrityId) => {
+  return frontApi.get(`/featured-series/${celebrityId}`);
+};
 export default frontApi;

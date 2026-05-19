@@ -23,14 +23,14 @@ import Biography from "./Biography";
 import {
   getCelebrityBySlug,
   getReferencesByCelebrity,
-  getRelatedPersonalitiesByCelebrity,
+  getRelatedPersonalitiesByCelebrity,getFeaturedMoviesByCelebrity,getFeaturedSeriesByCelebrity,
 } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const getImageUrl = (path) => {
   if (!path) return "/no-image.png";
 
-  // remove localhost if mistakenly added
+  // cloudinary image
   if (path.includes("res.cloudinary.com")) {
     const cloudinaryIndex = path.indexOf("https://res.cloudinary.com");
 
@@ -39,13 +39,13 @@ const getImageUrl = (path) => {
     }
   }
 
-  // if already normal full url
+  // already full url
   if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
   }
 
-  // local image
-  return `http://localhost:8000${path.startsWith("/") ? path : "/" + path}`;
+  // local upload image
+  return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
 };
 export const sidebarData = [
   {
@@ -74,32 +74,7 @@ export const sidebarData = [
     ],
   },
 
-  {
-    id: 2,
-    type: "topFilms",
-    title: "Featured Movies",
-    link: "/movies",
-    items: [
-      {
-        id: 1,
-        name: "Sooryavanshi",
-        subtitle: "2021",
-        image: "/movies/Sooryavanshi.png",
-      },
-      {
-        id: 2,
-        name: "Rowdy Rathore",
-        subtitle: "2012",
-        image: "/movies/Rowdy Rathore.png",
-      },
-      {
-        id: 3,
-        name: "Singh is King",
-        subtitle: "2008",
-        image: "/movies/Singh is Kinng.png",
-      },
-    ],
-  },
+
 
   {
     id: 3,
@@ -431,7 +406,8 @@ export default function AkshayProfile() {
 
   const [openRight, setOpenRight] = useState(0);
   const [referencesData, setReferencesData] = useState([]);
-
+const [featuredMovies, setFeaturedMovies] = useState([]);
+const [featuredSeries, setFeaturedSeries] = useState([]);
   const sidebarData = [
     {
       id: 1,
@@ -440,6 +416,32 @@ export default function AkshayProfile() {
       sections: ["Biography", "Timeline"],
     },
 
+{
+  id: 3,
+  type: "hitSongs",
+  title: "Featured Movies",
+  link: "/movies",
+  items: featuredMovies.map((movie) => ({
+    id: movie._id,
+    name: movie.title,
+    subtitle: movie.releaseYear,
+    image: `${API_BASE}/movies/${movie.image}`,
+    slug: movie.slug,
+  })),
+},
+{
+  id: 4,
+  type: "hitSongs",
+  title: "Featured Series",
+  link: "/webseries",
+  items: featuredSeries.map((series) => ({
+    id: series._id,
+    name: series.title,
+    subtitle: `${series.type || ""}`,
+    image: `${API_BASE}/series/${series.image}`,
+    slug: series.slug,
+  })),
+},
     {
       id: 5,
       type: "hitSongs",
@@ -488,6 +490,7 @@ export default function AkshayProfile() {
 
   useEffect(() => {
     getActorData();
+    
   }, [slug]);
   const fetchRelatedPersonalities = async (id) => {
     try {
@@ -505,6 +508,27 @@ export default function AkshayProfile() {
     setReferencesData(res?.data?.data || []);
   } catch (error) {
     console.log("Reference Error:", error);
+  }
+};
+
+
+const fetchFeaturedMovies = async (id) => {
+  try {
+    const res = await getFeaturedMoviesByCelebrity(id);
+
+    setFeaturedMovies(res?.data?.data || []);
+  } catch (error) {
+    console.log("Featured Movies Error:", error);
+  }
+};
+
+const fetchFeaturedSeries = async (id) => {
+  try {
+    const res = await getFeaturedSeriesByCelebrity(id);
+
+    setFeaturedSeries(res?.data?.data || []);
+  } catch (error) {
+    console.log("Featured Series Error:", error);
   }
 };
   const getActorData = async () => {
@@ -573,7 +597,14 @@ export default function AkshayProfile() {
       if (item?._id) {
         fetchRelatedPersonalities(item._id);
         fetchReferences(item._id);
+        fetchFeaturedMovies(item._id);
+
+        fetchFeaturedSeries(item._id);
+
+        
       }
+
+
     } catch (error) {
       console.log("Actor API Error:", error);
     }
