@@ -15,9 +15,7 @@ import Podcast from "./Podcast";
 import ActorTabs from "./ActorTabs";
 import Profilecard from "../card/Profilecard";
 import MobileProfileCard from "../card/MobileProfileCard";
-// import { ChevronDown } from "lucide-react";
 import { MyContext } from "../hooks/MyContext ";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import Biography from "./Biography";
 import {
@@ -403,11 +401,28 @@ export default function AkshayProfile() {
   const [relatedPersonalities, setRelatedPersonalities] = useState([]);
 
   const [active, setActive] = useState(false);
-
   const [openRight, setOpenRight] = useState(0);
   const [referencesData, setReferencesData] = useState([]);
 const [featuredMovies, setFeaturedMovies] = useState([]);
 const [featuredSeries, setFeaturedSeries] = useState([]);
+
+ const [ActorData, setActorData] = useState({
+    id: "",
+    title: "Personal Details",
+    type: "personalDetails",
+    Name: "",
+    Biography: "", // ✅ add
+    Roles: [],
+      gallery: [],
+
+    Rank: "",
+    Languages: [],
+    BirthDate: "",
+    BirthPlace: "",
+    profileimg: "",
+    discription: "",
+  });
+
   const sidebarData = [
     {
       id: 1,
@@ -415,6 +430,11 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
       title: "Akshay Kumar",
       sections: ["Biography", "Timeline"],
     },
+
+
+
+
+
 
 {
   id: 3,
@@ -442,8 +462,22 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
     slug: series.slug,
   })),
 },
+
+ {
+    id: 4,
+    type: "images",
+    title: "Gallery",
+    link: `/gallery/${slug}`,
+    items:
+      ActorData?.gallery?.slice(0, 12)?.map((img, index) => ({
+        id: index + 1,
+        image: getImageUrl(img),
+      })) || [],
+  },
+
+
     {
-      id: 5,
+      id: 6,
       type: "hitSongs",
       title: "Related Personalities",
       items: relatedPersonalities.map((item) => ({
@@ -459,21 +493,7 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
     sidebarData.map((_, index) => index), // all open by default
   );
 
-  const [ActorData, setActorData] = useState({
-    id: "",
-    title: "Personal Details",
-    type: "personalDetails",
-    Name: "",
-    Biography: "", // ✅ add
-    Roles: [],
-    Rank: "",
-    Languages: [],
-    BirthDate: "",
-    BirthPlace: "",
-    profileimg: "",
-    discription: "",
-  });
-
+ 
   const toggleRight = (id) => {
     setOpenRight(openRight === id ? null : id);
   };
@@ -541,7 +561,7 @@ const fetchFeaturedSeries = async (id) => {
         title: "Personal Details",
         type: "personalDetails",
         Name: item?.identityProfile?.name || "",
-
+gallery: item?.identityProfile?.gallery || [],
         Biography: item?.identityProfile?.biography || "",
         // ✅ role ki jagah profession show karo
         Roles:
@@ -593,6 +613,8 @@ const fetchFeaturedSeries = async (id) => {
 
         isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
       });
+
+
       // ✅ fetch related personalities here
       if (item?._id) {
         fetchRelatedPersonalities(item._id);
