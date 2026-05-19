@@ -1,9 +1,22 @@
-import React from "react";
+import React,{useState} from "react";
 import Subheading from "../Subheading";
 import { Link } from "react-router-dom";
 
+
 const MediaContent = ({ item }) => {
-  return (
+
+  const [popupData1, setPopupData1] = useState(null);
+
+  const openPopup1 = (movie) => {
+    setPopupData1(movie);
+    document.body.style.overflow = "hidden";
+};
+const closePopup1 = () => {
+    setPopupData1(null);
+    document.body.style.overflow = "auto";
+};
+
+  return (<>
     <div className="bg-white rounded-xl rounded-b-none border-[#4285F429] p-4 space-y-4 border-b">
 
       {/* Section Title */}
@@ -11,7 +24,13 @@ const MediaContent = ({ item }) => {
 
       {/* Media Items */}
       {item?.items?.map((mediaItem) => (
-        <a href="#!" key={mediaItem.id} className="space-y-2 block">
+        <a href="#!" key={mediaItem.id} className="space-y-2 block"   
+        onClick={(e) => {
+        if (mediaItem.isVideo) {
+          e.preventDefault();
+          openPopup1(mediaItem);
+        }
+      }}>
 
           <div className="relative">
             <img
@@ -65,7 +84,33 @@ const MediaContent = ({ item }) => {
           </Link>
         )}
     </div>
-  );
+
+
+    
+            {popupData1 && (
+                <div className="fixed inset-0 z-[9999] bg-[#00000080] overflow-hiddin flex justify-center items-center mb-0">
+
+                    <div className="bg-white rounded-[12px] max-w-[1000px] w-full p-[20px] relative animate-popup">
+
+                        {/* CLOSE */}
+                        <button
+                            onClick={closePopup1}
+                            className="absolute top-0 right-2 text-[28px] leading-none"
+                        >
+                            ×
+                        </button>
+
+                        <div className="pr-[10px] w-full">
+                            <iframe className="md:h-[80vh] w-full" src="https://www.youtube.com/embed/SwoLzt7HAIE?si=IywgyWetOFNK4pO1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                         
+
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
+  </>);
 };
 
 export default MediaContent;
