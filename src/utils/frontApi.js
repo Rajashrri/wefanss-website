@@ -77,4 +77,10 @@ export const getLatestListenByCelebrity = async (id) => {
     return frontApi.get(`/latest-listen/${id}`);
 
 };
+
+//watch all
+
+export const getWatchByCelebrity = (id) => {
+  return frontApi.get(`/watch/${id}`);
+};
 export default frontApi;

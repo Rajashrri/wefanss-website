@@ -36,7 +36,28 @@ const closePopup1 = () => {
         setPopupData(null);
         document.body.style.overflow = "auto";
     };
+const getYoutubeEmbedUrl = (url) => {
+    if (!url) return "";
 
+    // youtube.com/watch?v=
+    if (url.includes("youtube.com/watch")) {
+      const videoId = url.split("v=")[1]?.split("&")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // youtu.be/
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // already embed
+    if (url.includes("youtube.com/embed")) {
+      return url;
+    }
+
+    return url;
+  };
     return (
         <>
             <div className="relative bg-[#fff]">
@@ -126,7 +147,7 @@ const closePopup1 = () => {
                         }
 
 
-                        <Link to="/watch" className={`flex  justify-center items-center primary-font text-[14px] text-[#fff] gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Watch" ? "bg-[#4285F4]" : ""}`}>
+                        <Link to="/watch/:slug" className={`flex  justify-center items-center primary-font text-[14px] text-[#fff] gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Watch" ? "bg-[#4285F4]" : ""}`}>
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10.08 7.9425V13.7025H3.6V7.9425H10.08ZM17.3016 7.9425V13.7025C17.3016 14.1753 17.2085 14.6434 17.0276 15.0802C16.8466 15.5169 16.5815 15.9138 16.2472 16.2481C15.9129 16.5824 15.516 16.8476 15.0793 17.0285C14.6425 17.2094 14.1744 17.3025 13.7016 17.3025H3.6C2.64522 17.3025 1.72955 16.9232 1.05442 16.2481C0.379285 15.573 0 14.6573 0 13.7025V7.9425C0 6.98772 0.379285 6.07205 1.05442 5.39692C1.72955 4.72179 2.64522 4.3425 3.6 4.3425H7.1136L4.4748 1.1817C4.41429 1.1089 4.36871 1.02489 4.34066 0.934465C4.31261 0.844045 4.30265 0.748986 4.31135 0.654716C4.3289 0.464329 4.42136 0.288713 4.5684 0.166502C4.71544 0.0442897 4.905 -0.0145067 5.09539 0.00304669C5.28577 0.0206001 5.46139 0.113065 5.5836 0.260101L8.64 3.9249L11.6964 0.260101C11.8186 0.113065 11.9942 0.0206001 12.1846 0.00304669C12.375 -0.0145067 12.5646 0.0442897 12.7116 0.166502C12.8586 0.288713 12.9511 0.464329 12.9687 0.654716C12.9862 0.845103 12.9274 1.03467 12.8052 1.1817L10.1808 4.3317H13.68C14.1558 4.32837 14.6275 4.41938 15.0679 4.59949C15.5083 4.77959 15.9086 5.0452 16.2457 5.38097C16.5828 5.71674 16.85 6.116 17.0319 6.55567C17.2137 6.99535 17.3066 7.46671 17.3052 7.9425H17.3016ZM11.5416 7.9425C11.5416 7.56059 11.3899 7.19432 11.1198 6.92427C10.8498 6.65421 10.4835 6.5025 10.1016 6.5025H3.6C3.21809 6.5025 2.85182 6.65421 2.58177 6.92427C2.31171 7.19432 2.16 7.56059 2.16 7.9425V13.7025C2.16 14.0844 2.31171 14.4507 2.58177 14.7207C2.85182 14.9908 3.21809 15.1425 3.6 15.1425H10.08C10.4619 15.1425 10.8282 14.9908 11.0982 14.7207C11.3683 14.4507 11.52 14.0844 11.52 13.7025L11.5416 7.9425ZM15.5016 12.6225C15.5016 12.4089 15.4383 12.2001 15.3196 12.0225C15.2009 11.8449 15.0322 11.7065 14.8349 11.6247C14.6376 11.543 14.4204 11.5216 14.2109 11.5633C14.0014 11.6049 13.809 11.7078 13.6579 11.8588C13.5069 12.0099 13.404 12.2023 13.3624 12.4118C13.3207 12.6213 13.3421 12.8385 13.4238 13.0358C13.5056 13.2331 13.644 13.4018 13.8216 13.5205C13.9992 13.6392 14.208 13.7025 14.4216 13.7025C14.7055 13.7016 14.9777 13.5888 15.1792 13.3887C15.3806 13.1886 15.4952 12.9172 15.498 12.6333L15.5016 12.6225ZM15.5016 9.0225C15.5016 8.8089 15.4383 8.60009 15.3196 8.42249C15.2009 8.24488 15.0322 8.10645 14.8349 8.02471C14.6376 7.94297 14.4204 7.92158 14.2109 7.96325C14.0014 8.00493 13.809 8.10779 13.6579 8.25883C13.5069 8.40987 13.404 8.6023 13.3624 8.8118C13.3207 9.0213 13.3421 9.23846 13.4238 9.4358C13.5056 9.63314 13.644 9.80182 13.8216 9.92049C13.9992 10.0392 14.208 10.1025 14.4216 10.1025C14.7068 10.1016 14.98 9.98784 15.1817 9.78618C15.3833 9.58452 15.4971 9.31129 15.498 9.0261L15.5016 9.0225Z" fill={`${context.Contenttype === "Watch" ? "#fff" : "#000"}`} />
                             </svg>
@@ -479,7 +500,10 @@ const closePopup1 = () => {
                         </button>
 
                         <div className="pr-[10px] w-full">
-                            <iframe className="md:h-[560px] w-full" src="https://www.youtube.com/embed/SwoLzt7HAIE?si=IywgyWetOFNK4pO1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            <iframe className="md:h-[560px] w-full" 
+                           src={getYoutubeEmbedUrl(popupData1?.link)}
+                title={popupData1?.title || "video"}
+                              frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                          
 
                         </div>
