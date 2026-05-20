@@ -21,7 +21,12 @@ import Biography from "./Biography";
 import {
   getCelebrityBySlug,
   getReferencesByCelebrity,
-  getRelatedPersonalitiesByCelebrity,getFeaturedMoviesByCelebrity,getFeaturedSeriesByCelebrity,
+  getRelatedPersonalitiesByCelebrity,
+  getFeaturedMoviesByCelebrity,
+  getFeaturedSeriesByCelebrity,
+  getLatestWatchByCelebrity,
+  getLatestReadByCelebrity,
+  getLatestListenByCelebrity, // ✅ add
 } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -45,206 +50,6 @@ const getImageUrl = (path) => {
   // local upload image
   return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
 };
-export const sidebarData = [
-  {
-    id: 1,
-    type: "profile",
-    title: "Akshay Kumar",
-    sections: [
-      "Biography",
-      "Timeline",
-      "Films",
-      "Career Entry",
-      "Family",
-      "Career Entry",
-      "FilmFare Awards",
-      "Trivia",
-      "Songs",
-      "Wife",
-      "Brands",
-      "Early Life",
-      "Education",
-      "Movies",
-      "Podcasts",
-      "Books",
-      "Related Personalities",
-      "Brands",
-    ],
-  },
-
-
-
-  {
-    id: 3,
-    type: "hitSongs",
-    title: "Featured Web Series",
-    link: "/webseries",
-    items: [
-      {
-        id: 1,
-        name: "Tip Tip Barsa Paani",
-        subtitle: "Mohra",
-        image: "/song/Tip Tip Barsa Paani.png",
-      },
-      {
-        id: 2,
-        name: "Chura Ke Dil Mera",
-        subtitle: "Main Khiladi Tu Anari",
-        image: "/song/Chura Ke Dil Mera.png",
-      },
-      {
-        id: 3,
-        name: "Main Khiladi Tu Anari",
-        subtitle: "Main Khiladi Tu Anari",
-        image: "/song/Main Khiladi Tu Anari.png",
-      },
-    ],
-  },
-  {
-    id: 4,
-    type: "images",
-    title: "Gallery",
-    link: "/gallery",
-    items: [
-      {
-        id: 1,
-
-        image: "/actor/1.png",
-      },
-      {
-        id: 2,
-
-        image: "/actor/2.png",
-      },
-      {
-        id: 3,
-
-        image: "/actor/3.png",
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png",
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png",
-      },
-      {
-        id: 1,
-
-        image: "/actor/1.png",
-      },
-      {
-        id: 2,
-
-        image: "/actor/2.png",
-      },
-      {
-        id: 3,
-
-        image: "/actor/3.png",
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png",
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png",
-      },
-      {
-        id: 3,
-
-        image: "/actor/3.png",
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png",
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png",
-      },
-    ],
-  },
-  {
-    id: 5,
-    type: "hitSongs",
-    title: "Related Personalities",
-    items: [
-      {
-        id: 1,
-        name: "Twinkle Khanna",
-        subtitle: "Actress",
-        image: "/celebrities/tk.png",
-      },
-      {
-        id: 2,
-        name: "Jhon Abraham",
-        subtitle: "Actor",
-        image: "/celebrities/ji.png",
-      },
-      {
-        id: 3,
-        name: "Katrina Kaif",
-        subtitle: "Actress",
-        image: "/celebrities/kk.png",
-      },
-    ],
-  },
-];
-
-const watchData = {
-  id: 1,
-  title: "Watch",
-  type: "watch",
-  link: "/watch",
-  items: [
-    {
-      id: 1,
-      image: "/watch1.png",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-      isVideo: true,
-    },
-    {
-      id: 2,
-      image: "/watch2.png",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-      isVideo: true,
-    },
-  ],
-  seeMore: true,
-};
-const readData = {
-  id: 3,
-  title: "Read",
-  type: "read",
-  link: "/read",
-  items: [
-    {
-      id: 1,
-      image: "/read1.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-    {
-      id: 2,
-      image: "/read2.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-  ],
-};
 
 const PublicCampaignsData = {
   id: 3,
@@ -262,26 +67,6 @@ const PublicCampaignsData = {
       source: "2026",
       title: "Eknath Shinde Faces Criticism Over Land Allocation Policies",
       // dis: "Shinde's Land Policy Sparks Debate: Transparency and Fairness Questioned"
-    },
-  ],
-};
-const ListenData = {
-  id: 3,
-  title: "Listen",
-  type: "read",
-  link: "/listen",
-  items: [
-    {
-      id: 1,
-      source: "Podcast • 2026",
-      title: "Eknath Shinde Faces Criticism Over Land Allocation Policies",
-      dis: "Shinde's Land Policy Sparks Debate: Transparency and Fairness Questioned",
-    },
-    {
-      id: 2,
-      source: "Podcast • 2026",
-      title: "Eknath Shinde Faces Criticism Over Land Allocation Policies",
-      dis: "Shinde's Land Policy Sparks Debate: Transparency and Fairness Questioned",
     },
   ],
 };
@@ -403,17 +188,19 @@ export default function AkshayProfile() {
   const [active, setActive] = useState(false);
   const [openRight, setOpenRight] = useState(0);
   const [referencesData, setReferencesData] = useState([]);
-const [featuredMovies, setFeaturedMovies] = useState([]);
-const [featuredSeries, setFeaturedSeries] = useState([]);
-
- const [ActorData, setActorData] = useState({
+  const [featuredMovies, setFeaturedMovies] = useState([]);
+  const [featuredSeries, setFeaturedSeries] = useState([]);
+  const [watchItems, setWatchItems] = useState([]);
+  const [readItems, setReadItems] = useState([]);
+  const [listenItems, setListenItems] = useState([]);
+  const [ActorData, setActorData] = useState({
     id: "",
     title: "Personal Details",
     type: "personalDetails",
     Name: "",
     Biography: "", // ✅ add
     Roles: [],
-      gallery: [],
+    gallery: [],
 
     Rank: "",
     Languages: [],
@@ -431,50 +218,44 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
       sections: ["Biography", "Timeline"],
     },
 
+    {
+      id: 3,
+      type: "hitSongs",
+      title: "Featured Movies",
+      link: "/movies",
+      items: featuredMovies.map((movie) => ({
+        id: movie._id,
+        name: movie.title,
+        subtitle: movie.releaseYear,
+        image: `${API_BASE}/movies/${movie.image}`,
+        slug: movie.slug,
+      })),
+    },
+    {
+      id: 4,
+      type: "hitSongs",
+      title: "Featured Series",
+      link: "/webseries",
+      items: featuredSeries.map((series) => ({
+        id: series._id,
+        name: series.title,
+        subtitle: `${series.type || ""}`,
+        image: `${API_BASE}/series/${series.image}`,
+        slug: series.slug,
+      })),
+    },
 
-
-
-
-
-{
-  id: 3,
-  type: "hitSongs",
-  title: "Featured Movies",
-  link: "/movies",
-  items: featuredMovies.map((movie) => ({
-    id: movie._id,
-    name: movie.title,
-    subtitle: movie.releaseYear,
-    image: `${API_BASE}/movies/${movie.image}`,
-    slug: movie.slug,
-  })),
-},
-{
-  id: 4,
-  type: "hitSongs",
-  title: "Featured Series",
-  link: "/webseries",
-  items: featuredSeries.map((series) => ({
-    id: series._id,
-    name: series.title,
-    subtitle: `${series.type || ""}`,
-    image: `${API_BASE}/series/${series.image}`,
-    slug: series.slug,
-  })),
-},
-
- {
-    id: 4,
-    type: "images",
-    title: "Gallery",
-    link: `/gallery/${slug}`,
-    items:
-      ActorData?.gallery?.slice(0, 12)?.map((img, index) => ({
-        id: index + 1,
-        image: getImageUrl(img),
-      })) || [],
-  },
-
+    {
+      id: 4,
+      type: "images",
+      title: "Gallery",
+      link: `/gallery/${slug}`,
+      items:
+        ActorData?.gallery?.slice(0, 12)?.map((img, index) => ({
+          id: index + 1,
+          image: getImageUrl(img),
+        })) || [],
+    },
 
     {
       id: 6,
@@ -493,7 +274,6 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
     sidebarData.map((_, index) => index), // all open by default
   );
 
- 
   const toggleRight = (id) => {
     setOpenRight(openRight === id ? null : id);
   };
@@ -508,9 +288,70 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
 
   // ✅ API call only once
 
+  const watchData = {
+    id: 1,
+    title: "Watch",
+    type: "watch",
+    link: `/watch/${slug}`,
+    items: watchItems.slice(0, 2).map((item) => ({
+      id: item._id,
+      image: item.thumbnail
+        ? `${API_BASE}/watch/${item.thumbnail}`
+        : "/no-image.png",
+
+      title: item.title,
+      isVideo: true,
+      link: item.link,
+      videoType: item.videoType,
+      slug: item.slug,
+    })),
+    seeMore: true,
+  };
+
+  // dynamic read section
+  const readData = {
+    id: 2,
+    title: "Read",
+    type: "read",
+    link: `/read/${slug}`,
+    items: readItems.slice(0, 2).map((item) => ({
+      id: item._id,
+      image: item.thumbnail
+        ? `${API_BASE}/read/${item.thumbnail}`
+        : "/no-image.png",
+
+      title: item.title,
+      shortIntro: item.shortIntro,
+      slug: item.slug,
+      link: item.link,
+      isVideo: false,
+    })),
+  };
+
+  const listenData = {
+    id: 3,
+    title: "Listen",
+    type: "read",
+    link: `/listen/${slug}`,
+    items: listenItems.slice(0, 2).map((item) => ({
+      id: item._id,
+
+      image: item.thumbnail
+        ? `${API_BASE}/listen/${item.thumbnail}`
+        : "/no-image.png",
+
+      source: `${item.videoLink || "Podcast"} • ${item.noOfHours || ""} hrs`,
+
+      title: item.title,
+
+      dis: item.shortIntro || "",
+
+      slug: item.slug,
+      link: item.link,
+    })),
+  };
   useEffect(() => {
     getActorData();
-    
   }, [slug]);
   const fetchRelatedPersonalities = async (id) => {
     try {
@@ -521,36 +362,64 @@ const [featuredSeries, setFeaturedSeries] = useState([]);
       console.log("Related Personalities Error:", error);
     }
   };
- const fetchReferences = async (id) => {
-  try {
-    const res = await getReferencesByCelebrity(id);
+  const fetchReferences = async (id) => {
+    try {
+      const res = await getReferencesByCelebrity(id);
 
-    setReferencesData(res?.data?.data || []);
-  } catch (error) {
-    console.log("Reference Error:", error);
-  }
-};
+      setReferencesData(res?.data?.data || []);
+    } catch (error) {
+      console.log("Reference Error:", error);
+    }
+  };
 
+  const fetchFeaturedMovies = async (id) => {
+    try {
+      const res = await getFeaturedMoviesByCelebrity(id);
 
-const fetchFeaturedMovies = async (id) => {
-  try {
-    const res = await getFeaturedMoviesByCelebrity(id);
+      setFeaturedMovies(res?.data?.data || []);
+    } catch (error) {
+      console.log("Featured Movies Error:", error);
+    }
+  };
 
-    setFeaturedMovies(res?.data?.data || []);
-  } catch (error) {
-    console.log("Featured Movies Error:", error);
-  }
-};
+  const fetchFeaturedSeries = async (id) => {
+    try {
+      const res = await getFeaturedSeriesByCelebrity(id);
 
-const fetchFeaturedSeries = async (id) => {
-  try {
-    const res = await getFeaturedSeriesByCelebrity(id);
+      setFeaturedSeries(res?.data?.data || []);
+    } catch (error) {
+      console.log("Featured Series Error:", error);
+    }
+  };
 
-    setFeaturedSeries(res?.data?.data || []);
-  } catch (error) {
-    console.log("Featured Series Error:", error);
-  }
-};
+  // fetch latest read
+  const fetchLatestRead = async (id) => {
+    try {
+      const res = await getLatestReadByCelebrity(id);
+
+      setReadItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Read Error:", error);
+    }
+  };
+  const fetchLatestListen = async (id) => {
+    try {
+      const res = await getLatestListenByCelebrity(id);
+
+      setListenItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Listen Error:", error);
+    }
+  };
+  const fetchLatestWatch = async (id) => {
+    try {
+      const res = await getLatestWatchByCelebrity(id);
+
+      setWatchItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Watch Error:", error);
+    }
+  };
   const getActorData = async () => {
     try {
       const res = await getCelebrityBySlug(slug);
@@ -561,7 +430,7 @@ const fetchFeaturedSeries = async (id) => {
         title: "Personal Details",
         type: "personalDetails",
         Name: item?.identityProfile?.name || "",
-gallery: item?.identityProfile?.gallery || [],
+        gallery: item?.identityProfile?.gallery || [],
         Biography: item?.identityProfile?.biography || "",
         // ✅ role ki jagah profession show karo
         Roles:
@@ -614,7 +483,6 @@ gallery: item?.identityProfile?.gallery || [],
         isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
       });
 
-
       // ✅ fetch related personalities here
       if (item?._id) {
         fetchRelatedPersonalities(item._id);
@@ -622,11 +490,10 @@ gallery: item?.identityProfile?.gallery || [],
         fetchFeaturedMovies(item._id);
 
         fetchFeaturedSeries(item._id);
-
-        
+        fetchLatestWatch(item._id); // ✅ add
+        fetchLatestRead(item._id); // ✅ add
+        fetchLatestListen(item._id); // ✅ add
       }
-
-
     } catch (error) {
       console.log("Actor API Error:", error);
     }
@@ -1339,29 +1206,29 @@ gallery: item?.identityProfile?.gallery || [],
                 <h3 className="flex gap-2 items-center berlin text-[#1E1E1E] md:text-[24px] text-[20px] text-[400]">
                   References
                 </h3>
-            <ol className="detaillist list-decimal pl-5">
-  {referencesData.length > 0 ? (
-    referencesData.map((item, index) => (
-      <li
-        key={item._id || index}
-        className="mt-2 primary-font text-[16px] text-[#1E1E1E] font-[400]"
-      >
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-[16px] !text-[#1E1E1E] font-[400] underline"
-        >
-          {item.title}
-        </a>
+                <ol className="detaillist list-decimal pl-5">
+                  {referencesData.length > 0 ? (
+                    referencesData.map((item, index) => (
+                      <li
+                        key={item._id || index}
+                        className="mt-2 primary-font text-[16px] text-[#1E1E1E] font-[400]"
+                      >
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[16px] !text-[#1E1E1E] font-[400] underline"
+                        >
+                          {item.title}
+                        </a>
 
-        {item.type && ` (${item.type})`}
-      </li>
-    ))
-  ) : (
-    <li className="text-gray-500">No references found</li>
-  )}
-</ol>
+                        {item.type && ` (${item.type})`}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No references found</li>
+                  )}
+                </ol>
 
                 <hr className="my-4 text-[#4285F429]" />
               </div>
@@ -1441,7 +1308,7 @@ gallery: item?.identityProfile?.gallery || [],
 
             {/* <Subheading data="Listen"/> */}
 
-            <Podcast item={ListenData} />
+            <Podcast item={listenData} />
 
             {/* <div className="text-center">
               <button className="text-blue-500 text-[14px] font-medium">

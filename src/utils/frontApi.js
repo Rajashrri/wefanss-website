@@ -66,4 +66,15 @@ export const getFeaturedMoviesByCelebrity = (celebrityId) => {
 export const getFeaturedSeriesByCelebrity = (celebrityId) => {
   return frontApi.get(`/featured-series/${celebrityId}`);
 };
+export const getLatestWatchByCelebrity = async (id) => {
+  return frontApi.get(`/latest-watch/${id}`);
+};
+export const getLatestReadByCelebrity = async (id) => {
+  return frontApi.get(`/latest-read/${id}`);
+};
+
+export const getLatestListenByCelebrity = async (id) => {
+    return frontApi.get(`/latest-listen/${id}`);
+
+};
 export default frontApi;
