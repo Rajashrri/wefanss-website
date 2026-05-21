@@ -91,5 +91,13 @@ export const getListenByCelebrity = (id) => {
   return frontApi.get(`/listen/${id}`);
 };
 
+export const getLatestElectionByCelebrity = (id) => {
+  return frontApi.get(`/latest-election/${id}`);
+};
+// utils/frontApi.js
+
+export const getLatestPositionByCelebrity = (id) => {
+  return frontApi.get(`/latest-position/${id}`);
+};
 
 export default frontApi;

@@ -17,7 +17,6 @@ import Profilecard from "../card/Profilecard";
 import MobileProfileCard from "../card/MobileProfileCard";
 import { MyContext } from "../hooks/MyContext ";
 import { useParams } from "react-router-dom";
-import Biography from "./Biography";
 import {
   getCelebrityBySlug,
   getReferencesByCelebrity,

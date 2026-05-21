@@ -44,8 +44,9 @@ function App() {
           {/* <Route index element={<Home />} /> */}
           <Route path="/" element={<Home />} />
           <Route path="/profile-actor/:slug" element={<Profile />} />
+                    <Route path="/profile-politician/:slug" element={<EknathShinde />} />
+
           <Route path="/jaya-bachhan" element={<JayaBachhan />} />
-          <Route path="/eknath-shinde" element={<EknathShinde />} />
           <Route path="/register" element={<Singup />} />
           <Route path="/otp" element={<Otp />} />
           <Route path="/forget-password" element={<ForgetPassword />} />

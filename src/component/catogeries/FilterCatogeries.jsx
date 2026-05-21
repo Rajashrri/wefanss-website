@@ -47,18 +47,41 @@ const getCelebrities = async () => {
 
       const finalData = res.data.data.map((item, index) => {
 
+        const professions =
+          item?.professionalIdentity?.professions?.map((p) =>
+            p?.name?.toLowerCase()
+          ) || [];
+
+        console.log("professions", professions);
+
         let profileLink = `/profiles/${item?.identityProfile?.slug || ""}`;
 
-        // ✅ Actor category
-        if (slug?.toLowerCase() === "actor") {
+        // ✅ only actor
+        if (
+          professions.includes("actor") &&
+          !professions.includes("politician")
+        ) {
           profileLink = `/profile-actor/${
             item?.identityProfile?.slug || ""
           }`;
         }
 
-        // ✅ Politician category
-        else if (slug?.toLowerCase() === "politician") {
+        // ✅ only politician
+        else if (
+          professions.includes("politician") &&
+          !professions.includes("actor")
+        ) {
           profileLink = `/profile-politician/${
+            item?.identityProfile?.slug || ""
+          }`;
+        }
+
+        // ✅ actor + politician both
+        else if (
+          professions.includes("actor") &&
+          professions.includes("politician")
+        ) {
+          profileLink = `/profiles/${
             item?.identityProfile?.slug || ""
           }`;
         }

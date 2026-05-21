@@ -1,5 +1,5 @@
 import { Bookmark, Share } from "lucide-react";
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
@@ -18,370 +18,54 @@ import Profilecard from "../component/card/Profilecard";
 import MobileProfileCard from "../component/card/MobileProfileCard";
 // import { ChevronDown } from "lucide-react";
 import { MyContext } from "../component/hooks/MyContext ";
+import { useParams } from "react-router-dom";
+import {
+  getCelebrityBySlug,
+  getReferencesByCelebrity,
+   getRelatedPersonalitiesByCelebrity,
+   getLatestElectionByCelebrity,
+getLatestPositionByCelebrity,
+  getLatestWatchByCelebrity,
+  getLatestReadByCelebrity,
+  getLatestListenByCelebrity,
+} from "../utils/frontApi";
 
-export const sidebarData = [
-  {
-    id: 1,
-    type: "profile",
-    title: "Eknath Shinde",
-    sections: [
-      "Biography",
-      "Timeline",
-      "Films",
-      "Career Entry",
-      "Family",
-      "FilmFare Awards",
-      "Trivia",
-      "Songs",
-      "Wife",
-      "Brands",
-      "FilmFare Awards",
-      "Trivia",
-      "Songs",
-      "Wife",
-      "Brands",
-      "Early Life",
-      "Education",
-      "Movies",
-      "Podcasts",
-      "Books",
-      "Related Personalities",
-      "References",
-    ]
-  },
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-  {
-    id: 2,
-    type: "Elections",
-    title: "Elections",
-    items: [
-      {
-        id: 1,
-        name: "Rajya Sabha Elections",
-        tag: ["2021", "ShivSena"],
-        status: true,
-      },
-      {
-        id: 2,
-        name: "Lok Sabha Elections",
-        tag: ["2021", "ShivSena"],
-        status: false,
-      },
-      {
-        id: 3,
-        name: "State Assembly Elections",
-        tag: ["2021", "ShivSena"],
-        status: true,
-      }
-    ]
-  },
+const getImageUrl = (path) => {
+  if (!path) return "/no-image.png";
 
-  {
-    id: 3,
-    type: "Elections",
-    title: "Positions Held",
-    items: [
-      {
-        id: 1,
-        name: "Chief Minister of Maharashtra",
-        tag: ["ShivSena", "2022 to 2024"],
-      },
-      {
-        id: 2,
-        name: "Lok Sabha Elections",
-        tag: ["ShivSena", "2022 to 2024"],
-      },
-      {
-        id: 3,
-        name: "State Assembly Elections",
-        tag: ["ShivSena", "2022 to 2024"],
-      }
-    ]
-  },
-  
+  // cloudinary image
+  if (path.includes("res.cloudinary.com")) {
+    const cloudinaryIndex = path.indexOf("https://res.cloudinary.com");
 
-  // {
-  //   id: 4,
-  //   title: "Social Work",
-  //   type: "Initiatives",
-  //   items: [
-  //     {
-  //       id: 1,
-  //       title:
-  //         "Eknath Shinde Initiates Skill Development Programs for Youth Empowerment",
-  //     },
-  //     {
-  //       id: 2,
-  //       title:
-  //         "Eknath Shinde Initiates Skill Development Programs for Youth Empowerment",
-  //     },
-  //   ],
-  // },
- {
-    id: 4,
-    type: "images",
-    title: "Gallery",
-    link:"/gallery",
-    items: [
-      {
-        id: 1,
+    if (cloudinaryIndex !== -1) {
+      return path.substring(cloudinaryIndex);
+    }
+  }
 
-        image: "/actor/1.png"
-      },
-      {
-        id: 2,
+  // already full url
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
 
-        image: "/actor/2.png"
-      },
-      {
-        id: 3,
-
-        image: "/actor/3.png"
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png"
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png"
-      },
-      {
-        id: 1,
-
-        image: "/actor/1.png"
-      },
-      {
-        id: 2,
-
-        image: "/actor/2.png"
-      },
-      {
-        id: 3,
-
-        image: "/actor/3.png"
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png"
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png"
-      },
-        {
-        id: 3,
-
-        image: "/actor/3.png"
-      },
-      {
-        id: 4,
-
-        image: "/actor/4.png"
-      },
-      {
-        id: 5,
-
-        image: "/actor/1.png"
-      }
-    ]
-  },
-
-  // {
-  //   id: 7,
-  //   type: "profile",
-  //   title: "References",
-  //   sections: [
-  //     "Biography",
-  //     "Timeline",
-  //     "Films",
-  //     "Career Entry",
-  //     "Family",
-  //     "FilmFare Awards",
-  //     "Trivia",
-  //     "Songs",
-  //     "Wife",
-  //     "Brands"
-  //   ]
-  // },
-  // {
-  //   id: 8,
-  //   type: "topFilms",
-  //   title: "Related Personalities",
-  //   items: [
-  //     {
-  //       id: 1,
-  //       name: "Kabhi Khushi Kabhie Gham",
-  //       subtitle: "Chief Minister of Maharashtra",
-  //       image: "/actor/cm.png"
-  //     },
-  //     {
-  //       id: 2,
-  //       name: "Nitesh Rane",
-  //       subtitle: "Cabinet minister in Government of Maharashtra",
-  //       image: "/actor/nitesh.png"
-  //     },
-
-  //   ]
-  // },
-  {
-    id: 5,
-    type: "hitSongs",
-    title: "Related Personalities",
-    items: [
-      {
-        id: 1,
-        name: "Devendra Fadnavis",
-        subtitle: "Chief Minister of Maharashtra",
-        image: "/celebrities/dev.png"
-      },
-      {
-        id: 2,
-        name: "Nitesh Rane",
-        subtitle: "Cabinet minister in Government of Maharashtra",
-        image: "/celebrities/nitesh.svg"
-      }
-    ]
-  },
-  
-
-
-];
-
-const profileData = [
-  {
-    id: 1,
-    title: "Basic Info",
-    type: "basicInfo",
-    items: [
-      { label: "Born", value: "9 September 1967 (age 58), Delhi, India" },
-      { label: "Died", value: "9 September 1967 (age 58), Delhi, India" },
-      { label: "Occupations", value: "Actress, Politician" },
-      { label: "Citizenship", value: "Indian (until 2011), Canadian (2011–2023)" },
-      { label: "subtitles Active", value: "1991 – Present" },
-      { label: "Spouse", value: "Twinkle Khanna (m. 2001)" },
-      { label: "Children", value: "Shweta Bachchan Nanda, Abhishek Bachchan" }
-    ]
-  },
-
-
-];
-
-const ActorData = {
-
-
-
-  id: 1,
-  title: "Personal Details",
-  type: "personalDetails",
-  Name: "Eknath Shinde",
-  Roles: [" Politician"],
-  Rank: "22",
-  Languages: ["Marathi", "Hindi"],
-  BirthDate: "9 September 1967",
-  BirthPlace: "Amritsar, Punjab, India",
-  profileimg: "/actor/eknath.png",
-   discription:"Eknasth shinde (born September 9, 1967, Amritsar, Punjab, India) is an Indian actor and producer, chiefly known for his work in Bollywood comedies and action films. Kumar, whose career spans more than three decades, has starred in more"
-
-
-};
-const watchData = {
-  id: 1,
-  title: "Watch",
-  type: "watch",
-  items: [
-    {
-      id: 1,
-      image: "/watch1.png",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-      isVideo: true,
-    },
-    {
-      id: 2,
-      image: "/watch2.png",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-      isVideo: true,
-    },
-  ],
-  seeMore: true,
-};
-const readData = {
-  id: 3,
-  title: "Read",
-  type: "read",
-    link:"/read",
-  items: [
-    {
-      id: 1,
-      image: "/read1.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-    {
-      id: 2,
-      image: "/read2.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Akshay Kumar Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-  ],
+  // local upload image
+  return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
 };
 
-const MediaInterviewsPress = {
-  id: 1,
-  title: "Watch",
-  type: "watch",
-    link:"/watch",
-  items: [
-    {
-      id: 1,
-      image: "/ek1.png",
-      title:
-        "Eknath Shinde Launches Initiative to Support Local Artisans in Mumbai",
-      source: "Source • 02-01-2026",
-      isVideo: true,
-    },
-    {
-      id: 2,
-      image: "/ek2.png",
-      title:
-        "Eknath Shinde Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-      source: "Source • 02-01-2026",
-      isVideo: true,
-    },
-  ],
-  seeMore: true,
-};
-const Speeches = {
-  id: 3,
-  title: "Read ",
-  type: "read",
-    link:"/read",
-  items: [
-    {
-      id: 1,
-      image: "/ek3.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Eknath Shinde Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-    {
-      id: 2,
-      image: "/ek4.png",
-      source: "Source • 02-01-2026",
-      title:
-        "Eknath Shinde Says Success Changed His Career Track: 'Now I Can Choose Quality'",
-    },
-  ],
-};
-// const controversiesData = {
+
+
+
+
+
+
+
+
+
+
+
+
+
 //   id: 3,
 //   title: "Controversies",
 //   type: "read",
@@ -426,28 +110,7 @@ const PublicCampaignsData = {
     },
   ],
 };
-const ListenData = {
-  id: 3,
-  title: "Listen",
-  type: "read",
-    link:"/listen",
-  items: [
-    {
-      id: 1,
-      source: "Podcast • 2026",
-      title:
-        "Eknath Shinde Faces Criticism Over Land Allocation Policies",
-      dis: "Shinde's Land Policy Sparks Debate: Transparency and Fairness Questioned"
-    },
-    {
-      id: 2,
-      source: "Podcast • 2026",
-      title:
-        "Eknath Shinde Faces Criticism Over Land Allocation Policies",
-      dis: "Shinde's Land Policy Sparks Debate: Transparency and Fairness Questioned"
-    },
-  ],
-};
+
 
 const grid = [
   {
@@ -561,14 +224,501 @@ const media = [
 
 
 export default function EknathShinde() {
-  const [openIndexes, setOpenIndexes] = useState(
-    sidebarData.map((_, index) => index) // all open by default
-  );
+
   const [openRight, setOpenRight] = useState(0);
   const [openShare, setOpenShare] = useState(false);
   const [follow, setfollow] = useState(false);
+
+  const [relatedPersonalities, setRelatedPersonalities] = useState([]);
+
+  const [electionItems, setElectionItems] = useState([]);
+  const [possitionItems, setPossitionItems] = useState([]);
+
+    const [referencesData, setReferencesData] = useState([]);
+  const [watchItems, setWatchItems] = useState([]);
+  const [readItems, setReadItems] = useState([]);
+  const [listenItems, setListenItems] = useState([]);
+  const { slug } = useParams(); // URL se slug milega
+  
    const [active, setActive] = useState(false)
 
+  const [ActorData, setActorData] = useState({
+    id: "",
+    title: "Personal Details",
+    type: "personalDetails",
+    Name: "",
+    Biography: "", // ✅ add
+    Roles: [],
+    gallery: [],
+
+    Rank: "",
+    Languages: [],
+    BirthDate: "",
+    BirthPlace: "",
+    profileimg: "",
+    discription: "",
+  });
+ const sidebarData = [
+  {
+    id: 1,
+    type: "profile",
+    title:  ActorData?.Name || "",
+    sections: [
+      "Biography",
+      "Timeline",
+      "Films",
+      "Career Entry",
+      "Family",
+      "FilmFare Awards",
+      "Trivia",
+      "Songs",
+      "Wife",
+      "Brands",
+      "FilmFare Awards",
+      "Trivia",
+      "Songs",
+      "Wife",
+      "Brands",
+      "Early Life",
+      "Education",
+      "Movies",
+      "Podcasts",
+      "Books",
+      "Related Personalities",
+      "References",
+    ]
+  },
+
+  {
+
+
+id: 2,
+  title: "Elections",
+  type: "Elections",
+  link: `/election/${slug}`,
+items: electionItems.slice(0, 3).map((item, index) => ({
+  id: item._id || index,
+
+  name: `${item.type || ""} Elections`,
+
+  tag: [
+    item.election_year || "N/A",
+    item.party || item.type || "N/A",
+  ],
+
+  // won/lost handling
+  status:
+    item.result &&
+    item.result.toLowerCase() === "won"
+      ? true
+      : item.result &&
+        item.result.toLowerCase() === "lost"
+      ? false
+      : null,
+
+  result: item.result || "Pending",
+
+  slug: item.url || "",
+})),
+  },
+
+{
+  id: 3,
+  type: "Elections",
+  title: "Positions Held",
+  items: possitionItems.slice(0, 3).map((item, index) => ({
+    id: item._id || index,
+
+    name: item.title || "-",
+
+tag: [
+  item.party || "-",
+
+  item.from_date
+    ? `${new Date(item.from_date).getFullYear()} to ${
+        item.current === "Yes"
+          ? "Present"
+          : item.to_date
+          ? new Date(item.to_date).getFullYear()
+          : "-"
+      }`
+    : "-",
+],
+
+    slug: item.url || "",
+  })),
+},
+  
+   {
+      id: 4,
+      type: "images",
+      title: "Gallery",
+      link: `/gallery/${slug}`,
+      items:
+        ActorData?.gallery?.slice(0, 12)?.map((img, index) => ({
+          id: index + 1,
+          image: getImageUrl(img),
+        })) || [],
+    },
+
+ {
+      id: 5,
+      type: "hitSongs",
+      title: "Related Personalities",
+      items: relatedPersonalities.map((item) => ({
+        id: item._id,
+        name: item.relatedCelebrity?.identityProfile?.name || "",
+        subtitle: item.relationshipType || "",
+        image: getImageUrl(item.relatedCelebrity?.identityProfile?.image),
+        slug: item.relatedCelebrity?.identityProfile?.slug || "",
+      })),
+    },
+
+
+];
+
+  const [openIndexes, setOpenIndexes] = useState(
+    sidebarData.map((_, index) => index), // all open by default
+  );
+
+
+  const MediaInterviewsPress = {
+    id: 1,
+    title: "Watch",
+    type: "watch",
+    link: `/watch/${slug}`,
+    items: watchItems.slice(0, 2).map((item) => ({
+      id: item._id,
+      image: item.thumbnail
+        ? `${API_BASE}/watch/${item.thumbnail}`
+        : "/no-image.png",
+
+      title: item.title,
+      isVideo: true,
+      link: item.link,
+      videoType: item.videoType,
+      slug: item.slug,
+    })),
+    seeMore: true,
+  };
+
+  // dynamic read section
+  const Speeches = {
+    id: 2,
+    title: "Read",
+    type: "read",
+    link: `/read/${slug}`,
+    items: readItems.slice(0, 2).map((item) => ({
+      id: item._id,
+      image: item.thumbnail
+        ? `${API_BASE}/read/${item.thumbnail}`
+        : "/no-image.png",
+
+      title: item.title,
+      shortIntro: item.shortIntro,
+      slug: item.slug,
+      link: item.link,
+      isVideo: false,
+    })),
+  };
+
+  const ListenData= {
+    id: 3,
+    title: "Listen",
+    type: "read",
+    link: `/listen/${slug}`,
+    items: listenItems.slice(0, 2).map((item) => ({
+      id: item._id,
+
+      image: item.thumbnail
+        ? `${API_BASE}/listen/${item.thumbnail}`
+        : "/no-image.png",
+
+      source: `${item.videoLink || "Podcast"} • ${item.noOfHours || ""} hrs`,
+
+      title: item.title,
+
+      dis: item.shortIntro || "",
+
+      slug: item.slug,
+      link: item.link,
+    })),
+  };
+
+
+  useEffect(() => {
+    getActorData();
+  }, [slug]);
+
+
+    const fetchRelatedPersonalities = async (id) => {
+    try {
+      const res = await getRelatedPersonalitiesByCelebrity(id);
+
+      setRelatedPersonalities(res?.data?.data || []);
+    } catch (error) {
+      console.log("Related Personalities Error:", error);
+    }
+  };
+  // fetch latest read
+  const fetchLatestRead = async (id) => {
+    try {
+      const res = await getLatestReadByCelebrity(id);
+
+      setReadItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Read Error:", error);
+    }
+  };
+  const fetchLatestListen = async (id) => {
+    try {
+      const res = await getLatestListenByCelebrity(id);
+
+      setListenItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Listen Error:", error);
+    }
+  };
+    const fetchReferences = async (id) => {
+    try {
+      const res = await getReferencesByCelebrity(id);
+
+      setReferencesData(res?.data?.data || []);
+    } catch (error) {
+      console.log("Reference Error:", error);
+    }
+  };
+
+  const fetchLatestWatch = async (id) => {
+    try {
+      const res = await getLatestWatchByCelebrity(id);
+
+      setWatchItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Watch Error:", error);
+    }
+  };
+ const fetchLatestElection = async (id) => {
+    try {
+      const res = await getLatestElectionByCelebrity(id);
+
+      setElectionItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Watch Error:", error);
+    }
+  };
+ const fetchLatestPossition = async (id) => {
+    try {
+      const res = await getLatestPositionByCelebrity(id);
+
+      setPossitionItems(res?.data?.data || []);
+    } catch (error) {
+      console.log("Latest Watch Error:", error);
+    }
+  };
+   const getActorData = async () => {
+      try {
+        const res = await getCelebrityBySlug(slug);
+        const item = res.data.data;
+  
+        setActorData({
+          id: item?._id || "",
+          title: "Personal Details",
+          type: "personalDetails",
+          Name: item?.identityProfile?.name || "",
+          gallery: item?.identityProfile?.gallery || [],
+          Biography: item?.identityProfile?.biography || "",
+          // ✅ role ki jagah profession show karo
+          Roles:
+            item?.professionalIdentity?.professionNames
+              ?.split(", ")
+              ?.filter(Boolean) || [],
+          Rank: item?.publicAttributes?.rank || "",
+          Languages:
+            item?.professionalIdentity?.languages
+              ?.map((row) => row.name)
+              ?.filter(Boolean) || [],
+          BirthDate: item?.personalDetails?.dob || "",
+          BirthPlace: item?.personalDetails?.birthplace || "",
+  
+          profileimg: getImageUrl(item?.identityProfile?.image),
+          discription: item?.identityProfile?.shortinfo || "",
+          // ✅ getActorData me add karo
+          DeathDate: item?.lifeStatus?.dateOfDeath || "",
+          DeathPlace: item?.lifeStatus?.placeOfDeath || "",
+          Nationality: item?.personalDetails?.nationality || "",
+  
+          // ❌ father/mother object hai, array nahi hai
+          // ✅ correct code:
+  
+          Father: item?.familyRelationships?.father?.name || "",
+  
+          Mother: item?.familyRelationships?.mother?.name || "",
+  
+          Spouse:
+            item?.familyRelationships?.spouses
+              ?.map((row) => row.name)
+              ?.filter(Boolean)
+              ?.join(", ") || "",
+  
+          Children:
+            item?.familyRelationships?.children
+              ?.map((row) => row.name)
+              ?.filter(Boolean) || [],
+  
+          Siblings:
+            item?.familyRelationships?.siblings
+              ?.map((row) => row.name)
+              ?.filter(Boolean) || [],
+  
+          // Career Years ✅
+          careerStartYear: item?.professionalIdentity?.careerStartYear || "",
+  
+          careerEndYear: item?.professionalIdentity?.careerEndYear || "",
+  
+          isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
+        });
+  
+        // ✅ fetch related personalities here
+        if (item?._id) {
+          fetchRelatedPersonalities(item._id);
+          fetchReferences(item._id);
+        fetchLatestElection(item._id);
+  
+        fetchLatestPossition(item._id);
+           fetchLatestWatch(item._id); // ✅ add
+          fetchLatestRead(item._id); // ✅ add
+           fetchLatestListen(item._id); // ✅ add
+      }
+      } catch (error) {
+        console.log("Actor API Error:", error);
+      }
+    };
+
+
+     const profileData = [
+    {
+      id: 1,
+      title: "Basic Info",
+      type: "basicInfo",
+      items: [
+        {
+          label: "Born",
+          value: `${
+            ActorData.BirthDate
+              ? `${new Date(ActorData.BirthDate).getDate()} ${new Date(
+                  ActorData.BirthDate,
+                ).toLocaleString("default", { month: "long" })} ${new Date(
+                  ActorData.BirthDate,
+                ).getFullYear()}`
+              : "-"
+          }${
+            ActorData.BirthDate
+              ? ` (age ${
+                  new Date().getFullYear() -
+                  new Date(ActorData.BirthDate).getFullYear()
+                })`
+              : ""
+          }${ActorData.BirthPlace ? `, ${ActorData.BirthPlace}` : ""}`,
+        },
+
+        // ✅ profileData me conditional add karo
+        ...(ActorData.DeathDate
+          ? [
+              {
+                label: "Died",
+                value: `${new Date(ActorData.DeathDate).getDate()} ${new Date(
+                  ActorData.DeathDate,
+                ).toLocaleString("default", {
+                  month: "long",
+                })} ${new Date(ActorData.DeathDate).getFullYear()}${
+                  ActorData.BirthDate
+                    ? ` (age ${
+                        new Date(ActorData.DeathDate).getFullYear() -
+                        new Date(ActorData.BirthDate).getFullYear()
+                      })`
+                    : ""
+                }${ActorData.DeathPlace ? `, ${ActorData.DeathPlace}` : ""}`,
+              },
+            ]
+          : []),
+
+        {
+          label: "Occupations",
+          value: ActorData.Roles?.join(", ") || "-",
+        },
+        {
+          label: "Nationality ",
+          value: ActorData.Nationality || "-",
+        },
+        {
+          label: "Citizenship",
+          value: ActorData.Citizenship || "-",
+        },
+
+        {
+          label: "Active Years",
+          value: ActorData.careerStartYear
+            ? `${ActorData.careerStartYear} - ${
+                ActorData.isCareerOngoing
+                  ? "Present"
+                  : ActorData.careerEndYear || "-"
+              }`
+            : "-",
+        },
+
+        // ✅ profileData items me Family section dynamic banao
+
+        ...(ActorData.Mother
+          ? [
+              {
+                label: "Mother",
+                value: ActorData.Mother,
+              },
+            ]
+          : []),
+
+        ...(ActorData.Father
+          ? [
+              {
+                label: "Father",
+                value: ActorData.Father,
+              },
+            ]
+          : []),
+
+        // Spouse (sirf name ho tabhi show)
+        ...(ActorData.Spouse
+          ? [
+              {
+                label: "Spouse",
+                value: ActorData.Spouse,
+              },
+            ]
+          : []),
+
+        // Children (array ho aur data ho tabhi show)
+        ...(ActorData.Children?.length
+          ? [
+              {
+                label: "Children",
+                value: ActorData.Children.join(", "),
+              },
+            ]
+          : []),
+
+        // Siblings (array ho aur data ho tabhi show)
+        ...(ActorData.Siblings?.length
+          ? [
+              {
+                label: "Siblings",
+                value: ActorData.Siblings.join(", "),
+              },
+            ]
+          : []),
+      ],
+    },
+  ];
   const toggleRight = (id) => {
     setOpenRight(openRight === id ? null : id);
   };
@@ -594,8 +744,9 @@ export default function EknathShinde() {
       <li className='text-[#fff] ptimary-font text-[12px]'>/</li>
       <li className='text-[#fff] ptimary-font text-[12px]'>Actors</li>
       <li className='text-[#fff] ptimary-font text-[12px]'>/</li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>Eknath Shinde</li>
-    </ul>
+<li className='text-[#fff] ptimary-font text-[12px]'>
+  {ActorData?.Name || ""}
+</li>    </ul>
 
 
   </div>
@@ -1021,11 +1172,29 @@ export default function EknathShinde() {
           <div className="px-[20px] py-[20px] mt-4 rounded-[8px] space-y-4 bg-[#fff]">
             <div>
               <h3 className="flex gap-2 items-center berlin text-[#1E1E1E] md:text-[24px] text-[20px] text-[400]">References</h3>
-                  <ol className="detaillist">
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Kala, Anusha (9 September 2022). " <a href="">Decoding Akshay Kumar: We break down the evolution of Khiladi Kumar on his birthday | Filmfare.com</a> ". Filmfare. Archived from the original on 9 September 2022. Retrieved 19 July 2024.</li>
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Akshay Kumar, a prominent figure in Bollywood, has captivated audiences with his versatile roles and charismatic screen presence. Known as ' <a href="">Khiladi Kumar</a> ', he has evolved from action hero to a celebrated actor in various genres, showcasing his talent on his birthday each year.</li>
-                    <li className="mt-1 primary-font text-[16px] text-[#1E1E1E] font-[400]">Celebrated as one of India's most bankable stars, <a href="#!">Akshay Kumar's journey in cinema</a> is marked by his dedication and diverse filmography. Each year, fans honor his contributions to the film industry, reflecting on his growth from a martial arts expert to a beloved actor.</li>
-                  </ol>
+                  <ol className="detaillist list-decimal pl-5">
+                  {referencesData.length > 0 ? (
+                    referencesData.map((item, index) => (
+                      <li
+                        key={item._id || index}
+                        className="mt-2 primary-font text-[16px] text-[#1E1E1E] font-[400]"
+                      >
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[16px] !text-[#1E1E1E] font-[400] underline"
+                        >
+                          {item.title}
+                        </a>
+
+                        {item.type && ` (${item.type})`}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No references found</li>
+                  )}
+                </ol>
                   <Link to="#!" className="text-[#4285F4] w-full block text-[14px] text-center font-primary font-[700] mt-2 cursor-pointer hover:underline">
                               see more
                             </Link>
