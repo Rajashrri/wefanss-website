@@ -14,7 +14,8 @@ const FilterCatogeries = ({
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [sortOrder, setSortOrder] = useState(null);
-
+  // ✅ LOADER STATE
+  const [loading, setLoading] = useState(true);
   const [actorsData, setActorsData] = useState([]);
 
   const [gender, setGender] = useState("All");
@@ -68,6 +69,9 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
       }
     } catch (error) {
       console.log(error);
+     } finally {
+      // ✅ STOP LOADER
+      setLoading(false);
     }
   };
 
@@ -151,6 +155,12 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   return (
     <>
+     {/* ✅ PAGE LOADER */}
+      {loading ? (
+        <div className="w-full h-[80vh] flex items-center justify-center">
+          <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
       <div className="px-6 py-5 bg-[#fff]">
         {/* TOP */}
         <div className="flex md:justify-start justify-between gap-3">
@@ -325,8 +335,10 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
           </div>
         </div>
       </div>
-    </>
+         )}
+        </>
   );
 };
+
 
 export default FilterCatogeries;
