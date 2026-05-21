@@ -43,7 +43,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           {/* <Route index element={<Home />} /> */}
           <Route path="/" element={<Home />} />
-          <Route path="/profiles/:slug" element={<Profile />} />
+          <Route path="/profile-actor/:slug" element={<Profile />} />
           <Route path="/jaya-bachhan" element={<JayaBachhan />} />
           <Route path="/eknath-shinde" element={<EknathShinde />} />
           <Route path="/register" element={<Singup />} />

@@ -39,41 +39,61 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
   useEffect(() => {
     getCelebrities();
   }, [slug]);
+const getCelebrities = async () => {
+  try {
+    const res = await frontApi.get(`/frontcategory/${slug}`);
 
-  const getCelebrities = async () => {
-    try {
-      const res = await frontApi.get(`/frontcategory/${slug}`);
+    if (res.data.success) {
 
-      if (res.data.success) {
-        const finalData = res.data.data.map((item, index) => ({
-  id: item._id || index,
-  name: item?.identityProfile?.name || "No Name",
+      const finalData = res.data.data.map((item, index) => {
 
-  gender: item?.personalDetails?.gender || "Male",
+        let profileLink = `/profiles/${item?.identityProfile?.slug || ""}`;
 
-  // 🔥 IMPORTANT
-  language:
-    item?.professionalIdentity?.languages?.map((l) => l.name) || [],
+        // ✅ Actor category
+        if (slug?.toLowerCase() === "actor") {
+          profileLink = `/profile-actor/${
+            item?.identityProfile?.slug || ""
+          }`;
+        }
 
-  age: item?.personalDetails?.dob
-    ? new Date().getFullYear() -
-      new Date(item.personalDetails.dob).getFullYear()
-    : 25,
-  img: item?.identityProfile?.categoryImage
-          ? `${API_BASE}${item.identityProfile.categoryImage}`
-          : "/catogary/cat1.jpg",
-  link: `/profiles/${item?.identityProfile?.slug || ""}`,
-}));
+        // ✅ Politician category
+        else if (slug?.toLowerCase() === "politician") {
+          profileLink = `/profile-politician/${
+            item?.identityProfile?.slug || ""
+          }`;
+        }
 
-        setActorsData(finalData);
-      }
-    } catch (error) {
-      console.log(error);
-     } finally {
-      // ✅ STOP LOADER
-      setLoading(false);
+        return {
+          id: item._id || index,
+
+          name: item?.identityProfile?.name || "No Name",
+
+          gender: item?.personalDetails?.gender || "Male",
+
+          language:
+            item?.professionalIdentity?.languages?.map((l) => l.name) || [],
+
+          age: item?.personalDetails?.dob
+            ? new Date().getFullYear() -
+              new Date(item.personalDetails.dob).getFullYear()
+            : 25,
+
+          img: item?.identityProfile?.categoryImage
+            ? `${API_BASE}${item.identityProfile.categoryImage}`
+            : "/catogary/cat1.jpg",
+
+          link: profileLink,
+        };
+      });
+
+      setActorsData(finalData);
     }
-  };
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const addLanguage = (lang) => {
     if (!languages.includes(lang)) {
