@@ -66,7 +66,14 @@ const Read = () => {
     },
   };
 
-  if (loading) return <div>Loading...</div>;
+// ✅ LOADER
+if (loading) {
+  return (
+    <div className="w-full h-[80vh] flex items-center justify-center">
+      <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+};
 
   return <MoviesDetails context={MoviesContext} />;
 };

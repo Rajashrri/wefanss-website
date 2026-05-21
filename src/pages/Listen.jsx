@@ -84,14 +84,15 @@ const Listen = () => {
       })),
     },
   };
+// ✅ LOADER
+if (loading) {
+  return (
+    <div className="w-full h-[80vh] flex items-center justify-center">
+      <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+};
 
-  if (loading) {
-    return (
-      <div className="text-center py-10">
-        Loading...
-      </div>
-    );
-  }
 
   return (
     <MoviesDetails context={MoviesContext} />

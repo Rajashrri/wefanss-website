@@ -497,77 +497,112 @@ const MoviesDetails = ({ context }) => {
         )}
         {context.Contenttype === "Watch" && (
           <>
-            <div className="grid grid-cols-4 py-[90px] px-8  pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
-              {context.Adventure?.movies?.map((movie) => (
-                <Link
-                  key={movie.id}
-                  onClick={() => openPopup1(movie)}
-                  className="transition-all duration-500 lg:col-span-1 md:col-span-2 col-span-4"
-                >
-                  <div className="relative sldieimh rounded-[8px] overflow-hidden">
-                    <img
-                      src={movie.img}
-                      alt={movie.title}
-                      className="w-full h-full object-cover rounded-[8px]"
-                    />
+            <div className="grid grid-cols-4 py-[90px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
+  {context.Adventure?.movies?.length > 0 ? (
+    context.Adventure.movies.map((movie) => (
+      <Link
+        key={movie.id}
+        onClick={() => openPopup1(movie)}
+        className="transition-all duration-500 lg:col-span-1 md:col-span-2 col-span-4"
+      >
+        <div className="relative sldieimh rounded-[8px] overflow-hidden">
+          <img
+            src={movie.img}
+            alt={movie.title}
+            className="w-full h-full object-cover rounded-[8px]"
+          />
 
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {/* Play Icon */}
-                      <svg
-                        width="47"
-                        height="45"
-                        viewBox="0 0 47 45"
-                        fill="none"
-                      >
-                        <rect
-                          width="46.4"
-                          height="44.8"
-                          rx="22.4"
-                          fill="white"
-                          fillOpacity="0.8"
-                        />
-                        <path
-                          d="M18.7682 14.7521C17.3282 13.9281 16.1602 14.6001 16.1602 16.2641V28.5361C16.1602 30.2001 17.3282 30.8721 18.7682 30.0481L29.4962 23.8961C30.9362 23.0961 30.9362 21.7281 29.4962 20.9041L18.7682 14.7521Z"
-                          fill="#4285F4"
-                        />
-                      </svg>
-                    </div>
-                  </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg
+              width="47"
+              height="45"
+              viewBox="0 0 47 45"
+              fill="none"
+            >
+              <rect
+                width="46.4"
+                height="44.8"
+                rx="22.4"
+                fill="white"
+                fillOpacity="0.8"
+              />
 
-                  <div className="flex items-center justify-between mt-3">
-                    <h3 className="text-[16px] text-[#1E1E1E] font-[400] berlin">
-                      {movie.title}
-                    </h3>
-                  </div>
-                </Link>
-              ))}
-            </div>
+              <path
+                d="M18.7682 14.7521C17.3282 13.9281 16.1602 14.6001 16.1602 16.2641V28.5361C16.1602 30.2001 17.3282 30.8721 18.7682 30.0481L29.4962 23.8961C30.9362 23.0961 30.9362 21.7281 29.4962 20.9041L18.7682 14.7521Z"
+                fill="#4285F4"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-3">
+          <h3 className="text-[16px] text-[#1E1E1E] font-[400] berlin">
+            {movie.title}
+          </h3>
+        </div>
+      </Link>
+    ))
+  ) : (
+    <div className="col-span-full flex justify-center items-center py-20">
+      <h2 className="text-2xl font-semibold text-gray-500">
+        No Data Found
+      </h2>
+    </div>
+  )}
+</div>
           </>
         )}
-        {context.Contenttype === "Read" && (
-          <>
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 py-[60px] px-8  pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
-              {context.Adventure?.book?.map((book) => (
-                <Book book={book} />
-              ))}
-            </div>
-            <div className="grid md:grid-cols-2 grid-cols-1 py-[60px] px-8   bg-[#F4FBFF] flex-wrap gap-6 justify-center">
-              {context.Adventure?.news?.map((news) => (
-                <News2 news={news} />
-              ))}
-            </div>
-          </>
-        )}
-        {context.Contenttype === "Listen" && (
-          <>
-            <div className="flex py-[90px] px-8  pt-[120px] bg-[#fff] flex-wrap gap-9 justify-center">
-              {context.Adventure?.Listen?.map((listen) => (
-                <ListenCard listen={listen} />
-              ))}
-            </div>
-          </>
-        )}
+       {context.Contenttype === "Read" && (
+  <>
+    {/* BOOKS */}
+    <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 py-[60px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
+      {context.Adventure?.book?.length > 0 ? (
+        context.Adventure.book.map((book) => (
+          <Book key={book.id} book={book} />
+        ))
+      ) : (
+        <div className="col-span-full flex justify-center items-center py-20">
+          <h2 className="text-2xl font-semibold text-gray-500">
+            No Books Found
+          </h2>
+        </div>
+      )}
+    </div>
 
+    {/* NEWS */}
+    <div className="grid md:grid-cols-2 grid-cols-1 py-[60px] px-8 bg-[#F4FBFF] flex-wrap gap-6 justify-center">
+      {context.Adventure?.news?.length > 0 ? (
+        context.Adventure.news.map((news, index) => (
+          <News2 key={index} news={news} />
+        ))
+      ) : (
+        <div className="col-span-full flex justify-center items-center py-20">
+          <h2 className="text-2xl font-semibold text-gray-500">
+            No News Found
+          </h2>
+        </div>
+      )}
+    </div>
+  </>
+)}
+
+{context.Contenttype === "Listen" && (
+  <>
+    <div className="flex py-[90px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-9 justify-center">
+      {context.Adventure?.Listen?.length > 0 ? (
+        context.Adventure.Listen.map((listen) => (
+          <ListenCard key={listen.id} listen={listen} />
+        ))
+      ) : (
+        <div className="w-full flex justify-center items-center py-20">
+          <h2 className="text-2xl font-semibold text-gray-500">
+            No Audio Found
+          </h2>
+        </div>
+      )}
+    </div>
+  </>
+)}
         {/* **************** Popup  ********************** */}
 
         {popupData && (
