@@ -73,9 +73,24 @@ const Watch = () => {
     },
   };
 
-  if (loading) {
-    return <div className="p-5">Loading...</div>;
-  }
+// ✅ LOADER
+if (loading) {
+  return (
+    <div className="w-full h-[80vh] flex items-center justify-center">
+      <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
+// ✅ NO DATA FOUND
+if (!loading && watches.length === 0) {
+  return (
+    <div className="w-full h-[60vh] flex items-center justify-center">
+      <h2 className="text-2xl font-semibold text-gray-500">
+        Data Not Found
+      </h2>
+    </div>
+  );
+}
 
   return <MoviesDetails context={MoviesCotext} />;
 };
