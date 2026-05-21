@@ -50,6 +50,7 @@ const Watch = () => {
 
   const MoviesCotext = {
     Contenttype: "Watch",
+ slug: slug,   // 👈 ADD THIS (IMPORTANT)
 
     Adventure: {
       title: "Watch",

@@ -58,8 +58,8 @@ function App() {
           <Route path="/Webseries" element={<Webseries />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/watch/:slug" element={<Watch />} />
-          <Route path="/read" element={<Read />} />
-          <Route path="/listen" element={<Listen />} />
+          <Route path="/read/:slug" element={<Read />} />
+          <Route path="/listen/:slug" element={<Listen />} />
           <Route path="/claim-profile" element={<ClaimProfile />} />
           <Route path="/about" element={<About />} />
           <Route path="/search-result" element={<SearchResult />} />

@@ -1,97 +1,101 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import MoviesDetails from './MoviesDetails'
-const Listen = () => {
-          const MoviesCotext = {
-    Contenttype:"Listen",
-   
+import MoviesDetails from "./MoviesDetails";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-    
+import {
+  getCelebrityBySlug,
+  getListenByCelebrity,
+} from "../utils/frontApi";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+const Listen = () => {
+  const { slug } = useParams();
+
+  const [listen, setListen] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchListenData();
+  }, [slug]);
+
+  const fetchListenData = async () => {
+    try {
+      setLoading(true);
+
+      // ✅ Get Celebrity By Slug
+      const celebrityRes = await getCelebrityBySlug(slug);
+
+      const celebrity = celebrityRes?.data?.data;
+
+      if (!celebrity?._id) {
+        setListen([]);
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Get Listen Data
+      const listenRes = await getListenByCelebrity(
+        celebrity._id
+      );
+
+      setListen(listenRes?.data?.data || []);
+    } catch (error) {
+      console.log("Listen Fetch Error:", error);
+
+      setListen([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Context
+  const MoviesContext = {
+    Contenttype: "Listen",
+
+    slug: slug,
 
     Adventure: {
-        title: "Adventure",
-        mainclass: "bg-[#fff]",
-        type: "suggestion",
-        Listen: [
-            {
-                id: 1,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 2,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 3,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 4,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-             {
-                id: 5,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 6,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 7,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 8,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/audio.png",
-                      time:"2 Hours",
-                disk:"During the rapid-fire round, Aman Gupta asked audioshay about h ..",
-                cardclass:"md:max-w-[300px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            }
-        ]
-    },
-   
-}
-  return (
-    <MoviesDetails context={MoviesCotext}/>
-  )
-}
+      title: "Listen",
+      mainclass: "bg-[#fff]",
+      type: "suggestion",
 
-export default Listen
+      Listen: listen.map((item) => ({
+        id: item._id,
+
+        title: item.title,
+
+        img: item.thumbnail
+          ? `${API_BASE}/listen/${item.thumbnail}`
+          : "/audio.png",
+
+        time: `${item.noOfHours || 0} Hours`,
+
+        disk: item.videoLink || "",
+
+        desc: item.videoLink || "",
+
+        link: item.link || "#",
+
+        platform: item.videoLink || "",
+
+        // ✅ IMPORTANT FOR DESIGN
+        cardclass: "md:max-w-[300px]",
+      })),
+    },
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-10">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <MoviesDetails context={MoviesContext} />
+  );
+};
+
+export default Listen;

@@ -1,152 +1,74 @@
-import MoviesDetails from './MoviesDetails'
+import MoviesDetails from "./MoviesDetails";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getCelebrityBySlug, getReadByCelebrity } from "../utils/frontApi";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const Read = () => {
-      const MoviesCotext = {
-    Contenttype:"Read",
-   
+  const { slug } = useParams();
 
-    
+  const [read, setRead] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchReadData();
+  }, [slug]);
+
+  const fetchReadData = async () => {
+    try {
+      setLoading(true);
+
+      // 1. get celebrity
+      const celebrityRes = await getCelebrityBySlug(slug);
+      const celebrity = celebrityRes?.data?.data;
+
+      if (!celebrity?._id) {
+        setRead([]);
+        setLoading(false);
+        return;
+      }
+
+      // 2. get read data
+      const readRes = await getReadByCelebrity(celebrity._id);
+
+      setRead(readRes?.data?.data || []);
+    } catch (error) {
+      console.log("Read Fetch Error:", error);
+      setRead([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const MoviesContext = {
+    Contenttype: "Read",
+    slug: slug,
 
     Adventure: {
-        title: "Adventure",
-        mainclass: "bg-[#fff]",
-        type: "suggestion",
-        book: [
-            {
-                id: 1,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 2,
-                title: "Deepika Padukone Talks About Mental Health: ‘It’s Okay to Seek Help’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 3,
-                title: "Ranbir Kapoor on His Upcoming Projects: ‘I’m Excited for the New Challenges’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 4,
-                title: "Varun Dhawan on Collaborating with New Directors: ‘Innovation is Key’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-             {
-                id: 5,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 6,
-                title: "Deepika Padukone Talks About Mental Health: ‘It’s Okay to Seek Help’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 7,
-                title: "Ranbir Kapoor on His Upcoming Projects: ‘I’m Excited for the New Challenges’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 8,
-                title: "Varun Dhawan on Collaborating with New Directors: ‘Innovation is Key’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-              {
-                id: 9,
-                title: "Varun Dhawan on Collaborating with New Directors: ‘Innovation is Key’",
-                img: "/book.png",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-        ],
-        news: [
-            {
-                id: 1,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/ak.png",
-                time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 2,
-                title: "Deepika Padukone Talks About Mental Health: ‘It’s Okay to Seek Help’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 3,
-                title: "Ranbir Kapoor on His Upcoming Projects: ‘I’m Excited for the New Challenges’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 4,
-                title: "Varun Dhawan on Collaborating with New Directors: ‘Innovation is Key’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-             {
-                id: 5,
-                title: "Akshay Kumar Says Success Changed His Career Track: ‘Now I Can Choose Quality’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 6,
-                title: "Deepika Padukone Talks About Mental Health: ‘It’s Okay to Seek Help’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 7,
-                title: "Ranbir Kapoor on His Upcoming Projects: ‘I’m Excited for the New Challenges’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            },
-            {
-                id: 8,
-                title: "Varun Dhawan on Collaborating with New Directors: ‘Innovation is Key’",
-                img: "/ak.png",
-                      time:"Feb 14, 2026, 13:17 IST",
-                disk:"During the rapid-fire round, Aman Gupta asked Akshay about h ..",
-                cardclass:"md:max-w-[600px] ",
-                desc: "Rogue One: A Star Wars Story is a thrilling film set in the Star Wars universe, focusing on a group of rebels who band together to steal the plans."
-            }
-        ]
-    },
-   
-}
-  return (
-    <MoviesDetails context={MoviesCotext}/>
-  )
-}
+      title: "Read",
+      mainclass: "bg-[#fff]",
+      type: "suggestion",
 
-export default Read
+      // 🔥 USE API DATA HERE
+      news: read.map((item) => ({
+        id: item._id,
+        title: item.title,
+
+        img: item.thumbnail
+          ? `${API_BASE}/read/${item.thumbnail}`
+          : "/no-image.png",
+        //  time: item.createdAt,
+        disk: item.shortIntro || "", // ✅ FIX HERE
+
+        desc: item.shortIntro || "",
+        link: item.link, // ✅ ADD THIS (IMPORTANT)
+      })),
+    },
+  };
+
+  if (loading) return <div>Loading...</div>;
+
+  return <MoviesDetails context={MoviesContext} />;
+};
+
+export default Read;
