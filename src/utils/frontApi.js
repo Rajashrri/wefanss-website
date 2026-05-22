@@ -99,4 +99,14 @@ export const getLatestPositionByCelebrity = (id) => {
   return frontApi.get(`/latest-position/${id}`);
 };
 
+//elections page
+
+export const getElectionByCelebrity = (celebrityId) => {
+  return frontApi.get(`/election/${celebrityId}`);
+};
+//possion
+export const getPossitionByCelebrity = (celebrityId) => {
+  return frontApi.get(`/possition/${celebrityId}`);
+};
+
 export default frontApi;

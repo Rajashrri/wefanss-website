@@ -1,20 +1,24 @@
-import React, { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MoviesSlider from "../component/movies/MoviesSlider";
 import BannerSlider from "../component/slider/BannerSlider";
-import Card3 from "../component/card/Card3";
-import Card2 from "../component/card/Card2";
 import Book from "../component/card/Book";
 import News2 from "../component/card/News2";
 import ListenCard from "../component/card/ListenCard";
 
+import {
+  getCelebrityBySlug,
+  getElectionByCelebrity,
+  getPossitionByCelebrity,
+} from "../utils/frontApi";
+
 const MoviesDetails = ({ context }) => {
   const [popupData, setPopupData] = useState(null);
   const [popupData1, setPopupData1] = useState(null);
+  const [popupData2, setPopupData2] = useState(null);
+
+  const [electionsData, setElectionsData] = useState([]);
+  const [possitionsData, setPossitionsData] = useState([]);
 
   const openPopup = (item) => {
     setPopupData(item);
@@ -28,43 +32,135 @@ const MoviesDetails = ({ context }) => {
     setPopupData1(null);
     document.body.style.overflow = "auto";
   };
-
+  const openPopup2 = (movie) => {
+    setPopupData2(movie);
+    document.body.style.overflow = "hidden";
+  };
+  const closePopup2 = () => {
+    setPopupData2(null);
+    document.body.style.overflow = "auto";
+  };
   const closePopup = () => {
     setPopupData(null);
     document.body.style.overflow = "auto";
   };
+
+  // ✅ celebrity state
+  const [celebrityData, setCelebrityData] = useState(null);
+
+  // ✅ popup state
+
+  // =====================================
+  // GET CELEBRITY DATA
+  // =====================================
+  useEffect(() => {
+    if (context?.slug) {
+      fetchCelebrity();
+    }
+  }, [context?.slug]);
+
+  const fetchCelebrity = async () => {
+    try {
+      const response = await getCelebrityBySlug(context?.slug);
+
+      console.log("CELEBRITY RESPONSE =>", response.data);
+
+      const celebrity = response.data.data;
+
+      setCelebrityData(celebrity);
+
+      // ✅ final id
+      const celebrityId = celebrity?._id || celebrity?.id;
+
+      console.log("FINAL CELEBRITY ID =>", celebrityId);
+
+      // ✅ election fetch
+      if (celebrityId) {
+        fetchElections(celebrityId);
+        fetchPossitions(celebrityId);
+      }
+    } catch (error) {
+      console.log("ERROR =>", error);
+    }
+  };
+  // GET ELECTIONS
+  // =====================================
+  const fetchElections = async (celebrityId) => {
+    try {
+      const response = await getElectionByCelebrity(celebrityId);
+
+      console.log("ELECTION RESPONSE =>", response.data);
+
+      setElectionsData(response.data.data);
+    } catch (error) {
+      console.log("ELECTION ERROR =>", error);
+    }
+  };
+
+  const fetchPossitions = async (celebrityId) => {
+    try {
+      const response = await getPossitionByCelebrity(celebrityId);
+
+      console.log("POSSITIONS RESPONSE =>", response.data);
+
+      setPossitionsData(response.data.data);
+    } catch (error) {
+      console.log("ELECTION ERROR =>", error);
+    }
+  };
+  // =====================================
+  // PROFESSION CHECK
+  // =====================================
+  const professionNames =
+    celebrityData?.professionalIdentity?.professionNames || "";
+
+  console.log("PROFESSION =>", professionNames);
+
+  const isPolitician = professionNames.toLowerCase().includes("politician");
+
+  const isActor = professionNames.toLowerCase().includes("actor");
+
+  console.log("isPolitician =>", isPolitician);
+  console.log("isActor =>", isActor);
+
+  // =====================================
+  // VIDEO POPUP
+  // =====================================
+
+  // =====================================
+  // YOUTUBE URL
+  // =====================================
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return "";
 
-    // youtube.com/watch?v=
     if (url.includes("youtube.com/watch")) {
       const videoId = url.split("v=")[1]?.split("&")[0];
       return `https://www.youtube.com/embed/${videoId}`;
     }
 
-    // youtu.be/
     if (url.includes("youtu.be/")) {
       const videoId = url.split("youtu.be/")[1]?.split("?")[0];
       return `https://www.youtube.com/embed/${videoId}`;
     }
 
-    // already embed
     if (url.includes("youtube.com/embed")) {
       return url;
     }
 
     return url;
   };
+
   return (
     <>
       <div className="relative bg-[#fff]">
-        <div className="absolute  inset-0 h-fit md:top-[30px] top-[20px] z-30">
-          <div className="flex gap-1 border border-1 border-[#D9D9D9] m-auto w-fit bg-[#fff] rounded-[50px] p-1">
-            {(context.Contenttype === "Elections" ||
-              context.Contenttype === "PositionsHeld") && (
+        {/* TOP MENU */}
+        <div className="absolute inset-0 h-fit md:top-[30px] top-[20px] z-30">
+          <div className="flex gap-1 border border-[#D9D9D9] m-auto w-fit bg-[#fff] rounded-[50px] p-1 flex-wrap justify-center">
+            {/* ELECTIONS */}
+            {isPolitician && (
               <>
                 <Link
-                  to="/elections-contested"
+                  to={`/elections-contested/${context.slug}`}
                   className={`flex  justify-center items-center primary-font text-[14px]  gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Elections" ? "bg-[#4285F4] text-[#fff]" : " text-[#000]"}`}
                 >
                   <svg
@@ -94,13 +190,13 @@ const MoviesDetails = ({ context }) => {
                       </clipPath>
                     </defs>
                   </svg>
-
+                  `
                   {context.Contenttype === "Elections" && (
                     <>Elections Contested</>
                   )}
                 </Link>
                 <Link
-                  to="/positions-held"
+                  to={`/positions-held/${context.slug}`}
                   className={`flex  justify-center items-center primary-font text-[14px]  gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "PositionsHeld" ? "bg-[#4285F4] text-[#fff]" : " text-[#000]"}`}
                 >
                   <svg
@@ -154,48 +250,49 @@ const MoviesDetails = ({ context }) => {
               </>
             )}
 
-            {context.Contenttype !== "Elections" &&
-              context.Contenttype !== "PositionsHeld" && (
-                <>
-                  <Link
-                    to="/movies"
-                    className={`flex  justify-center items-center primary-font text-[14px]  gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Movies" ? "bg-[#4285F4] text-[#fff]" : " text-[#000]"}`}
+            {/* MOVIES */}
+            {isActor && (
+              <>
+                <Link
+                  to={`/movies/${context.slug}`}
+                  className={`flex  justify-center items-center primary-font text-[14px]  gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Movies" ? "bg-[#4285F4] text-[#fff]" : " text-[#000]"}`}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M5.8752 3.52065C5.87591 4.03787 5.72314 4.54368 5.43623 4.97404C5.14932 5.40439 4.74117 5.73994 4.26345 5.93821C3.78573 6.13647 3.25992 6.18853 2.7526 6.0878C2.24527 5.98707 1.77924 5.73807 1.41351 5.37234C1.04777 5.0066 0.798778 4.54057 0.698047 4.03325C0.597315 3.52593 0.649377 3.00012 0.84764 2.5224C1.0459 2.04468 1.38145 1.63653 1.81181 1.34962C2.24216 1.06271 2.74797 0.909935 3.2652 0.910647C3.60795 0.910647 3.94734 0.978157 4.264 1.10932C4.58066 1.24049 4.86839 1.43274 5.11075 1.6751C5.35311 1.91746 5.54536 2.20518 5.67653 2.52184C5.80769 2.8385 5.8752 3.1779 5.8752 3.52065ZM9.1404 0.910647C8.62333 0.910647 8.11787 1.06402 7.68799 1.35137C7.25811 1.63871 6.92312 2.04712 6.72541 2.5249C6.5277 3.00268 6.47615 3.52837 6.57729 4.03546C6.67842 4.54255 6.9277 5.00824 7.29358 5.37361C7.65946 5.73899 8.1255 5.98763 8.63272 6.08807C9.13995 6.1885 9.66557 6.13623 10.1431 5.93786C10.6206 5.73949 11.0285 5.40394 11.3153 4.97366C11.602 4.54339 11.7547 4.03772 11.754 3.52065C11.753 2.8281 11.4773 2.16425 10.9872 1.67488C10.4972 1.18551 9.83295 0.910646 9.1404 0.910647ZM12.4056 10.051V13.9678C12.4056 14.6604 12.1307 15.3246 11.6414 15.8147C11.152 16.3047 10.4881 16.5805 9.7956 16.5814H2.5956C1.90555 16.5767 1.24539 16.2992 0.759131 15.8096C0.272872 15.32 -1.63648e-05 14.6579 7.36057e-10 13.9678L7.36057e-10 10.051C-3.25593e-07 9.70799 0.0676284 9.36831 0.199018 9.05141C0.330408 8.73452 0.522981 8.44663 0.765724 8.20422C1.00847 7.96182 1.29662 7.76964 1.61369 7.63869C1.93077 7.50773 2.27055 7.44057 2.6136 7.44105H9.8136C10.5027 7.4458 11.1619 7.72288 11.6475 8.21183C12.1331 8.70079 12.4056 9.36194 12.4056 10.051ZM14.8068 8.67225L13.7268 9.16905V14.2306L14.8068 14.731C15.984 15.271 18 14.8894 18 14.1262V9.27345C18 8.51385 15.984 8.13225 14.8068 8.66865V8.67225Z"
-                        fill={`${context.Contenttype === "Movies" ? "#fff" : "#000"}`}
-                      />
-                    </svg>{" "}
-                    {context.Contenttype === "Movies" && <> Movies</>}
-                  </Link>
-                  <Link
-                    to="/webseries"
-                    className={`flex  justify-center items-center primary-font md:text-[14px] text-[13px] text-[#fff] md:gap-2 gap-1 rounded-[50px] md:px-[20px] px-2 py-[10px]  ${context.Contenttype === "Webseries" ? "bg-[#4285F4]" : ""}`}
+                    <path
+                      d="M5.8752 3.52065C5.87591 4.03787 5.72314 4.54368 5.43623 4.97404C5.14932 5.40439 4.74117 5.73994 4.26345 5.93821C3.78573 6.13647 3.25992 6.18853 2.7526 6.0878C2.24527 5.98707 1.77924 5.73807 1.41351 5.37234C1.04777 5.0066 0.798778 4.54057 0.698047 4.03325C0.597315 3.52593 0.649377 3.00012 0.84764 2.5224C1.0459 2.04468 1.38145 1.63653 1.81181 1.34962C2.24216 1.06271 2.74797 0.909935 3.2652 0.910647C3.60795 0.910647 3.94734 0.978157 4.264 1.10932C4.58066 1.24049 4.86839 1.43274 5.11075 1.6751C5.35311 1.91746 5.54536 2.20518 5.67653 2.52184C5.80769 2.8385 5.8752 3.1779 5.8752 3.52065ZM9.1404 0.910647C8.62333 0.910647 8.11787 1.06402 7.68799 1.35137C7.25811 1.63871 6.92312 2.04712 6.72541 2.5249C6.5277 3.00268 6.47615 3.52837 6.57729 4.03546C6.67842 4.54255 6.9277 5.00824 7.29358 5.37361C7.65946 5.73899 8.1255 5.98763 8.63272 6.08807C9.13995 6.1885 9.66557 6.13623 10.1431 5.93786C10.6206 5.73949 11.0285 5.40394 11.3153 4.97366C11.602 4.54339 11.7547 4.03772 11.754 3.52065C11.753 2.8281 11.4773 2.16425 10.9872 1.67488C10.4972 1.18551 9.83295 0.910646 9.1404 0.910647ZM12.4056 10.051V13.9678C12.4056 14.6604 12.1307 15.3246 11.6414 15.8147C11.152 16.3047 10.4881 16.5805 9.7956 16.5814H2.5956C1.90555 16.5767 1.24539 16.2992 0.759131 15.8096C0.272872 15.32 -1.63648e-05 14.6579 7.36057e-10 13.9678L7.36057e-10 10.051C-3.25593e-07 9.70799 0.0676284 9.36831 0.199018 9.05141C0.330408 8.73452 0.522981 8.44663 0.765724 8.20422C1.00847 7.96182 1.29662 7.76964 1.61369 7.63869C1.93077 7.50773 2.27055 7.44057 2.6136 7.44105H9.8136C10.5027 7.4458 11.1619 7.72288 11.6475 8.21183C12.1331 8.70079 12.4056 9.36194 12.4056 10.051ZM14.8068 8.67225L13.7268 9.16905V14.2306L14.8068 14.731C15.984 15.271 18 14.8894 18 14.1262V9.27345C18 8.51385 15.984 8.13225 14.8068 8.66865V8.67225Z"
+                      fill={`${context.Contenttype === "Movies" ? "#fff" : "#000"}`}
+                    />
+                  </svg>{" "}
+                  {context.Contenttype === "Movies" && <> Movies</>}
+                </Link>
+                <Link
+                  to={`/webseries/${context.slug}`}
+                  className={`flex  justify-center items-center primary-font md:text-[14px] text-[13px] text-[#fff] md:gap-2 gap-1 rounded-[50px] md:px-[20px] px-2 py-[10px]  ${context.Contenttype === "Webseries" ? "bg-[#4285F4]" : ""}`}
+                >
+                  <svg
+                    width="16"
+                    height="18"
+                    viewBox="0 0 16 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      width="16"
-                      height="18"
-                      viewBox="0 0 16 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.0469 4.05572C13.9547 3.38851 13.6025 2.78478 13.067 2.37613C12.5316 1.96748 11.8564 1.78703 11.1885 1.87412C11.0928 1.88592 10.9979 1.90274 10.9041 1.92452C10.4994 1.50631 9.94843 1.26116 9.36685 1.24052C9.09727 0.71257 8.63227 0.310679 8.07084 0.120397C7.50941 -0.0698843 6.89588 -0.0335289 6.36085 0.221725C6.13639 0.32173 5.93064 0.459305 5.75245 0.628525C5.2747 0.551866 4.78497 0.633051 4.35751 0.859775C3.93005 1.0865 3.58816 1.4464 3.38365 1.88492C2.84723 1.9703 2.35276 2.2267 1.9739 2.61594C1.59505 3.00517 1.3521 3.5064 1.28125 4.04492C-0.101146 4.69652 -0.741946 7.36052 1.32445 7.46492H3.18565C3.59749 7.46334 4.00369 7.56059 4.37015 7.74851C4.7366 7.93644 5.05262 8.20956 5.29165 8.54492C5.84202 7.92937 6.6101 7.55182 7.43365 7.49204C8.2572 7.43225 9.07175 7.69491 9.70525 8.22452C9.82431 8.322 9.93509 8.42916 10.0365 8.54492C10.2755 8.20956 10.5915 7.93644 10.958 7.74851C11.3244 7.56059 11.7306 7.46334 12.1425 7.46492H14.0037C16.0701 7.36052 15.4293 4.69652 14.0469 4.05572ZM5.74525 4.34732C5.66222 4.3459 5.57972 4.3609 5.5025 4.39147C5.42529 4.42204 5.35488 4.46757 5.29533 4.52545C5.23577 4.58333 5.18825 4.65242 5.15549 4.72873C5.12274 4.80505 5.10539 4.88708 5.10445 4.97012C5.10445 5.14008 5.03694 5.30307 4.91677 5.42324C4.79659 5.54341 4.6336 5.61092 4.46365 5.61092C4.2937 5.61092 4.13071 5.54341 4.01054 5.42324C3.89037 5.30307 3.82285 5.14008 3.82285 4.97012C3.82614 4.72097 3.87848 4.47491 3.97687 4.24599C4.07526 4.01707 4.21779 3.80977 4.3963 3.63593C4.57482 3.4621 4.78583 3.32513 5.01728 3.23285C5.24874 3.14057 5.4961 3.09479 5.74525 3.09812C5.83126 3.09159 5.9177 3.10289 5.99914 3.13132C6.08058 3.15974 6.15527 3.20468 6.21853 3.26332C6.28179 3.32196 6.33226 3.39303 6.36678 3.47208C6.40129 3.55114 6.41911 3.63647 6.41911 3.72272C6.41911 3.80898 6.40129 3.89431 6.36678 3.97336C6.33226 4.05242 6.28179 4.12349 6.21853 4.18213C6.15527 4.24077 6.08058 4.28571 5.99914 4.31413C5.9177 4.34256 5.83126 4.35386 5.74525 4.34732ZM10.8645 6.21572C10.7814 6.21715 10.6989 6.20215 10.6217 6.17158C10.5445 6.14101 10.4741 6.09548 10.4145 6.03759C10.355 5.97971 10.3075 5.91063 10.2747 5.83432C10.2419 5.758 10.2246 5.67597 10.2237 5.59292C10.2227 5.50988 10.2054 5.42785 10.1726 5.35153C10.1399 5.27522 10.0923 5.20613 10.0328 5.14825C9.97323 5.09037 9.90282 5.04484 9.8256 5.01427C9.74839 4.9837 9.66589 4.9687 9.58285 4.97012C9.49684 4.97666 9.41041 4.96536 9.32897 4.93693C9.24753 4.90851 9.17284 4.86357 9.10958 4.80493C9.04631 4.74629 8.99584 4.67522 8.96133 4.59616C8.92682 4.51711 8.909 4.43178 8.909 4.34552C8.909 4.25927 8.92682 4.17394 8.96133 4.09488C8.99584 4.01583 9.04631 3.94476 9.10958 3.88612C9.17284 3.82748 9.24753 3.78254 9.32897 3.75412C9.41041 3.72569 9.49684 3.71439 9.58285 3.72093C9.832 3.71759 10.0794 3.76337 10.3108 3.85565C10.5423 3.94793 10.7533 4.0849 10.9318 4.25873C11.1103 4.43257 11.2528 4.63987 11.3512 4.86879C11.4496 5.09771 11.502 5.34377 11.5053 5.59292C11.5043 5.67597 11.487 5.758 11.4542 5.83432C11.4215 5.91063 11.3739 5.97971 11.3144 6.03759C11.2548 6.09548 11.1844 6.14101 11.1072 6.17158C11.03 6.20215 10.9475 6.21715 10.8645 6.21572ZM9.52165 10.9965L9.01045 17.6133H6.32125L5.80645 10.9965C5.80645 9.50612 6.64165 8.30372 7.66405 8.30372C8.68645 8.30372 9.51805 9.52052 9.52165 10.9965ZM4.48165 10.1865L5.04685 17.6133C3.66805 17.6133 2.48365 16.2021 2.21365 14.2401L1.37845 8.32892H3.17845C3.89125 8.32892 4.46365 9.16052 4.46365 10.1865H4.48165ZM12.1605 8.32892H13.9605L13.1325 14.2437C12.8625 16.2021 11.6925 17.6133 10.2993 17.6133L10.8645 10.1865C10.8645 9.16052 11.4369 8.32892 12.1425 8.32892H12.1605Z"
-                        fill={`${context.Contenttype === "Webseries" ? "#fff" : "#000"}`}
-                      />
-                    </svg>
-                    {context.Contenttype === "Webseries" && <> Web Series</>}
-                  </Link>
-                </>
-              )}
+                    <path
+                      d="M14.0469 4.05572C13.9547 3.38851 13.6025 2.78478 13.067 2.37613C12.5316 1.96748 11.8564 1.78703 11.1885 1.87412C11.0928 1.88592 10.9979 1.90274 10.9041 1.92452C10.4994 1.50631 9.94843 1.26116 9.36685 1.24052C9.09727 0.71257 8.63227 0.310679 8.07084 0.120397C7.50941 -0.0698843 6.89588 -0.0335289 6.36085 0.221725C6.13639 0.32173 5.93064 0.459305 5.75245 0.628525C5.2747 0.551866 4.78497 0.633051 4.35751 0.859775C3.93005 1.0865 3.58816 1.4464 3.38365 1.88492C2.84723 1.9703 2.35276 2.2267 1.9739 2.61594C1.59505 3.00517 1.3521 3.5064 1.28125 4.04492C-0.101146 4.69652 -0.741946 7.36052 1.32445 7.46492H3.18565C3.59749 7.46334 4.00369 7.56059 4.37015 7.74851C4.7366 7.93644 5.05262 8.20956 5.29165 8.54492C5.84202 7.92937 6.6101 7.55182 7.43365 7.49204C8.2572 7.43225 9.07175 7.69491 9.70525 8.22452C9.82431 8.322 9.93509 8.42916 10.0365 8.54492C10.2755 8.20956 10.5915 7.93644 10.958 7.74851C11.3244 7.56059 11.7306 7.46334 12.1425 7.46492H14.0037C16.0701 7.36052 15.4293 4.69652 14.0469 4.05572ZM5.74525 4.34732C5.66222 4.3459 5.57972 4.3609 5.5025 4.39147C5.42529 4.42204 5.35488 4.46757 5.29533 4.52545C5.23577 4.58333 5.18825 4.65242 5.15549 4.72873C5.12274 4.80505 5.10539 4.88708 5.10445 4.97012C5.10445 5.14008 5.03694 5.30307 4.91677 5.42324C4.79659 5.54341 4.6336 5.61092 4.46365 5.61092C4.2937 5.61092 4.13071 5.54341 4.01054 5.42324C3.89037 5.30307 3.82285 5.14008 3.82285 4.97012C3.82614 4.72097 3.87848 4.47491 3.97687 4.24599C4.07526 4.01707 4.21779 3.80977 4.3963 3.63593C4.57482 3.4621 4.78583 3.32513 5.01728 3.23285C5.24874 3.14057 5.4961 3.09479 5.74525 3.09812C5.83126 3.09159 5.9177 3.10289 5.99914 3.13132C6.08058 3.15974 6.15527 3.20468 6.21853 3.26332C6.28179 3.32196 6.33226 3.39303 6.36678 3.47208C6.40129 3.55114 6.41911 3.63647 6.41911 3.72272C6.41911 3.80898 6.40129 3.89431 6.36678 3.97336C6.33226 4.05242 6.28179 4.12349 6.21853 4.18213C6.15527 4.24077 6.08058 4.28571 5.99914 4.31413C5.9177 4.34256 5.83126 4.35386 5.74525 4.34732ZM10.8645 6.21572C10.7814 6.21715 10.6989 6.20215 10.6217 6.17158C10.5445 6.14101 10.4741 6.09548 10.4145 6.03759C10.355 5.97971 10.3075 5.91063 10.2747 5.83432C10.2419 5.758 10.2246 5.67597 10.2237 5.59292C10.2227 5.50988 10.2054 5.42785 10.1726 5.35153C10.1399 5.27522 10.0923 5.20613 10.0328 5.14825C9.97323 5.09037 9.90282 5.04484 9.8256 5.01427C9.74839 4.9837 9.66589 4.9687 9.58285 4.97012C9.49684 4.97666 9.41041 4.96536 9.32897 4.93693C9.24753 4.90851 9.17284 4.86357 9.10958 4.80493C9.04631 4.74629 8.99584 4.67522 8.96133 4.59616C8.92682 4.51711 8.909 4.43178 8.909 4.34552C8.909 4.25927 8.92682 4.17394 8.96133 4.09488C8.99584 4.01583 9.04631 3.94476 9.10958 3.88612C9.17284 3.82748 9.24753 3.78254 9.32897 3.75412C9.41041 3.72569 9.49684 3.71439 9.58285 3.72093C9.832 3.71759 10.0794 3.76337 10.3108 3.85565C10.5423 3.94793 10.7533 4.0849 10.9318 4.25873C11.1103 4.43257 11.2528 4.63987 11.3512 4.86879C11.4496 5.09771 11.502 5.34377 11.5053 5.59292C11.5043 5.67597 11.487 5.758 11.4542 5.83432C11.4215 5.91063 11.3739 5.97971 11.3144 6.03759C11.2548 6.09548 11.1844 6.14101 11.1072 6.17158C11.03 6.20215 10.9475 6.21715 10.8645 6.21572ZM9.52165 10.9965L9.01045 17.6133H6.32125L5.80645 10.9965C5.80645 9.50612 6.64165 8.30372 7.66405 8.30372C8.68645 8.30372 9.51805 9.52052 9.52165 10.9965ZM4.48165 10.1865L5.04685 17.6133C3.66805 17.6133 2.48365 16.2021 2.21365 14.2401L1.37845 8.32892H3.17845C3.89125 8.32892 4.46365 9.16052 4.46365 10.1865H4.48165ZM12.1605 8.32892H13.9605L13.1325 14.2437C12.8625 16.2021 11.6925 17.6133 10.2993 17.6133L10.8645 10.1865C10.8645 9.16052 11.4369 8.32892 12.1425 8.32892H12.1605Z"
+                      fill={`${context.Contenttype === "Webseries" ? "#fff" : "#000"}`}
+                    />
+                  </svg>
+                  {context.Contenttype === "Webseries" && <> Web Series</>}
+                </Link>
+              </>
+            )}
 
+            {/* WATCH */}
             <Link
               to={`/watch/${context.slug}`}
               className={`flex  justify-center items-center primary-font text-[14px] text-[#fff] gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Watch" ? "bg-[#4285F4]" : ""}`}
@@ -233,7 +330,7 @@ const MoviesDetails = ({ context }) => {
               {context.Contenttype === "Read" && <>Read</>}
             </Link>
             <Link
-               to={`/listen/${context.slug}`}
+              to={`/listen/${context.slug}`}
               className={`flex  justify-center items-center primary-font text-[14px] text-[#fff] gap-2 rounded-[50px] px-[20px] py-[10px]  ${context.Contenttype === "Listen" ? "bg-[#4285F4]" : ""}`}
             >
               <svg
@@ -252,123 +349,115 @@ const MoviesDetails = ({ context }) => {
             </Link>
           </div>
         </div>
+
+        {/* ELECTIONS DATA */}
         {context.Contenttype === "Elections" && (
           <>
             <div className="pt-[120px] pb-[90px] px-4">
               <div className="md:max-w-[1130px] electopnbox m-auto space-y-[27px]">
-                {/* Row */}
-                {[
-                  {
-                    year: "2019",
-                    election: "Lok Sabha",
-                    party: "Shivsena",
-                    result: "Won",
-                  },
-                  {
-                    year: "2020",
-                    election: "Municipal",
-                    party: "BJP",
-                    result: "Lost",
-                  },
-                  {
-                    year: "2021",
-                    election: "Panchayat",
-                    party: "NCP",
-                    result: "Won",
-                  },
-                  {
-                    year: "2022",
-                    election: "State Assembly",
-                    party: "Congress",
-                    result: "Lost",
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex flexbox1 items-center bg-[#F4FBFF] rounded-[8px] overflow-hidden "
-                  >
-                    {/* Image */}
-                    <div className="pr-[24px]">
-                      <img
-                        src="/actor/eknath.png"
-                        alt=""
-                        className="h-[120px] w-[100px] object-cover md:rounded-0 rounded-[8px]"
-                      />
-                    </div>
-
-                    {/* Year */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] min-w-[120px]">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Year
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.year}
-                      </h2>
-                    </div>
-
-                    {/* Election */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] min-w-[300px]">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Election Type
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.election}
-                      </h2>
-                    </div>
-
-                    {/* Party */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Affiliation
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.party}
-                      </h2>
-                    </div>
-
-                    {/* Result */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Result
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.result}
-                      </h2>
-                    </div>
-
-                    {/* Button */}
-                    <a
-                      href="#!"
-                      onClick={() => openPopup(item)}
-                      className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center"
+                {electionsData?.length > 0 ? (
+                  electionsData.map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex flexbox1 items-center bg-[#F4FBFF] rounded-[8px] overflow-hidden"
                     >
-                      <div className="flex flex-col justify-center items-center">
-                        <div className="text-[18px] mb-[4px]">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                          >
-                            <g clip-path="url(#clip0_1460_3613)">
-                              <path
-                                d="M14.2016 17.8L13.9016 19C13.1016 19.3 12.4016 19.6 11.9016 19.8C11.4016 20 10.8016 20.1 10.2016 20.1C9.20156 20.1 8.40156 19.9 7.80156 19.4C7.20156 18.9 7.00156 18.3 7.00156 17.5C7.00156 17.2 7.00156 16.9 7.10156 16.6C7.10156 16.3 7.20156 15.9 7.30156 15.5L8.30156 11.8C8.40156 11.4 8.50156 11.1 8.50156 10.8C8.60156 10.5 8.60156 10.2 8.60156 9.9C8.60156 9.4 8.50156 9.1 8.30156 8.9C8.10156 8.7 7.70156 8.6 7.10156 8.6C6.80156 8.6 6.50156 8.6 6.30156 8.7C6.00156 8.8 5.80156 8.9 5.60156 8.9L5.90156 7.8C6.60156 7.5 7.20156 7.3 7.90156 7.1C8.50156 6.9 9.10156 6.8 9.70156 6.8C10.7016 6.8 11.5016 7 12.0016 7.5C12.5016 8 12.8016 8.6 12.8016 9.4C12.8016 9.6 12.8016 9.8 12.7016 10.3C12.7016 10.7 12.6016 11.1 12.5016 11.4L11.5016 15.1C11.4016 15.4 11.3016 15.7 11.3016 16.1C11.2016 16.5 11.2016 16.8 11.2016 17C11.2016 17.5 11.3016 17.8 11.5016 18C11.7016 18.2 12.1016 18.3 12.6016 18.3C12.9016 18.3 13.1016 18.3 13.5016 18.2C13.8016 18 14.0016 17.9 14.2016 17.8ZM14.4016 2.3C14.4016 2.9 14.2016 3.5 13.7016 3.9C13.2016 4.4 12.6016 4.6 11.9016 4.6C11.2016 4.6 10.7016 4.4 10.2016 4C9.70156 3.5 9.40156 3 9.40156 2.3C9.40156 1.7 9.60156 1.1 10.1016 0.6C10.7016 0.2 11.2016 0 11.9016 0C12.6016 0 13.2016 0.2 13.7016 0.7C14.2016 1.1 14.4016 1.7 14.4016 2.3Z"
-                                fill="white"
-                              />
-                            </g>
-                            <defs>
-                              <clipPath id="clip0_1460_3613">
-                                <rect width="20" height="20" fill="white" />
-                              </clipPath>
-                            </defs>
-                          </svg>
-                        </div>
-                        Read <br /> More
+                      {/* IMAGE */}
+                      <div className="pr-[24px]">
+                        <img
+                          src={
+                            item?.image
+                              ? `${import.meta.env.VITE_API_BASE_URL}/election/${item.image}`
+                              : "/actor/eknath.png"
+                          }
+                          alt=""
+                          className="h-[120px] w-[100px] object-cover md:rounded-0 rounded-[8px]"
+                        />
                       </div>
-                    </a>
+
+                      {/* YEAR */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] min-w-[120px]">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Yearcvcb
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.election_year}
+                        </h2>
+                      </div>
+
+                      {/* TYPE */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] min-w-[300px]">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Election Type
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.type}
+                        </h2>
+                      </div>
+
+                      {/* PARTY */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Affiliation
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.party || "-"}
+                        </h2>
+                      </div>
+
+                      {/* RESULT */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Result
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.result || "-"}
+                        </h2>
+                      </div>
+
+                      {/* BUTTON */}
+                      <button
+                        onClick={() => openPopup(item)}
+                        className="ml-auto bg-[#4285F4] h-[120px] flex items-center p-[20px] text-white text-[16px] text-center"
+                      >
+                        <div className="flex flex-col justify-center items-center">
+                          <div className="text-[18px] mb-[4px]">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                            >
+                              <g clipPath="url(#clip0_1460_3613)">
+                                <path
+                                  d="M14.2016 17.8L13.9016 19C13.1016 19.3 12.4016 19.6 11.9016 19.8C11.4016 20 10.8016 20.1 10.2016 20.1C9.20156 20.1 8.40156 19.9 7.80156 19.4C7.20156 18.9 7.00156 18.3 7.00156 17.5C7.00156 17.2 7.00156 16.9 7.10156 16.6C7.10156 16.3 7.20156 15.9 7.30156 15.5L8.30156 11.8C8.40156 11.4 8.50156 11.1 8.50156 10.8C8.60156 10.5 8.60156 10.2 8.60156 9.9C8.60156 9.4 8.50156 9.1 8.30156 8.9C8.10156 8.7 7.70156 8.6 7.10156 8.6C6.80156 8.6 6.50156 8.6 6.30156 8.7C6.00156 8.8 5.80156 8.9 5.60156 8.9L5.90156 7.8C6.60156 7.5 7.20156 7.3 7.90156 7.1C8.50156 6.9 9.10156 6.8 9.70156 6.8C10.7016 6.8 11.5016 7 12.0016 7.5C12.5016 8 12.8016 8.6 12.8016 9.4C12.8016 9.6 12.8016 9.8 12.7016 10.3C12.7016 10.7 12.6016 11.1 12.5016 11.4L11.5016 15.1C11.4016 15.4 11.3016 15.7 11.3016 16.1C11.2016 16.5 11.2016 16.8 11.2016 17C11.2016 17.5 11.3016 17.8 11.5016 18C11.7016 18.2 12.1016 18.3 12.6016 18.3C12.9016 18.3 13.1016 18.3 13.5016 18.2C13.8016 18 14.0016 17.9 14.2016 17.8ZM14.4016 2.3C14.4016 2.9 14.2016 3.5 13.7016 3.9C13.2016 4.4 12.6016 4.6 11.9016 4.6C11.2016 4.6 10.7016 4.4 10.2016 4C9.70156 3.5 9.40156 3 9.40156 2.3C9.40156 1.7 9.60156 1.1 10.1016 0.6C10.7016 0.2 11.2016 0 11.9016 0C12.6016 0 13.2016 0.2 13.7016 0.7C14.2016 1.1 14.4016 1.7 14.4016 2.3Z"
+                                  fill="white"
+                                />
+                              </g>
+
+                              <defs>
+                                <clipPath id="clip0_1460_3613">
+                                  <rect width="20" height="20" fill="white" />
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          </div>
+                          Read <br /> More
+                        </div>
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20">
+                    <h2 className="text-2xl font-semibold text-gray-500">
+                      No Elections Found
+                    </h2>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </>
@@ -377,113 +466,113 @@ const MoviesDetails = ({ context }) => {
           <>
             <div className="pt-[120px] pb-[90px] px-4">
               <div className="md:max-w-[1130px] electopnbox m-auto space-y-[27px]">
-                {/* Row */}
-                {[
-                  {
-                    Department: "Minister of Urban Development",
-                    party: "Shivsena",
-                    Heldoffice: "2019-2022",
-                  },
-                  {
-                    Department: "Minister of Health",
-                    party: "BJP",
-                    Heldoffice: "2020-2023",
-                  },
-                  {
-                    Department: "Minister of Education",
-                    party: "NCP",
-                    Heldoffice: "2018-2021",
-                  },
-                  {
-                    Department: "Minister of Finance",
-                    party: "Congress",
-                    Heldoffice: "2019-2024",
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex flexbox1 items-center bg-[#F4FBFF] rounded-[8px] overflow-hidden "
-                  >
-                    {/* Image */}
-                    <div className="pr-[24px]">
-                      <img
-                        src="/actor/eknath.png"
-                        alt=""
-                        className="h-[120px] w-[100px] object-cover md:rounded-0 rounded-[8px]"
-                      />
-                    </div>
-
-                    {/* Year */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Position
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.Department}
-                      </h2>
-                    </div>
-
-                    {/* Party */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Affiliation
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.party}
-                      </h2>
-                    </div>
-
-                    {/* Result */}
-                    <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
-                      <h4 className="text-[#757575] text-[16px] primary-font">
-                        Term
-                      </h4>
-                      <h2 className="berlin text-[24px] mt-[4px]">
-                        {item.Heldoffice}
-                      </h2>
-                    </div>
-
-                    {/* Button */}
-                    <a
-                      href="#!"
-                      onClick={() => openPopup(item)}
-                      className="ml-auto bg-[#4285F4] h-[120px]  flex items-center p-[20px] text-white text-[16px] text-center"
+                {possitionsData?.length > 0 ? (
+                  possitionsData.map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex flexbox1 items-center bg-[#F4FBFF] rounded-[8px] overflow-hidden "
                     >
-                      <div className="flex flex-col justify-center items-center">
-                        <div className="text-[18px] mb-[4px]">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                          >
-                            <g clip-path="url(#clip0_1460_3613)">
-                              <path
-                                d="M14.2016 17.8L13.9016 19C13.1016 19.3 12.4016 19.6 11.9016 19.8C11.4016 20 10.8016 20.1 10.2016 20.1C9.20156 20.1 8.40156 19.9 7.80156 19.4C7.20156 18.9 7.00156 18.3 7.00156 17.5C7.00156 17.2 7.00156 16.9 7.10156 16.6C7.10156 16.3 7.20156 15.9 7.30156 15.5L8.30156 11.8C8.40156 11.4 8.50156 11.1 8.50156 10.8C8.60156 10.5 8.60156 10.2 8.60156 9.9C8.60156 9.4 8.50156 9.1 8.30156 8.9C8.10156 8.7 7.70156 8.6 7.10156 8.6C6.80156 8.6 6.50156 8.6 6.30156 8.7C6.00156 8.8 5.80156 8.9 5.60156 8.9L5.90156 7.8C6.60156 7.5 7.20156 7.3 7.90156 7.1C8.50156 6.9 9.10156 6.8 9.70156 6.8C10.7016 6.8 11.5016 7 12.0016 7.5C12.5016 8 12.8016 8.6 12.8016 9.4C12.8016 9.6 12.8016 9.8 12.7016 10.3C12.7016 10.7 12.6016 11.1 12.5016 11.4L11.5016 15.1C11.4016 15.4 11.3016 15.7 11.3016 16.1C11.2016 16.5 11.2016 16.8 11.2016 17C11.2016 17.5 11.3016 17.8 11.5016 18C11.7016 18.2 12.1016 18.3 12.6016 18.3C12.9016 18.3 13.1016 18.3 13.5016 18.2C13.8016 18 14.0016 17.9 14.2016 17.8ZM14.4016 2.3C14.4016 2.9 14.2016 3.5 13.7016 3.9C13.2016 4.4 12.6016 4.6 11.9016 4.6C11.2016 4.6 10.7016 4.4 10.2016 4C9.70156 3.5 9.40156 3 9.40156 2.3C9.40156 1.7 9.60156 1.1 10.1016 0.6C10.7016 0.2 11.2016 0 11.9016 0C12.6016 0 13.2016 0.2 13.7016 0.7C14.2016 1.1 14.4016 1.7 14.4016 2.3Z"
-                                fill="white"
-                              />
-                            </g>
-                            <defs>
-                              <clipPath id="clip0_1460_3613">
-                                <rect width="20" height="20" fill="white" />
-                              </clipPath>
-                            </defs>
-                          </svg>
-                        </div>
-                        Read <br /> More
+                      {/* IMAGE */}
+                      <div className="pr-[24px]">
+                        <img
+                          src={
+                            item?.image
+                              ? `${import.meta.env.VITE_API_BASE_URL}/positions/${item.image}`
+                              : "/actor/eknath.png"
+                          }
+                          alt=""
+                          className="h-[120px] w-[100px] object-cover md:rounded-0 rounded-[8px]"
+                        />
                       </div>
-                    </a>
+
+                      {/* POSITION */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Position
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.department || "-"}
+                        </h2>
+                      </div>
+
+                      {/* PARTY */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] min-w-[200px]">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Affiliation
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.party || "-"}
+                        </h2>
+                      </div>
+
+                      {/* TERM */}
+                      <div className="border-l border-[#D9D9D9] px-[24px] flex-1">
+                        <h4 className="text-[#757575] text-[16px] primary-font">
+                          Term
+                        </h4>
+
+                        <h2 className="berlin text-[24px] mt-[4px]">
+                          {item?.from_date
+                            ? new Date(item.from_date).getFullYear()
+                            : "-"}{" "}
+                          -{" "}
+                          {item?.to_date
+                            ? new Date(item.to_date).getFullYear()
+                            : "Present"}
+                        </h2>
+                      </div>
+
+                      {/* BUTTON */}
+                      <button
+                        onClick={() => openPopup2(item)}
+                        className="ml-auto bg-[#4285F4] h-[120px] flex items-center p-[20px] text-white text-[16px] text-center"
+                      >
+                        <div className="flex flex-col justify-center items-center">
+                          <div className="text-[18px] mb-[4px]">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                            >
+                              <g clipPath="url(#clip0_1460_3613)">
+                                <path
+                                  d="M14.2016 17.8L13.9016 19C13.1016 19.3 12.4016 19.6 11.9016 19.8C11.4016 20 10.8016 20.1 10.2016 20.1C9.20156 20.1 8.40156 19.9 7.80156 19.4C7.20156 18.9 7.00156 18.3 7.00156 17.5C7.00156 17.2 7.00156 16.9 7.10156 16.6C7.10156 16.3 7.20156 15.9 7.30156 15.5L8.30156 11.8C8.40156 11.4 8.50156 11.1 8.50156 10.8C8.60156 10.5 8.60156 10.2 8.60156 9.9C8.60156 9.4 8.50156 9.1 8.30156 8.9C8.10156 8.7 7.70156 8.6 7.10156 8.6C6.80156 8.6 6.50156 8.6 6.30156 8.7C6.00156 8.8 5.80156 8.9 5.60156 8.9L5.90156 7.8C6.60156 7.5 7.20156 7.3 7.90156 7.1C8.50156 6.9 9.10156 6.8 9.70156 6.8C10.7016 6.8 11.5016 7 12.0016 7.5C12.5016 8 12.8016 8.6 12.8016 9.4C12.8016 9.6 12.8016 9.8 12.7016 10.3C12.7016 10.7 12.6016 11.1 12.5016 11.4L11.5016 15.1C11.4016 15.4 11.3016 15.7 11.3016 16.1C11.2016 16.5 11.2016 16.8 11.2016 17C11.2016 17.5 11.3016 17.8 11.5016 18C11.7016 18.2 12.1016 18.3 12.6016 18.3C12.9016 18.3 13.1016 18.3 13.5016 18.2C13.8016 18 14.0016 17.9 14.2016 17.8Z"
+                                  fill="white"
+                                />
+                              </g>
+
+                              <defs>
+                                <clipPath id="clip0_1460_3613">
+                                  <rect width="20" height="20" fill="white" />
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          </div>
+                          Read <br /> More
+                        </div>
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20">
+                    <h2 className="text-2xl font-semibold text-gray-500">
+                      No Positions Found
+                    </h2>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </>
         )}
+        {/* MOVIES + WEBSERIES */}
         {(context.Contenttype === "Movies" ||
           context.Contenttype === "Webseries") && (
           <>
-            <BannerSlider data={context.MoviesSliderdata.bannerSlider} />
+            <BannerSlider data={context.MoviesSliderdata?.bannerSlider} />
 
             {Object.values(context)
               .filter(
@@ -495,116 +584,80 @@ const MoviesDetails = ({ context }) => {
               ))}
           </>
         )}
+
+        {/* WATCH */}
         {context.Contenttype === "Watch" && (
-          <>
-            <div className="grid grid-cols-4 py-[90px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
-  {context.Adventure?.movies?.length > 0 ? (
-    context.Adventure.movies.map((movie) => (
-      <Link
-        key={movie.id}
-        onClick={() => openPopup1(movie)}
-        className="transition-all duration-500 lg:col-span-1 md:col-span-2 col-span-4"
-      >
-        <div className="relative sldieimh rounded-[8px] overflow-hidden">
-          <img
-            src={movie.img}
-            alt={movie.title}
-            className="w-full h-full object-cover rounded-[8px]"
-          />
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 py-[90px] px-8 pt-[120px] bg-[#fff] gap-6">
+            {context.Adventure?.movies?.length > 0 ? (
+              context.Adventure.movies.map((movie) => (
+                <Link
+                  key={movie.id}
+                  onClick={() => openPopup1(movie)}
+                  className="transition-all duration-500"
+                >
+                  <div className="relative rounded-[8px] overflow-hidden">
+                    <img
+                      src={movie.img}
+                      alt={movie.title}
+                      className="w-full h-full object-cover rounded-[8px]"
+                    />
+                  </div>
 
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg
-              width="47"
-              height="45"
-              viewBox="0 0 47 45"
-              fill="none"
-            >
-              <rect
-                width="46.4"
-                height="44.8"
-                rx="22.4"
-                fill="white"
-                fillOpacity="0.8"
-              />
-
-              <path
-                d="M18.7682 14.7521C17.3282 13.9281 16.1602 14.6001 16.1602 16.2641V28.5361C16.1602 30.2001 17.3282 30.8721 18.7682 30.0481L29.4962 23.8961C30.9362 23.0961 30.9362 21.7281 29.4962 20.9041L18.7682 14.7521Z"
-                fill="#4285F4"
-              />
-            </svg>
+                  <div className="flex items-center justify-between mt-3">
+                    <h3 className="text-[16px] text-[#1E1E1E] font-[400] berlin">
+                      {movie.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full flex justify-center items-center py-20">
+                <h2 className="text-2xl font-semibold text-gray-500">
+                  No Data Found
+                </h2>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center justify-between mt-3">
-          <h3 className="text-[16px] text-[#1E1E1E] font-[400] berlin">
-            {movie.title}
-          </h3>
-        </div>
-      </Link>
-    ))
-  ) : (
-    <div className="col-span-full flex justify-center items-center py-20">
-      <h2 className="text-2xl font-semibold text-gray-500">
-        No Data Found
-      </h2>
-    </div>
-  )}
-</div>
+        {/* READ */}
+        {context.Contenttype === "Read" && (
+          <>
+            <div className="grid md:grid-cols-2 grid-cols-1 py-[60px] px-8 bg-[#F4FBFF] gap-6">
+              {context.Adventure?.news?.length > 0 ? (
+                context.Adventure.news.map((news, index) => (
+                  <News2 key={index} news={news} />
+                ))
+              ) : (
+                <div className="col-span-full flex justify-center items-center py-20">
+                  <h2 className="text-2xl font-semibold text-gray-500">
+                    No Data Found
+                  </h2>
+                </div>
+              )}
+            </div>
           </>
         )}
-       {context.Contenttype === "Read" && (
-  <>
-    {/* BOOKS */}
-    <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 py-[60px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-6 justify-center">
-      {context.Adventure?.book?.length > 0 ? (
-        context.Adventure.book.map((book) => (
-          <Book key={book.id} book={book} />
-        ))
-      ) : (
-        <div className="col-span-full flex justify-center items-center py-20">
-          <h2 className="text-2xl font-semibold text-gray-500">
-            No Books Found
-          </h2>
-        </div>
-      )}
-    </div>
 
-    {/* NEWS */}
-    <div className="grid md:grid-cols-2 grid-cols-1 py-[60px] px-8 bg-[#F4FBFF] flex-wrap gap-6 justify-center">
-      {context.Adventure?.news?.length > 0 ? (
-        context.Adventure.news.map((news, index) => (
-          <News2 key={index} news={news} />
-        ))
-      ) : (
-        <div className="col-span-full flex justify-center items-center py-20">
-          <h2 className="text-2xl font-semibold text-gray-500">
-            No News Found
-          </h2>
-        </div>
-      )}
-    </div>
-  </>
-)}
+        {/* LISTEN */}
+        {context.Contenttype === "Listen" && (
+          <div className="flex py-[90px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-9 justify-center">
+            {context.Adventure?.Listen?.length > 0 ? (
+              context.Adventure.Listen.map((listen) => (
+                <ListenCard key={listen.id} listen={listen} />
+              ))
+            ) : (
+              <div className="w-full flex justify-center items-center py-20">
+                <h2 className="text-2xl font-semibold text-gray-500">
+                  No Audio Found
+                </h2>
+              </div>
+            )}
+          </div>
+        )}
 
-{context.Contenttype === "Listen" && (
-  <>
-    <div className="flex py-[90px] px-8 pt-[120px] bg-[#fff] flex-wrap gap-9 justify-center">
-      {context.Adventure?.Listen?.length > 0 ? (
-        context.Adventure.Listen.map((listen) => (
-          <ListenCard key={listen.id} listen={listen} />
-        ))
-      ) : (
-        <div className="w-full flex justify-center items-center py-20">
-          <h2 className="text-2xl font-semibold text-gray-500">
-            No Audio Found
-          </h2>
-        </div>
-      )}
-    </div>
-  </>
-)}
-        {/* **************** Popup  ********************** */}
-
+        {/* **************** Popup  election ********************** */}
+        {/* POPUP */}
         {popupData && (
           <div className="fixed inset-0 z-[9999] bg-[#00000080] overflow-scroll flex justify-center items-center px-4">
             <div className="bg-white rounded-[12px] max-w-[700px] w-full p-[40px] relative animate-popup">
@@ -616,31 +669,39 @@ const MoviesDetails = ({ context }) => {
                 ×
               </button>
 
+              {/* IMAGE */}
               <div className="pr-[24px]">
                 <img
-                  src="/actor/eknath.png"
+                  src={
+                    popupData?.image
+                      ? `${import.meta.env.VITE_API_BASE_URL}/election/${popupData.image}`
+                      : "/actor/eknath.png"
+                  }
                   alt=""
                   className="h-[72px] w-[60px] object-cover md:rounded-0 rounded-[8px]"
                 />
               </div>
-              <h3 className="text-[20px] mt-[10px] berlin mb-[20px] text-[#1E1E1E] berlin">
-                Eknath Shinde
+
+              {/* NAME */}
+              <h3 className="text-[20px] mt-[10px] mb-[20px] text-[#1E1E1E] berlin">
+                {celebrityData?.identityProfile?.name || "Celebrity"}
               </h3>
 
-              <h2 className="text-[35px] berlin mb-4 text-[#1E1E1E] font-[400] berlin">
-                {popupData.election || popupData.Department}
+              {/* TITLE */}
+              <h2 className="text-[35px] mb-4 text-[#1E1E1E] font-[400] berlin">
+                {popupData?.type || "-"}
               </h2>
 
               <div className="space-y-3 text-[18px] primary-font text-[#222]">
+                {/* TOP INFO */}
                 <div className="flex gap-[12px] flex-wrap items-center">
-                  {" "}
-                  {popupData.year && (
+                  {/* YEAR */}
+                  {popupData?.election_year && (
                     <>
-                      {" "}
                       <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
-                        {" "}
-                        {popupData.year}
+                        {popupData?.election_year}
                       </p>
+
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="4"
@@ -652,46 +713,211 @@ const MoviesDetails = ({ context }) => {
                       </svg>
                     </>
                   )}
-                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
-                    Mumbai North Central
-                  </p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="4"
-                    height="4"
-                    viewBox="0 0 4 4"
-                    fill="none"
-                  >
-                    <circle cx="2" cy="2" r="2" fill="#5A5A5A" />
-                  </svg>
-                  {popupData.party && (
+
+                  {/* CONSTITUENCY */}
+                  {popupData?.constituency && (
+                    <>
+                      <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
+                        {popupData?.constituency}
+                      </p>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="4"
+                        height="4"
+                        viewBox="0 0 4 4"
+                        fill="none"
+                      >
+                        <circle cx="2" cy="2" r="2" fill="#5A5A5A" />
+                      </svg>
+                    </>
+                  )}
+
+                  {/* PARTY */}
+                  {popupData?.party && (
                     <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
-                      {popupData.party}
+                      {popupData?.party}
                     </p>
                   )}
                 </div>
-                {popupData.result && (
+
+                {/* RESULT */}
+                {popupData?.result && (
                   <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
-                    {" "}
-                    Result: {popupData.result}
+                    Result: {popupData?.result}
                   </p>
                 )}
-                {popupData.Heldoffice && (
+
+                {/* ROLE */}
+                {popupData?.role && (
                   <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
-                    Held Office: {popupData.Heldoffice}
+                    Role: {popupData?.role}
                   </p>
                 )}
-                <p className="mt-[20px] text-[#757575] primary-font text-[16px] font-[600]">
-                  Eknath Shinde is preparing for the upcoming Lok Sabha
-                  elections with the goal of achieving a notable win. He is
-                  concentrating on local concerns and community growth, aiming
-                  to engage voters through creative campaigns and grassroots
-                  initiatives. His approach involves utilizing social media to
-                  attract younger voters while showcasing his accomplishments in
-                  public service. As the election date nears, his team is
-                  diligently working to ensure his message resonates throughout
-                  the constituency.
-                </p>
+
+                {/* STATE */}
+                {popupData?.state && (
+                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
+                    State: {popupData?.state}
+                  </p>
+                )}
+
+                {/* VOTE SHARE */}
+                {popupData?.vote_share && (
+                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
+                    Vote Share: {popupData?.vote_share}
+                  </p>
+                )}
+
+                {/* VOTES */}
+                {popupData?.votes && (
+                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
+                    Votes: {popupData?.votes}
+                  </p>
+                )}
+
+                {/* OPPONENT */}
+                {popupData?.opponent && (
+                  <p className="text-[#1E1E1E] primary-font text-[16px] font-[600]">
+                    Opponent: {popupData?.opponent}
+                  </p>
+                )}
+
+                {/* NOTES */}
+                {popupData?.notes && (
+                  <p className="mt-[20px] text-[#757575] primary-font text-[16px] font-[500] leading-[28px]">
+                    {popupData?.notes}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {popupData2 && (
+          <div className="fixed inset-0 z-[9999] bg-[#00000080] overflow-scroll flex justify-center items-center px-4">
+            <div className="bg-white rounded-[12px] max-w-[700px] w-full p-[40px] relative animate-popup">
+              {/* CLOSE */}
+              <button
+                onClick={closePopup2}
+                className="absolute top-4 right-4 text-[28px] leading-none"
+              >
+                ×
+              </button>
+
+              {/* IMAGE */}
+              <div className="pr-[24px]">
+                <img
+                  src={
+                    popupData2?.image
+                      ? `${import.meta.env.VITE_API_BASE_URL}/uploads/possition/${popupData2.image}`
+                      : "/actor/eknath.png"
+                  }
+                  alt=""
+                  className="h-[72px] w-[60px] object-cover rounded-[8px]"
+                />
+              </div>
+
+              {/* CELEBRITY NAME */}
+              <h3 className="text-[20px] mt-[10px] mb-[20px] text-[#1E1E1E] berlin">
+                {celebrityData?.identityProfile?.name || "Celebrity"}
+              </h3>
+
+              {/* POSITION TITLE */}
+              <h2 className="text-[35px] mb-4 text-[#1E1E1E] font-[400] berlin">
+                {popupData2?.department || "-"}
+              </h2>
+
+              <div className="space-y-3 text-[18px] primary-font text-[#222]">
+                {/* TOP INFO */}
+                <div className="flex gap-[12px] flex-wrap items-center">
+                  {/* FROM DATE */}
+                  {popupData2?.from_date && (
+                    <>
+                      <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                        {new Date(popupData2?.from_date).getFullYear()}
+                      </p>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="4"
+                        height="4"
+                        viewBox="0 0 4 4"
+                        fill="none"
+                      >
+                        <circle cx="2" cy="2" r="2" fill="#5A5A5A" />
+                      </svg>
+                    </>
+                  )}
+
+                  {/* TO DATE */}
+                  {popupData2?.to_date && (
+                    <>
+                      <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                        {new Date(popupData2?.to_date).getFullYear()}
+                      </p>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="4"
+                        height="4"
+                        viewBox="0 0 4 4"
+                        fill="none"
+                      >
+                        <circle cx="2" cy="2" r="2" fill="#5A5A5A" />
+                      </svg>
+                    </>
+                  )}
+
+                  {/* PARTY */}
+                  {popupData2?.party && (
+                    <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                      {popupData2?.party}
+                    </p>
+                  )}
+                </div>
+
+                {/* LEVEL */}
+                {popupData2?.level && (
+                  <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                    Level: {popupData2?.level}
+                  </p>
+                )}
+
+                {/* STATE */}
+                {popupData2?.state && (
+                  <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                    State: {popupData2?.state}
+                  </p>
+                )}
+
+                {/* CONSTITUENCY */}
+                {popupData2?.constituency && (
+                  <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                    Constituency: {popupData2?.constituency}
+                  </p>
+                )}
+
+                {/* REPORTING */}
+                {popupData2?.reporting && (
+                  <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                    Reporting To: {popupData2?.reporting}
+                  </p>
+                )}
+
+                {/* CURRENT */}
+                {popupData2?.current && (
+                  <p className="text-[#1E1E1E] text-[16px] font-[600]">
+                    Current Position: {popupData2?.current}
+                  </p>
+                )}
+
+                {/* WORK */}
+                {popupData2?.work && (
+                  <p className="mt-[20px] text-[#757575] text-[16px] font-[500] leading-[28px]">
+                    {popupData2?.work}
+                  </p>
+                )}
               </div>
             </div>
           </div>
