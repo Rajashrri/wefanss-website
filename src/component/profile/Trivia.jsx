@@ -1,10 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-  getCelebrityBySlug,
-  getTriviaByCelebrity,
-} from "../../utils/frontApi";
+import { getCelebrityBySlug, getTriviaByCelebrity } from "../../utils/frontApi";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -17,15 +14,12 @@ const getImageUrl = (path) => {
   }
 
   // full url
-  if (
-    path.startsWith("http://") ||
-    path.startsWith("https://")
-  ) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
   }
 
   // local trivia image
-  return `${API_BASE}/trivia/${path}`;
+  return `${API_BASE}/triviaentries/${path}`;
 };
 
 const Trivia = () => {
@@ -52,16 +46,9 @@ const Trivia = () => {
       }
     };
 
-    document.addEventListener(
-      "click",
-      handleClickOutside
-    );
+    document.addEventListener("click", handleClickOutside);
 
-    return () =>
-      document.removeEventListener(
-        "click",
-        handleClickOutside
-      );
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const getTriviaData = async () => {
@@ -69,15 +56,12 @@ const Trivia = () => {
       // celebrity by slug
       const celebRes = await getCelebrityBySlug(slug);
 
-      const celebrityId =
-        celebRes?.data?.data?._id;
+      const celebrityId = celebRes?.data?.data?._id;
 
       if (!celebrityId) return;
 
       // trivia fetch
-      const res = await getTriviaByCelebrity(
-        celebrityId
-      );
+      const res = await getTriviaByCelebrity(celebrityId);
 
       setTriviaData(res?.data?.data || []);
     } catch (error) {
@@ -88,30 +72,19 @@ const Trivia = () => {
   // ✅ unique categories for filter
   const categoryOptions = [
     "All",
-    ...new Set(
-      triviaData.map(
-        (item) => item.categoryName
-      )
-    ),
+    ...new Set(triviaData.map((item) => item.categoryName)),
   ];
 
   // ✅ filter data
   const filteredTrivia =
     selected === "All"
       ? triviaData
-      : triviaData.filter(
-          (item) =>
-            item.categoryName === selected
-        );
+      : triviaData.filter((item) => item.categoryName === selected);
 
   return (
     <div className="mt-4 md:overflow-y-auto h-screen no-scrollbar">
-
       {/* FILTER */}
-      <div
-        className="filter relative w-fit mb-[24px]"
-        ref={dropdownRef}
-      >
+      <div className="filter relative w-fit mb-[24px]" ref={dropdownRef}>
         <button
           onClick={() => setOpen(!open)}
           className="bg-[#4285F4] px-[24px] py-[12px] primary-font font-semibold text-white rounded-[8px] flex items-center"
@@ -161,7 +134,6 @@ const Trivia = () => {
       {filteredTrivia?.length > 0 ? (
         filteredTrivia.map((item) => (
           <div key={item._id}>
-
             {/* TITLE */}
             <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
               {item.title}
@@ -193,9 +165,7 @@ const Trivia = () => {
           </div>
         ))
       ) : (
-        <p className="text-center text-[#868484]">
-          No trivia found
-        </p>
+        <p className="text-center text-[#868484]">No trivia found</p>
       )}
     </div>
   );

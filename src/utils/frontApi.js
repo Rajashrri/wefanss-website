@@ -6,7 +6,7 @@ import axios from "axios";
 // =====================================
 
 const frontApi = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/front`,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/front`,
 
   timeout: 300000,
   headers: {
@@ -40,7 +40,7 @@ frontApi.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // ✅ get timeline by celebrity id
@@ -74,8 +74,7 @@ export const getLatestReadByCelebrity = async (id) => {
 };
 
 export const getLatestListenByCelebrity = async (id) => {
-    return frontApi.get(`/latest-listen/${id}`);
-
+  return frontApi.get(`/latest-listen/${id}`);
 };
 
 //watch all
