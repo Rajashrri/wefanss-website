@@ -108,5 +108,7 @@ export const getElectionByCelebrity = (celebrityId) => {
 export const getPossitionByCelebrity = (celebrityId) => {
   return frontApi.get(`/possition/${celebrityId}`);
 };
-
+export const getMoviesByCelebrityGenre = (slug) => {
+  return frontApi.get(`/movies-by-genre/${slug}`);
+};
 export default frontApi;

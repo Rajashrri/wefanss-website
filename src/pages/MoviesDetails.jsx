@@ -568,22 +568,19 @@ const MoviesDetails = ({ context }) => {
             </div>
           </>
         )}
-        {/* MOVIES + WEBSERIES */}
-        {(context.Contenttype === "Movies" ||
-          context.Contenttype === "Webseries") && (
-          <>
-            <BannerSlider data={context.MoviesSliderdata?.bannerSlider} />
+{/* MOVIES + WEBSERIES */}
+{(context.Contenttype === "Movies" ||
+  context.Contenttype === "Webseries") && (
+  <>
+    <BannerSlider
+      data={context.MoviesSliderdata?.bannerSlider}
+    />
 
-            {Object.values(context)
-              .filter(
-                (item) =>
-                  typeof item === "object" && item.type === "suggestion",
-              )
-              .map((item, index) => (
-                <MoviesSlider key={index} data={item} />
-              ))}
-          </>
-        )}
+    {(context.genres || []).map((item, index) => (
+      <MoviesSlider key={index} data={item} />
+    ))}
+  </>
+)}
 
         {/* WATCH */}
         {context.Contenttype === "Watch" && (
