@@ -9,99 +9,142 @@ import {
 
 const Missionimpossible = () => {
   const { slug } = useParams();
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [context, setContext] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (slug) fetchData();
   }, [slug]);
 
-const fetchData = async () => {
-  try {
-    // 1️⃣ Celebrity fetch
-    const celebrityRes = await getCelebrityBySlug(slug);
-    const celebrity = celebrityRes?.data?.data;
+  const fetchData = async () => {
+    try {
+      setLoading(true);
 
-    if (!celebrity?._id) return;
+      // celebrity
+      const celebrityRes = await getCelebrityBySlug(slug);
 
-    // 2️⃣ Movies fetch
-    const moviesRes = await getMoviesByCelebrityGenre(slug);
-    const genresData = moviesRes?.data?.data || [];
+      const celebrity = celebrityRes?.data?.data;
 
-    // 3️⃣ Find ONLY ONE Featured Movie
-    let featuredMovie = null;
+      if (!celebrity?._id) {
+        setContext(null);
+        return;
+      }
 
-    genresData.forEach((genre) => {
-      genre.movies?.forEach((movie) => {
-        if (
-          movie.featured === 1 &&
-          movie.status === 1 &&
-          !featuredMovie
-        ) {
-          featuredMovie = movie;
-        }
+      // movies
+      const moviesRes = await getMoviesByCelebrityGenre(slug);
+
+      const genresData = moviesRes?.data?.data || [];
+
+      // featured movie latest 1
+      let featuredMovie = null;
+
+      genresData.forEach((genre) => {
+        genre.movies?.forEach((movie) => {
+          if (
+            movie.featured === 1 &&
+            movie.status === "1" &&
+            !featuredMovie
+          ) {
+            featuredMovie = movie;
+          }
+        });
       });
-    });
 
-    // 4️⃣ Dynamic Banner Slider
-    const bannerSlider = featuredMovie
-      ? [
-          {
-            id: featuredMovie._id,
+      // dynamic banner
+      const bannerSlider = featuredMovie
+        ? [
+            {
+              id: featuredMovie._id,
+              _id: featuredMovie._id,
 
-            title: featuredMovie.title,
+              title: featuredMovie.title,
+              name: featuredMovie.title,
 
-            img: featuredMovie.imagebg
-              ? `${import.meta.env.VITE_API_BASE_URL}/moviesbg/${featuredMovie.imagebg}`
-              : "/md.png",
+              img: featuredMovie.image
+                ? `${API_BASE}/movies/${featuredMovie.image}`
+                : "/md.png",
 
-            year: featuredMovie.releaseYear || "",
+              imagebg: featuredMovie.imagebg
+                ? `${API_BASE}/moviesbg/${featuredMovie.imagebg}`
+                : "/md.png",
 
-            category:
-              featuredMovie.genre
-                ?.map((g) => g.name)
-                .join(", ") || "",
+              year: featuredMovie.releaseYear || "",
 
-            language:
-              featuredMovie.languages
-                ?.map((l) => l.name)
-                .filter(Boolean) || [],
+              category:
+                featuredMovie.genre
+                  ?.map((g) => g.name)
+                  .join(", ") || "",
 
-            rating: featuredMovie.rating || "",
+              language:
+                featuredMovie.languages
+                  ?.map((l) => l.name)
+                  .filter(Boolean) || [],
 
-            platformRating:
-              featuredMovie.platformRating || "",
+              platform: featuredMovie.platform || "",
 
-notes: featuredMovie.notes || "",
-            cast: featuredMovie.cast || "",
+              desc: featuredMovie.notes || "",
 
-            slug: featuredMovie.slug,
-          },
-        ]
-      : [];
+              cast: featuredMovie.cast || "",
 
-    // 5️⃣ Genre Array
-    const genresArray = (genresData || []).filter(
-      (g) => g.type === "suggestion"
+              rating: [
+                {
+                  img: "/rating/1.png",
+                  per: featuredMovie.rating || 7.2,
+                  site: "IMDb",
+                },
+              ],
+            },
+          ]
+        : [];
+
+      // genres
+      const genresArray = genresData.filter(
+        (g) => g.type === "suggestion"
+      );
+
+      setContext({
+        Contenttype: "Movies",
+
+        slug: slug,
+
+        MoviesSliderdata: {
+          type: "banner",
+          bannerSlider,
+        },
+
+        genres: genresArray,
+      });
+    } catch (err) {
+      console.log("ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // loader
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center text-[22px]">
+        Loading...
+      </div>
     );
-
-    // 6️⃣ Final Context
-    setContext({
-      Contenttype: "Movies",
-
-      slug: slug,
-
-      MoviesSliderdata: {
-        type: "banner",
-        bannerSlider,
-      },
-
-      genres: genresArray,
-    });
-  } catch (err) {
-    console.log("ERROR:", err);
   }
-};
-  if (!context) return null;
+
+  // no data
+  if (
+    !context ||
+    (!context?.MoviesSliderdata?.bannerSlider?.length &&
+      !context?.genres?.length)
+  ) {
+    return (
+      <div className="h-screen flex items-center justify-center text-[22px]">
+        Movies Not Found
+      </div>
+    );
+  }
 
   return <MoviesDetails context={context} />;
 };

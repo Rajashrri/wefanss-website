@@ -13,6 +13,8 @@ const Webseries = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const [context, setContext] = useState(null);
+  // ✅ loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (slug) {
@@ -27,7 +29,10 @@ const Webseries = () => {
 
       const celebrity = celebrityRes?.data?.data;
 
-      if (!celebrity?._id) return;
+  if (!celebrity?._id) {
+        setLoading(false);
+        return;
+      }
 
       // featured series
       const featuredRes = await getFeaturedSeriesByCelebrity2(
@@ -104,13 +109,34 @@ const Webseries = () => {
 
         genres: genresArray,
       });
-    } catch (error) {
+     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!context) return null;
+  // ✅ Loader
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-[24px]">
+        Loading...
+      </div>
+    );
+  }
 
+  // ✅ No Series Found
+  if (
+    !context ||
+    !context?.genres ||
+    context.genres.length === 0
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-[28px] berlin">
+        No Web Series Found
+      </div>
+    );
+  }
   return <MoviesDetails context={context} />;
 };
 
