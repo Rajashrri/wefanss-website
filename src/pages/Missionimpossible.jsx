@@ -15,65 +15,92 @@ const Missionimpossible = () => {
     if (slug) fetchData();
   }, [slug]);
 
-  const fetchData = async () => {
-    try {
-      // 1️⃣ Celebrity fetch
-      const celebrityRes = await getCelebrityBySlug(slug);
-      const celebrity = celebrityRes?.data?.data;
+const fetchData = async () => {
+  try {
+    // 1️⃣ Celebrity fetch
+    const celebrityRes = await getCelebrityBySlug(slug);
+    const celebrity = celebrityRes?.data?.data;
 
-      if (!celebrity?._id) return;
+    if (!celebrity?._id) return;
 
-      // 2️⃣ Movies fetch (IMPORTANT: SLUG PASS)
-      const moviesRes = await getMoviesByCelebrityGenre(slug);
-      const genresData = moviesRes?.data?.data || [];
+    // 2️⃣ Movies fetch
+    const moviesRes = await getMoviesByCelebrityGenre(slug);
+    const genresData = moviesRes?.data?.data || [];
 
-      // 3️⃣ STATIC BANNER (as you want)
-      const bannerSlider = [
-        {
-          id: 1,
-          name: "Mission Impossible",
-          img: "/md.png",
-          year: "2019",
-          category: "Thriller",
-          language: ["Marathi", "Hindi", "English", "More"],
-          rating: [
-            {
-              img: "/rating/1.png",
-              per: 7.2,
-              site: "IMDb",
-            },
-            {
-              img: "/rating/2.png",
-              per: 7,
-              site: "Wefanss",
-            },
-          ],
-          dis: '"Mission Impossible" follows Ethan Hunt...',
-          cast: "Alex Carter, Mia Chen, Jordan Lee",
-        },
-      ];
+    // 3️⃣ Find ONLY ONE Featured Movie
+    let featuredMovie = null;
 
-      // 4️⃣ convert array safely
-      const genresArray = (genresData || []).filter(
-        (g) => g.type === "suggestion"
-      );
-
-      // 5️⃣ FINAL CONTEXT
-      setContext({
-        Contenttype: "Movies",
-
-        MoviesSliderdata: {
-          type: "banner",
-          bannerSlider, // STATIC ONLY
-        },
-
-        genres: genresArray, // IMPORTANT FIX
+    genresData.forEach((genre) => {
+      genre.movies?.forEach((movie) => {
+        if (
+          movie.featured === 1 &&
+          movie.status === 1 &&
+          !featuredMovie
+        ) {
+          featuredMovie = movie;
+        }
       });
-    } catch (err) {
-      console.log("ERROR:", err);
-    }
-  };
+    });
 
+    // 4️⃣ Dynamic Banner Slider
+    const bannerSlider = featuredMovie
+      ? [
+          {
+            id: featuredMovie._id,
+
+            title: featuredMovie.title,
+
+            img: featuredMovie.imagebg
+              ? `${import.meta.env.VITE_API_BASE_URL}/moviesbg/${featuredMovie.imagebg}`
+              : "/md.png",
+
+            year: featuredMovie.releaseYear || "",
+
+            category:
+              featuredMovie.genre
+                ?.map((g) => g.name)
+                .join(", ") || "",
+
+            language:
+              featuredMovie.languages
+                ?.map((l) => l.name)
+                .filter(Boolean) || [],
+
+            rating: featuredMovie.rating || "",
+
+            platformRating:
+              featuredMovie.platformRating || "",
+
+notes: featuredMovie.notes || "",
+            cast: featuredMovie.cast || "",
+
+            slug: featuredMovie.slug,
+          },
+        ]
+      : [];
+
+    // 5️⃣ Genre Array
+    const genresArray = (genresData || []).filter(
+      (g) => g.type === "suggestion"
+    );
+
+    // 6️⃣ Final Context
+    setContext({
+      Contenttype: "Movies",
+
+      slug: slug,
+
+      MoviesSliderdata: {
+        type: "banner",
+        bannerSlider,
+      },
+
+      genres: genresArray,
+    });
+  } catch (err) {
+    console.log("ERROR:", err);
+  }
+};
   if (!context) return null;
 
   return <MoviesDetails context={context} />;

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MoviesSlider from "../component/movies/MoviesSlider";
 import BannerSlider from "../component/slider/BannerSlider";
+
+import WebseriesSlider from "../component/movies/WebseriesSlider";
+import BannerWebseriesSlider from "../component/slider/BannerWebseriesSlider";
 import Book from "../component/card/Book";
 import News2 from "../component/card/News2";
 import ListenCard from "../component/card/ListenCard";
@@ -568,8 +571,8 @@ const MoviesDetails = ({ context }) => {
             </div>
           </>
         )}
-{/* MOVIES + WEBSERIES */}
-{(context.Contenttype === "Movies" ||
+        {/* MOVIES + WEBSERIES */}
+        {/* {(context.Contenttype === "Movies" ||
   context.Contenttype === "Webseries") && (
   <>
     <BannerSlider
@@ -580,8 +583,68 @@ const MoviesDetails = ({ context }) => {
       <MoviesSlider key={index} data={item} />
     ))}
   </>
-)}
+)} */}
 
+ {context.Contenttype === "Webseries" && (
+  <>
+    {/* STATIC BANNER */}
+    <BannerWebseriesSlider
+      data={context.MoviesSliderdata.bannerSlider}
+    />
+
+    {/* DYNAMIC SERIES */}
+    {context.genres?.map((item, index) => (
+      <WebseriesSlider
+        key={index}
+        data={{
+          ...item,
+
+          movies: item.movies.map((series) => ({
+            ...series,
+
+            id: series._id,
+
+            title: series.title,
+
+            img: series.image
+              ? `${import.meta.env.VITE_API_BASE_URL}/series/${series.image}`
+              : "/md.png",
+
+            desc: series.notes || "",
+
+            year:
+              series.releaseYear ||
+              series.start_year ||
+              "",
+
+            category:
+              series.genre
+                ?.map((g) => g.name)
+                .join(", ") || "",
+
+            language:
+              series.languages
+                ?.map((l) => l.name)
+                .filter(Boolean) || [],
+
+            cast: series.cast || "",
+
+            slug: series.slug || series.url,
+          })),
+        }}
+      />
+    ))}
+  </>
+)}
+        {context.Contenttype === "Movies" && (
+          <>
+            <BannerSlider data={context.MoviesSliderdata?.bannerSlider} />
+
+            {(context.genres || []).map((item, index) => (
+              <MoviesSlider key={index} data={item} />
+            ))}
+          </>
+        )}
         {/* WATCH */}
         {context.Contenttype === "Watch" && (
           <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 py-[90px] px-8 pt-[120px] bg-[#fff] gap-6">
@@ -602,7 +665,7 @@ const MoviesDetails = ({ context }) => {
 
                   <div className="flex items-center justify-between mt-3">
                     <h3 className="text-[16px] text-[#1E1E1E] font-[400] berlin">
-                      {movie.title}
+                      {movie.title}bgvvbvb
                     </h3>
                   </div>
                 </Link>

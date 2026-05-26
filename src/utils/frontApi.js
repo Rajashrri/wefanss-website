@@ -111,4 +111,12 @@ export const getPossitionByCelebrity = (celebrityId) => {
 export const getMoviesByCelebrityGenre = (slug) => {
   return frontApi.get(`/movies-by-genre/${slug}`);
 };
+
+export const getSeriesByCelebrityGenre = async (slug) => {
+
+  return frontApi.get(`/series-by-celebrity-genre/${slug}`);
+};
+export const getFeaturedSeriesByCelebrity2 = (celebrityId) => {
+  return frontApi.get(`/featured-series2/${celebrityId}`);
+};
 export default frontApi;

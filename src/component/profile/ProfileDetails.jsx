@@ -221,7 +221,8 @@ export default function AkshayProfile() {
       id: 3,
       type: "hitSongs",
       title: "Featured Movies",
-      link: "/movies",
+          link: `/movies/${slug}`,
+
       items: featuredMovies.map((movie) => ({
         id: movie._id,
         name: movie.title,
@@ -234,7 +235,8 @@ export default function AkshayProfile() {
       id: 4,
       type: "hitSongs",
       title: "Featured Series",
-      link: "/webseries",
+                link: `/webseries/${slug}`,
+
       items: featuredSeries.map((series) => ({
         id: series._id,
         name: series.title,

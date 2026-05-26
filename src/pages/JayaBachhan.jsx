@@ -251,7 +251,7 @@ export default function JayaBachhan() {
       id: 2,
       type: "hitSongs",
       title: "Featured Movies",
-      link: "/movies",
+          link: `/movies/${slug}`,
       items: featuredMovies.map((movie) => ({
         id: movie._id,
         name: movie.title,
@@ -264,7 +264,7 @@ export default function JayaBachhan() {
       id: 3,
       type: "hitSongs",
       title: "Featured Series",
-      link: "/webseries",
+                link: `/webseries/${slug}`,
       items: featuredSeries.map((series) => ({
         id: series._id,
         name: series.title,
@@ -278,7 +278,7 @@ export default function JayaBachhan() {
       id: 4,
       title: "Elections",
       type: "Elections",
-      link: `/election/${slug}`,
+      link: `/elections-contested/${slug}`,
       items: electionItems.slice(0, 3).map((item, index) => ({
         id: item._id || index,
 
@@ -304,6 +304,8 @@ export default function JayaBachhan() {
       id: 5,
       type: "Elections",
       title: "Positions Held",
+            link: `/positions-held/${slug}`,
+
       items: possitionItems.slice(0, 3).map((item, index) => ({
         id: item._id || index,
 
