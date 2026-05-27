@@ -1,7 +1,12 @@
 import React from 'react'
 import Button from '../Button'
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
+      // ================= GET USER =================
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
   return (
     <div className='max-w-[684px] px-[20px] md:gap-9 gap-4 m-auto grid md:grid-cols-3 grid-cols-4 py-[60px]'>
         <div className="md:col-span-1 col-span-2">
@@ -11,12 +16,17 @@ const UserProfile = () => {
             </div>
             <div className='mt-6  md:flex hidden justify-center'>
 
-                <Button btntext="Complete Profile" btnclass="!  px-2"/>
-            </div>
+<Button
+  btntext="Complete Profile"
+  btnclass="!px-2 w-full"
+  btnlink="/profile"
+/>
+    
+     </div>
         </div>
         <div className="md:col-span-2 col-span-2 pt-[40px]">
             <h3 className='text-[#1E1E1E] text-[16px] primary-font font-[500]'>Welcome</h3>
-            <h2 className='md:text-[96px] text-[48px] berlin text-[#4285F4] font-[400]'>Jhone</h2>
+            <h2 className='md:text-[96px] text-[48px] berlin text-[#4285F4] font-[400]'>  {user?.name || "User"}</h2>
             <div className='md:grid hidden gap-2 grid-cols-2 mt-7 '>
                 <div className='col-span-1 shadow-[0px_10px_10px_0px_#0000001F] p-5'>
                     <h4 className='text-[#1E1E1E] primary-font text-[14px] text-[500]' >Followed Celebrities</h4>

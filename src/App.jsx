@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes,  Navigate,
+ } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home";
 import Layout from "./Layout";
@@ -39,6 +40,10 @@ import ElectionsContested from "./pages/ElectionsContested";
 import PositionsHeld from "./pages/PositionsHeld";
 
 function App() {
+  // ✅ YAHAN DALO
+  const isLoggedIn = !!localStorage.getItem("token");
+    console.log(isLoggedIn);
+
   return (
     <>
       <BrowserRouter>
@@ -52,33 +57,44 @@ function App() {
               element={<EknathShinde />}
             />
 
-            <Route path="/profiles/:slug" element={<JayaBachhan />} />
-            <Route path="/register" element={<Singup />} />
+          <Route
+          path="/login"
+          element={
+            isLoggedIn ? (
+              <Navigate to="/user-dashboard" />
+            ) : (
+              <Login />
+            )
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            isLoggedIn ? (
+              <Navigate to="/user-dashboard" />
+            ) : (
+              <Singup />
+            )
+          }
+        />
+
+        <Route
+          path="/user-dashboard"
+          element={
+            isLoggedIn ? (
+              <UserDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+
             <Route path="/otp" element={<Otp />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/*" element={<Error />} />
-            <Route path="/thank-you" element={<ThankYou />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-conditions" element={<TermsConditions />} />
-            <Route path="/movies/:slug" element={<Missionimpossible />} />
-            <Route path="/Webseries/:slug" element={<Webseries />} />
-            <Route
-              path="/elections-contested/:slug"
-              element={<ElectionsContested />}
-            />
-            <Route path="/positions-held/:slug" element={<PositionsHeld />} />
 
-            <Route path="/user-dashboard" element={<UserDashboard />} />
-            <Route path="/watch/:slug" element={<Watch />} />
-            <Route path="/read/:slug" element={<Read />} />
-            <Route path="/listen/:slug" element={<Listen />} />
-            <Route path="/claim-profile" element={<ClaimProfile />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/search-result" element={<SearchResult />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/no-search-found" element={<NoSearcfound />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="/explorer-feed" element={<ExplorerFeed />} />
             <Route path="/profile" element={<Profilepage />} />
             <Route
@@ -92,7 +108,29 @@ function App() {
             />
             <Route path="/change-password" element={<ChangePassword />} />
 
-            <Route path="/login" element={<Login />} />
+            <Route path="/profiles/:slug" element={<JayaBachhan />} />
+
+            <Route path="/*" element={<Error />} />
+            <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/movies/:slug" element={<Missionimpossible />} />
+            <Route path="/Webseries/:slug" element={<Webseries />} />
+            <Route
+              path="/elections-contested/:slug"
+              element={<ElectionsContested />}
+            />
+            <Route path="/positions-held/:slug" element={<PositionsHeld />} />
+
+            <Route path="/watch/:slug" element={<Watch />} />
+            <Route path="/read/:slug" element={<Read />} />
+            <Route path="/listen/:slug" element={<Listen />} />
+            <Route path="/claim-profile" element={<ClaimProfile />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/search-result" element={<SearchResult />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/no-search-found" element={<NoSearcfound />} />
+            <Route path="/contact" element={<Contact />} />
 
             <Route path="/:slug" element={<Categories />} />
           </Route>

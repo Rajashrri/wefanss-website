@@ -9,7 +9,9 @@ import img12 from "../../public/feed/1.png"
 
 const Sidebar = () => {
   const [active, setActive] = React.useState("Home");
-
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
 
   return (
@@ -21,7 +23,7 @@ const Sidebar = () => {
         </div>
         <div className='mt-6  md:flex hidden justify-center'>
 
-            <h3 className='berlin text-[20px]'>Jhone Doe</h3>
+            <h3 className='berlin text-[20px]'> {user?.name || "User"}</h3>
         </div>
       </div>
 
@@ -129,7 +131,31 @@ const Sidebar = () => {
             </svg>
           <span>Change Pasword</span>
           </NavLink>
-      
+      {/* LOGOUT */}
+<NavLink
+  to="#"
+  onClick={() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    window.location.href = "/login";
+  }}
+  className="w-full flex p-[16px] rounded-lg text-left primary-font text-[16px] transition-all text-[#1E1E1E] hover:bg-red-500 hover:text-white"
+>
+  <svg
+    className="me-[10px]"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M16 13V11H7V8L2 12L7 16V13H16Z" />
+    <path d="M20 3H10C8.9 3 8 3.9 8 5V9H10V5H20V19H10V15H8V19C8 20.1 8.9 21 10 21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3Z" />
+  </svg>
+
+  <span>Logout</span>
+</NavLink>
       </div>
     </div>
   );
