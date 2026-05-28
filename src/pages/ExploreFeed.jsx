@@ -5,6 +5,10 @@ import CatogeriesCard from "../component/catogeries/CatogeriesCard";
 import Card2 from "../component/card/Card2";
 import { NavLink } from "react-router-dom";
 import img12 from "../../public/feed/1.png"
+import toast from "react-hot-toast";
+import {
+  changePasswordApi,
+} from "../utils/userApi";
 
 
 const Sidebar = () => {
@@ -1155,64 +1159,355 @@ export function CollectionsDetails() {
 }
 
 
+
+
 export function ChangePassword() {
- 
-  return (<>
-    <div className=''>
-    <ul className='flex gap-2 px-6 py-2 bg-[#4285F4]'>
-      <li className='text-[#fff] ptimary-font text-[12px]'><a href="#!">Home</a></li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>/</li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>Change Password</li>
-    </ul>
 
+  // ================= USER DATA =================
+  const userData = JSON.parse(
+    localStorage.getItem("user")
+  );
 
-  </div>
-    <div className=" md:h-screen bodyslide p-4 flex flex-col overflow-hidden ">
-    
+  const email = userData?.email;
 
-      <div className="flex maomcontflex  flex-1 overflow-hidden">
-        <div className="">
-          <Sidebar />
-        </div>
+  // ================= STATES =================
+  const [formData, setFormData] =
+    useState({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
 
-        {/* Center Scroll Area */}
-        <div className="flex-1 md:overflow-y-auto p-6 space-y-[50px]  no-scrollbar">
-          <h2 className="text-center md:text-[48px] text-[36px] berlin font-[400] md:mb-[50px] mb-[32px]">Change Password</h2>
-          <div className="max-w-[762px] m-auto bg-[#fff] p-[24px] rounded-[16px]">
-            <div className="p-[16px] bg-[#F4FBFF] rounded-[8px] mb-[14px]">
-              <h4 className="text-[#757575] text-[16px] primary-font mb-[8px]">Current Password</h4>
-              <input type="Current Password" className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none focus:ring-none focus:ring-none" placeholder="********" />
+  const [errors, setErrors] =
+    useState({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+
+  const [loading, setLoading] =
+    useState(false);
+
+  // ================= HANDLE CHANGE =================
+  const handleChange = (e) => {
+
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // REMOVE ERROR WHILE TYPING
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  // ================= VALIDATION =================
+  const validateForm = () => {
+
+    let newErrors = {};
+
+    // CURRENT PASSWORD
+    if (
+      !formData.currentPassword.trim()
+    ) {
+      newErrors.currentPassword =
+        "Current password is required";
+    }
+
+    // NEW PASSWORD
+    if (
+      !formData.newPassword.trim()
+    ) {
+      newErrors.newPassword =
+        "New password is required";
+    }
+
+    // CONFIRM PASSWORD
+    if (
+      !formData.confirmPassword.trim()
+    ) {
+      newErrors.confirmPassword =
+        "Confirm password is required";
+    }
+
+    // PASSWORD MATCH
+    if (
+      formData.newPassword &&
+      formData.confirmPassword &&
+      formData.newPassword !==
+        formData.confirmPassword
+    ) {
+      newErrors.confirmPassword =
+        "Passwords do not match";
+    }
+
+    // SAME PASSWORD CHECK
+    if (
+      formData.currentPassword &&
+      formData.newPassword &&
+      formData.currentPassword ===
+        formData.newPassword
+    ) {
+      newErrors.newPassword =
+        "New password must be different from current password";
+    }
+
+    // PASSWORD VALIDATION
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (
+      formData.newPassword &&
+      !passwordRegex.test(
+        formData.newPassword
+      )
+    ) {
+      newErrors.newPassword =
+        "Password must contain uppercase, lowercase, number, special character and minimum 8 characters";
+    }
+
+    setErrors(newErrors);
+
+    return (
+      Object.keys(newErrors).length === 0
+    );
+  };
+
+  // ================= HANDLE SUBMIT =================
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    const isValid =
+      validateForm();
+
+    if (!isValid) {
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+
+      // API CALL
+      const res =
+        await changePasswordApi({
+          email,
+          currentPassword:
+            formData.currentPassword,
+          newPassword:
+            formData.newPassword,
+          confirmPassword:
+            formData.confirmPassword,
+        });
+
+      // SUCCESS
+      if (res.data.success) {
+
+        toast.success(
+          res.data.message
+        );
+
+        // RESET FORM
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+
+        setErrors({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      }
+
+    } catch (error) {
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong"
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {/* TOP BAR */}
+      <div>
+        <ul className="flex gap-2 px-6 py-2 bg-[#4285F4]">
+
+          <li className="text-[#fff] text-[12px]">
+            Home
+          </li>
+
+          <li className="text-[#fff] text-[12px]">
+            /
+          </li>
+
+          <li className="text-[#fff] text-[12px]">
+            Change Password
+          </li>
+
+        </ul>
+      </div>
+
+      {/* MAIN */}
+      <div className="md:h-screen bodyslide p-4 flex flex-col">
+
+        <div className="flex maomcontflex flex-1">
+
+          {/* SIDEBAR */}
+          <div>
+            <Sidebar />
+          </div>
+
+          {/* CONTENT */}
+          <div className="flex-1 p-6 space-y-[50px] overflow-y-auto no-scrollbar">
+
+            <h2 className="text-center md:text-[48px] text-[36px] berlin font-[400] md:mb-[50px] mb-[32px]">
+              Change Password
+            </h2>
+
+            <div className="max-w-[762px] m-auto bg-[#fff] p-[24px] rounded-[16px] shadow-md">
+
+              {/* FORM */}
+              <form onSubmit={handleSubmit}>
+
+                {/* CURRENT PASSWORD */}
+                <div className="mb-[20px]">
+
+                  <div className="p-[16px] bg-[#F4FBFF] rounded-[8px]">
+
+                    <h4 className="text-[#757575] text-[16px] mb-[8px]">
+                      Current Password
+                    </h4>
+
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={
+                        formData.currentPassword
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none border border-[#ddd]"
+                      placeholder="********"
+                    />
+
+                  </div>
+
+                  {errors.currentPassword && (
+                    <p className="text-red-500 text-[13px] mt-1">
+                      {
+                        errors.currentPassword
+                      }
+                    </p>
+                  )}
+
+                </div>
+
+                {/* NEW PASSWORD */}
+                <div className="mb-[20px]">
+
+                  <div className="p-[16px] bg-[#F4FBFF] rounded-[8px]">
+
+                    <h4 className="text-[#757575] text-[16px] mb-[8px]">
+                      New Password
+                    </h4>
+
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={
+                        formData.newPassword
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none border border-[#ddd]"
+                      placeholder="********"
+                    />
+
+                  </div>
+
+                  {errors.newPassword && (
+                    <p className="text-red-500 text-[13px] mt-1">
+                      {
+                        errors.newPassword
+                      }
+                    </p>
+                  )}
+
+                </div>
+
+                {/* CONFIRM PASSWORD */}
+                <div className="mb-[20px]">
+
+                  <div className="p-[16px] bg-[#F4FBFF] rounded-[8px]">
+
+                    <h4 className="text-[#757575] text-[16px] mb-[8px]">
+                      Confirm New Password
+                    </h4>
+
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={
+                        formData.confirmPassword
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none border border-[#ddd]"
+                      placeholder="********"
+                    />
+
+                  </div>
+
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-[13px] mt-1">
+                      {
+                        errors.confirmPassword
+                      }
+                    </p>
+                  )}
+
+                </div>
+
+                {/* BUTTON */}
+                <div className="mt-[26px]">
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="py-[12px] px-[24px] rounded-[8px] w-full font-[600] bg-[#4285F4] text-[#fff] cursor-pointer disabled:opacity-70"
+                  >
+                    {loading
+                      ? "Updating..."
+                      : "Update Password"}
+                  </button>
+
+                </div>
+
+              </form>
 
             </div>
-            <div className="p-[16px] bg-[#F4FBFF] rounded-[8px] mb-[14px]">
-              <h4 className="text-[#757575] text-[16px] primary-font mb-[8px]">New Password</h4>
-              <input type="New Password" className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none focus:ring-none focus:ring-none" placeholder="********" />
-
-            </div>
-            <div className="p-[16px] bg-[#F4FBFF] rounded-[8px] mb-[14px]">
-              <h4 className="text-[#757575] text-[16px] primary-font mb-[8px]">Confirm New Password</h4>
-              <input type="Confirm New Password" className="bg-[#F5F5F5] w-full p-[16px] rounded-[8px] outline-none focus:ring-none focus:ring-none" placeholder="********" />
-
-            </div>
-           
-            
-
-          
-
-              <div className="mt-[26px] flex justify-end gap-[10px]">
-              
-                <button className="py-[12px] px-[24px] rounded-[8px] w-full font-[600] bg-[#4285F4] text-[#fff] dm-sans font-[16px]">Update Password</button>
-
-              </div>
-           
-           
 
           </div>
-         
+
         </div>
 
-      
       </div>
-    </div></>
+    </>
   );
 }

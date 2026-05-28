@@ -49,4 +49,11 @@ export const resendForgotOtp = (data) => {
 export const resetPasswordApi = (data) => {
   return userApi.post("/reset-password", data);
 };
+
+export const changePasswordApi = (data) => {
+  return userApi.post(
+    "/change-password",
+    data
+  );
+};
 export default userApi;

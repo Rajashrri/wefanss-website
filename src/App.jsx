@@ -42,11 +42,32 @@ import ExplorerFeed, {
 } from "./pages/ExploreFeed";
 import ElectionsContested from "./pages/ElectionsContested";
 import PositionsHeld from "./pages/PositionsHeld";
+// ================= AUTH CHECK =================
+const ProtectedRoute = ({
+  children,
+}) => {
 
+  const token =
+    localStorage.getItem("token");
+
+  return token
+    ? children
+    : <Navigate to="/login" />;
+};
 function App() {
+ const token =
+    localStorage.getItem("token");
+
+
+
+
   // ✅ YAHAN DALO
   const isLoggedIn = !!localStorage.getItem("token");
     console.log(isLoggedIn);
+
+
+
+
 
   return (
     <>
@@ -61,41 +82,51 @@ function App() {
               element={<EknathShinde />}
             />
 
+            {/* LOGIN */}
           <Route
-          path="/login"
-          element={
-            isLoggedIn ? (
-              <Navigate to="/user-dashboard" />
-            ) : (
-              <Login />
-            )
-          }
-        />
+            path="/login"
+            element={
+              token ? (
+                <Navigate
+                  to="/user-dashboard"
+                  replace
+                />
+              ) : (
+                <Login />
+              )
+            }
+          />
 
-        <Route
-          path="/register"
-          element={
-            isLoggedIn ? (
-              <Navigate to="/user-dashboard" />
-            ) : (
-              <Singup />
-            )
-          }
-        />
+          {/* REGISTER */}
+          <Route
+            path="/register"
+            element={
+              token ? (
+                <Navigate
+                  to="/user-dashboard"
+                  replace
+                />
+              ) : (
+                <Singup />
+              )
+            }
+          />
 
-        <Route
-          path="/user-dashboard"
-          element={
-            isLoggedIn ? (
-              <UserDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+          {/* OTP */}
+          <Route
+            path="/otp"
+            element={<Otp />}
+          />
 
-
-            <Route path="/otp" element={<Otp />} />
+          {/* DASHBOARD */}
+          <Route
+            path="/user-dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
                         <Route path="/forgototp" element={<ForgotOtp />} />
 
             <Route path="/forget-password" element={<ForgetPassword />} />
