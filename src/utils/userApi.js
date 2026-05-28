@@ -28,4 +28,10 @@ export const resendRegisterOtp = (data) => {
 export const loginUser = (data) => {
   return userApi.post("/login", data);
 };
+
+
+// Google Login API
+export const googleLoginUser = (data) => {
+  return userApi.post("/google-login", data);
+};
 export default userApi;

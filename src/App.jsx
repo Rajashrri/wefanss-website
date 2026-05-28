@@ -27,8 +27,9 @@ import ClaimProfile from "./pages/ClaimProfile";
 import About from "./pages/About";
 import SearchResult from "./pages/SearchResult";
 import Gallery from "./pages/Gallery";
-import NoSearcfound from "./component/NoSearcfound";
+import NoSearcfound from "./component/NoSearcfound"
 import Contact from "./pages/Contact";
+
 import ExplorerFeed, {
   Profilepage,
   FollowedCelebrities,

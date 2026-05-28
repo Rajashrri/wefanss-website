@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import FormHeading from "./FormHeading";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { loginUser } from "../../utils/userApi";
+import { loginUser,googleLoginUser  } from "../../utils/userApi";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Loginform = () => {
   const navigate = useNavigate();
@@ -11,6 +12,39 @@ const Loginform = () => {
     email: "",
     password: "",
   });
+
+  //google login
+
+ const handleSuccess = async (credentialResponse) => {
+  try {
+    const res = await googleLoginUser({
+      credential: credentialResponse.credential,
+    });
+
+    toast.success(res.data.message);
+
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+
+    window.location.href = "/profile";
+
+  } catch (error) {
+
+    const data = error?.response?.data;
+
+    if (data?.needRegister) {
+      toast.error("Please register first");
+      setTimeout(() => {
+        navigate("/register");
+      }, 1500);
+      return;
+    }
+
+    toast.error(
+      data?.message || "Google login failed"
+    );
+  }
+};
 
   const [errors, setErrors] = useState({});
 
@@ -205,16 +239,12 @@ const Loginform = () => {
             </Link>
           </div>
 
-          <Link
-            className="h-[72px] mt-8 flex gap-2 justify-center berlin items-center bg-[#F9FAFB] text-[#ADAEBC] text-[24px] rounded-[8px]"
-          >
-            Login with Google
-
-            <img
-              src="/google.svg"
-              alt=""
-            />
-          </Link>
+         <div className="mt-8 flex justify-center">
+  <GoogleLogin
+    onSuccess={handleSuccess}
+    onError={() => toast.error("Google Login Failed")}
+  />
+</div>
         </form>
       </div>
     </div>
