@@ -10,6 +10,9 @@ import Categories from "./pages/Categories";
 import Login from "./auth/Login";
 import Singup from "./auth/Singup";
 import Otp from "./auth/Otp";
+import ForgotOtp from "./auth/ForgotOtp";
+
+
 import ForgetPassword from "./auth/ForgetPassword";
 import ResetPassword from "./auth/ResetPassword";
 import Error from "./auth/Error";
@@ -93,6 +96,8 @@ function App() {
 
 
             <Route path="/otp" element={<Otp />} />
+                        <Route path="/forgototp" element={<ForgotOtp />} />
+
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
