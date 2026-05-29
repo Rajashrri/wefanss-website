@@ -58,7 +58,7 @@ const [followedCelebrities, setFollowedCelebrities] = useState([]);
     cardClass: "py-[70px]",
 
     slider: followedCelebrities.map((item) => ({
-      id: item?._id,
+_id: item?._id,
       name: item?.identityProfile?.name,
       img: item?.identityProfile?.image,
       gender: item?.personalDetails?.gender || "N/A",

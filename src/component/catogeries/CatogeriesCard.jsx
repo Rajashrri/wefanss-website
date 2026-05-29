@@ -22,6 +22,7 @@ const [follow, setFollow] = useState(false);  // false = not following
   // logged in user
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
+const celebrityId = data?._id || data?.id;
 
   // ================= FOLLOW CLICK =================
 
@@ -31,8 +32,6 @@ const handleFollow = async () => {
     navigate("/login");
     return;
   }
-
-  const celebrityId = data?.id; // ✅ FIXED
 
   // ================= UNFOLLOW =================
   if (follow) {
@@ -55,9 +54,9 @@ const handleFollow = async () => {
               toast.dismiss(t.id);
 
               try {
-              const res = await unfollowCelebrity(
+const res = await unfollowCelebrity(
   user?._id,
-  data?.id,
+  celebrityId,
   token
 );
 
@@ -67,9 +66,9 @@ const handleFollow = async () => {
                   refreshFollowed?.();
                 }
               } catch (err) {
-                console.log(err);
-                toast.error("Something went wrong");
-              }
+  console.log("FOLLOW ERROR:", err?.response?.data || err);
+  toast.error(err?.response?.data?.message || "Something went wrong");
+}
             }}
             className="px-3 py-1 bg-[#4285F4] text-white rounded"
           >
@@ -107,26 +106,27 @@ const handleFollow = async () => {
   // ================= CHECK ALREADY FOLLOWING =================
 
 const getFollowStatus = async () => {
+
+  if (!token || !user?._id || !celebrityId) return;
+
   try {
-    const res = await checkFollowStatus(user?._id, data?.id);
 
-    console.log("FOLLOW STATUS =>", res.data);
+    const response = await checkFollowStatus(
+      user?._id,
+      celebrityId
+    );
 
-    if (res.data?.isFollowing) {
-      setFollow(true);
-    } else {
-      setFollow(false);
-    }
+    console.log("FOLLOW STATUS =>", response.data);
+
+    setFollow(!!response?.data?.isFollowing);
+
   } catch (error) {
-    console.log("STATUS ERROR =>", error);
-    toast.error("Something went wrong");
+    console.log(error);
   }
 };
-
 useEffect(() => {
   getFollowStatus();
-}, [data]);
-
+}, [celebrityId]);
 
   // Close all popups helper
   const closeAll = () => {
