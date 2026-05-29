@@ -1,13 +1,132 @@
-import React, { useState } from 'react'
-import { Bookmark, Share } from "lucide-react";
-import { Link } from "react-router-dom";
-
-const CatogeriesCard = ({ data }) => {
-  const [shareLink, setShareLink] = useState(false);
+import React, { useEffect, useState } from "react";
+import { Bookmark, Share, Check } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {
+  createFollow,
+  checkFollowStatus,
+  unfollowCelebrity
+} from "../../utils/frontApi";
+const CatogeriesCard = ({ data, refreshFollowed }) => {
+    const [shareLink, setShareLink] = useState(false);
   const [saveCollection, setSaveCollection] = useState(false);
   const [createCollection, setCreateCollection] = useState(false);
-  const [follow, setFollow] = useState(true);
+const [follow, setFollow] = useState(false);  // false = not following
+  // true = following
+
+  const navigate = useNavigate();
+
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+  // logged in user
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+
+  // ================= FOLLOW CLICK =================
+
+const handleFollow = async () => {
+  if (!token || !user) {
+    toast.error("Please login first");
+    navigate("/login");
+    return;
+  }
+
+  const celebrityId = data?.id; // ✅ FIXED
+
+  // ================= UNFOLLOW =================
+  if (follow) {
+    toast.custom((t) => (
+      <div className="bg-white p-4 rounded-lg shadow-lg border w-[280px]">
+        <p className="text-sm font-medium">
+          Are you sure you want to unfollow?
+        </p>
+
+        <div className="flex justify-end gap-2 mt-3">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 bg-gray-200 rounded"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+
+              try {
+              const res = await unfollowCelebrity(
+  user?._id,
+  data?.id,
+  token
+);
+
+                if (res.data.success) {
+                  setFollow(false);
+                  toast.success("Unfollowed Successfully");
+                  refreshFollowed?.();
+                }
+              } catch (err) {
+                console.log(err);
+                toast.error("Something went wrong");
+              }
+            }}
+            className="px-3 py-1 bg-[#4285F4] text-white rounded"
+          >
+            Unfollow
+          </button>
+        </div>
+      </div>
+    ));
+
+    return;
+  }
+
+  // ================= FOLLOW =================
+  try {
+    const response = await createFollow(
+      {
+        celebrityId: celebrityId, // ✅ FIXED
+        userId: user?._id,
+      },
+      token
+    );
+
+    if (response.data.success) {
+      setFollow(true);
+      toast.success("Following Successfully");
+                        refreshFollowed?.();
+
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+
+  // ================= CHECK ALREADY FOLLOWING =================
+
+const getFollowStatus = async () => {
+  try {
+    const res = await checkFollowStatus(user?._id, data?.id);
+
+    console.log("FOLLOW STATUS =>", res.data);
+
+    if (res.data?.isFollowing) {
+      setFollow(true);
+    } else {
+      setFollow(false);
+    }
+  } catch (error) {
+    console.log("STATUS ERROR =>", error);
+    toast.error("Something went wrong");
+  }
+};
+
+useEffect(() => {
+  getFollowStatus();
+}, [data]);
+
 
   // Close all popups helper
   const closeAll = () => {
@@ -69,21 +188,39 @@ const CatogeriesCard = ({ data }) => {
       {/* ACTION BUTTONS (OUTSIDE LINK ✅) */}
       <div className="mt-3 flex items-center gap-[10px]">
 
-        {/* FOLLOW */}
-        <button
-          onClick={() => setFollow(!follow)}
-          className={`px-6 w-[172px] flex justify-center primary-font py-2 rounded-[24px] flex items-center gap-2 
-          ${follow ? "bg-[#4285F4] text-white" : "bg-white text-[#4285F4] border border-[#4285F4]"}`}
-        >
-          {follow ? "follow" : "following"}<svg className={` ${follow
-                                ? "block"
-                                : "hidden invisible"
-                                }`
-                            } width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 1V15M1 8H15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-        </button>
+   {/* FOLLOW BUTTON */}
 
+      <button
+  onClick={handleFollow}
+  className={`px-6 w-[172px] flex justify-center primary-font py-2 rounded-[24px] items-center gap-2
+
+  ${
+    follow
+      ? "bg-white text-[#4285F4] border border-[#4285F4]"
+      : "bg-[#4285F4] text-white"
+  }`}
+>
+  {follow ? "Following" : "Follow"}
+
+  {follow ? (
+    <Check size={16} />
+  ) : (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M8 1V15M1 8H15"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )}
+</button>
         {/* SAVE */}
         <button
           onClick={() => {

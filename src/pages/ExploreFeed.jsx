@@ -791,7 +791,7 @@ export function FollowedCelebrities() {
 
         {/* Center Scroll Area */}
         <div className="flex-1 h-full md:overflow-y-auto p-6 space-y-[50px]  no-scrollbar">
-          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">Followed Celebrities</h2>
+          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">Followed Celebrvbbities</h2>
           <div className="grid grid-cols-6 md:px-[50px] gap-[20px] h-fit">
             {
               actorsData.map((item)=>(

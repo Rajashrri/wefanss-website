@@ -77,6 +77,10 @@ export const getLatestListenByCelebrity = async (id) => {
   return frontApi.get(`/latest-listen/${id}`);
 };
 
+
+export const getProfession = async () => {
+  return await frontApi.get(`/profession`);
+};
 //watch all
 
 export const getWatchByCelebrity = (id) => {
@@ -118,5 +122,37 @@ export const getSeriesByCelebrityGenre = async (slug) => {
 };
 export const getFeaturedSeriesByCelebrity2 = (celebrityId) => {
   return frontApi.get(`/featured-series2/${celebrityId}`);
+};
+
+
+// ✅ create follow
+export const createFollow = (data, token) => {
+  return frontApi.post("/follow/create", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// ✅ check follow status
+export const checkFollowStatus = (userId, celebrityId) => {
+  return frontApi.get(`/follow/check/${userId}/${celebrityId}`);
+};
+
+export const unfollowCelebrity = (userId, celebrityId, token) => {
+  return frontApi.delete(
+    `/follow/unfollow/${userId}/${celebrityId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+// ================= FOLLOWED CELEBRITIES =================
+
+export const getFollowedCelebrities = (userId) => {
+  return frontApi.get(`/follow/followed/${userId}`);
 };
 export default frontApi;

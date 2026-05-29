@@ -1,146 +1,74 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import UserProfile from '../component/dashboardComp/UserProfile'
 import ViewedCelebritiesSlider from '../component/dashboardComp/ViewedCelebritiesSlider'
 import Collection from '../component/dashboardComp/Collection'
 import Card3 from '../component/card/Card3'
 import Button from '../component/Button'
-
+import { getFollowedCelebrities } from "../utils/frontApi";
 
 
 const UserDashboard = () => {
+
+const [followedCelebrities, setFollowedCelebrities] = useState([]);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // ================= FETCH FOLLOWED =================
+  const fetchFollowedCelebrities = async () => {
+    try {
+      if (!user?._id) return;
+
+      const response = await getFollowedCelebrities(user._id);
+
+      if (response.data.success) {
+        setFollowedCelebrities(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFollowedCelebrities();
+  }, []);
+
+  // ================= VIEWED DATA =================
   const ViewedCelebrities = {
-  title:"Recently Viewed Celebrities",
- slider:[
-        {
-    id: 1,
-    name: "Chris Evans",
-    gender: "Male",
-    language: ["English"],
-    age: 42,
-    totalMovies: 38,
-    totalAwards: 15,
-    img: "/catogary/cat1.jpg",
-  },
-  {
-    id: 2,
-    name: "Florence Pugh",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 38,
-    totalMovies: 30,
-    totalAwards: 25,
-     img: "/catogary/cat2.jpg",
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-  },
-        ]
-}
+    title: "Recently Viewed Celebrities",
+    slider: [
+      {
+        id: 1,
+        name: "Chris Evans",
+        gender: "Male",
+        language: ["English"],
+        age: 42,
+        totalMovies: 38,
+        totalAwards: 15,
+        img: "/catogary/cat1.jpg",
+      },
+    ],
+  };
+
+  // ================= FOLLOWED DATA (REAL API) =================
   const FollowedCelebrities = {
-  title:"Followed Celebrities",
-  btnlink:"/",
-    btnclass:"h-fit text-[20px] primary-font !font-[500] !px-[24px] !py-[10px]",
-  cardClass:"py-[70px]",
-  slider:[
-        {
-    id: 1,
-    name: "Chris Evans",
-    gender: "Male",
-    language: ["English"],
-    age: 42,
-    totalMovies: 38,
-    totalAwards: 15,
-    img: "/catogary/cat1.jpg",
-  },
-  {
-    id: 2,
-    name: "Florence Pugh",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 38,
-    totalMovies: 30,
-    totalAwards: 25,
-     img: "/catogary/cat2.jpg",
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-  },
-        ]
-}
+    title: "Followed Celebrities",
+    btnlink: "/",
+    btnclass:
+      "h-fit text-[20px] primary-font !font-[500] !px-[24px] !py-[10px]",
+    cardClass: "py-[70px]",
+
+    slider: followedCelebrities.map((item) => ({
+      id: item?._id,
+      name: item?.identityProfile?.name,
+      img: item?.identityProfile?.image,
+      gender: item?.personalDetails?.gender || "N/A",
+      language: item?.professionalIdentity?.languages || [],
+      age: item?.personalDetails?.age || "",
+      totalMovies: item?.analyticsEngagement?.totalMovies || 0,
+      totalAwards: item?.analyticsEngagement?.totalAwards || 0,
+      link: `/celebrity/${item?.identityProfile?.slug}`,
+    })),
+  };
   const Collectionbox = {
   title:"Followed Celebrities",
   btnlink:"/",
@@ -290,7 +218,10 @@ const UserDashboard = () => {
     <div className='bg-[#fff]'>
     <UserProfile/>
     <ViewedCelebritiesSlider data={ViewedCelebrities}/>
-    <ViewedCelebritiesSlider data={FollowedCelebrities}/>
+    <ViewedCelebritiesSlider
+  data={FollowedCelebrities}
+  refreshFollowed={fetchFollowedCelebrities}
+/>
     <Collection data={Collectionbox}/>
     <div className='max-w-[1352px] m-auto px-[20px] py-[30px] pt-0'>
           <div className="flex justify-between">
