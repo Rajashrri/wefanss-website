@@ -4,13 +4,13 @@ import ViewedCelebritiesSlider from '../component/dashboardComp/ViewedCelebritie
 import Collection from '../component/dashboardComp/Collection'
 import Card3 from '../component/card/Card3'
 import Button from '../component/Button'
-import { getFollowedCelebrities } from "../utils/frontApi";
+import { getFollowedCelebrities,getRecentViews } from "../utils/frontApi";
 
 
 const UserDashboard = () => {
 
 const [followedCelebrities, setFollowedCelebrities] = useState([]);
-
+const [recentViews, setRecentViews] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
   // ================= FETCH FOLLOWED =================
@@ -30,24 +30,52 @@ const [followedCelebrities, setFollowedCelebrities] = useState([]);
 
   useEffect(() => {
     fetchFollowedCelebrities();
+      fetchRecentViews();
+
   }, []);
 
+
+const fetchRecentViews = async () => {
+
+  try {
+
+    if (!user?._id) return;
+
+    const response = await getRecentViews(user._id);
+
+    if (response?.data?.success) {
+
+      const formatted = response.data.data.map((item) => ({
+        id: item?._id,
+        name: item?.identityProfile?.name,
+        img: item?.identityProfile?.image,
+        gender: item?.personalDetails?.gender || "N/A",
+        language:
+          item?.professionalIdentity?.languages || [],
+        age:
+          item?.personalDetails?.age || "",
+        totalMovies:
+          item?.analyticsEngagement?.totalMovies || 0,
+        totalAwards:
+          item?.analyticsEngagement?.totalAwards || 0,
+      }));
+
+      setRecentViews(formatted);
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
+
+
   // ================= VIEWED DATA =================
-  const ViewedCelebrities = {
-    title: "Recently Viewed Celebrities",
-    slider: [
-      {
-        id: 1,
-        name: "Chris Evans",
-        gender: "Male",
-        language: ["English"],
-        age: 42,
-        totalMovies: 38,
-        totalAwards: 15,
-        img: "/catogary/cat1.jpg",
-      },
-    ],
-  };
+const ViewedCelebrities = {
+  title: "Recently Viewed Celebrities",
+  slider: recentViews,
+};
 
   // ================= FOLLOWED DATA (REAL API) =================
   const FollowedCelebrities = {

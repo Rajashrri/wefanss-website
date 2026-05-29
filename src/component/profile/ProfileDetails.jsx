@@ -26,6 +26,7 @@ import {
   getLatestWatchByCelebrity,
   getLatestReadByCelebrity,
   getLatestListenByCelebrity, // ✅ add
+  addRecentView
 } from "../../utils/frontApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -208,6 +209,35 @@ export default function AkshayProfile() {
     profileimg: "",
     discription: "",
   });
+
+
+
+
+  const saveRecentView = async (celebrityId) => {
+  try {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    // login nahi hai to save mat karo
+    if (!user?._id || !token || !celebrityId) return;
+
+    await addRecentView(
+      {
+        userId: user._id,
+        celebrityId,
+      },
+      token
+    );
+
+    console.log("Recent View Saved");
+
+  } catch (error) {
+
+    console.log("Recent View Error", error);
+
+  }
+};
 
   const sidebarData = [
     {
@@ -483,6 +513,8 @@ export default function AkshayProfile() {
 
         isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
       });
+ // ✅ recent save
+    saveRecentView(item?._id);
 
       // ✅ fetch related personalities here
       if (item?._id) {

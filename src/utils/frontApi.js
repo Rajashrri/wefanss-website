@@ -160,6 +160,22 @@ export const getFollowedCelebritiesall = (userId) => {
   return frontApi.get(`/allfollowed/${userId}`);
 };
 
+// ================= RECENT VIEW =================
 
+export const addRecentView = (data, token) => {
+  return frontApi.post(
+    "/recent-view/add",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getRecentViews = (userId) => {
+  return frontApi.get(`/recent-view/${userId}`);
+};
 
 export default frontApi;
