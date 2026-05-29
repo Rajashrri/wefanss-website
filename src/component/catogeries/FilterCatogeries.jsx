@@ -54,37 +54,47 @@ const getCelebrities = async () => {
 
         console.log("professions", professions);
 
-        let profileLink = `/profiles/${item?.identityProfile?.slug || ""}`;
+    let profileLink = `/profiles/${item?.identityProfile?.slug || ""}`;
 
-        // ✅ only actor
-        if (
-          professions.includes("actor") &&
-          !professions.includes("politician")
-        ) {
-          profileLink = `/profile-actor/${
-            item?.identityProfile?.slug || ""
-          }`;
-        }
+// ✅ only actor / actors
+if (
+  (professions.includes("actor") ||
+    professions.includes("actors")) &&
+  !(
+    professions.includes("politician") ||
+    professions.includes("politicians")
+  )
+) {
+  profileLink = `/profile-actor/${
+    item?.identityProfile?.slug || ""
+  }`;
+}
 
-        // ✅ only politician
-        else if (
-          professions.includes("politician") &&
-          !professions.includes("actor")
-        ) {
-          profileLink = `/profile-politician/${
-            item?.identityProfile?.slug || ""
-          }`;
-        }
+// ✅ only politician / politicians
+else if (
+  (professions.includes("politician") ||
+    professions.includes("politicians")) &&
+  !(
+    professions.includes("actor") ||
+    professions.includes("actors")
+  )
+) {
+  profileLink = `/profile-politician/${
+    item?.identityProfile?.slug || ""
+  }`;
+}
 
-        // ✅ actor + politician both
-        else if (
-          professions.includes("actor") &&
-          professions.includes("politician")
-        ) {
-          profileLink = `/profiles/${
-            item?.identityProfile?.slug || ""
-          }`;
-        }
+// ✅ actor + politician both
+else if (
+  (professions.includes("actor") ||
+    professions.includes("actors")) &&
+  (professions.includes("politician") ||
+    professions.includes("politicians"))
+) {
+  profileLink = `/profiles/${
+    item?.identityProfile?.slug || ""
+  }`;
+}
 
         return {
           id: item._id || index,

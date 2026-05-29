@@ -52,7 +52,7 @@ const [followedCelebrities, setFollowedCelebrities] = useState([]);
   // ================= FOLLOWED DATA (REAL API) =================
   const FollowedCelebrities = {
     title: "Followed Celebrities",
-    btnlink: "/",
+    btnlink: "/followed-celebrities",
     btnclass:
       "h-fit text-[20px] primary-font !font-[500] !px-[24px] !py-[10px]",
     cardClass: "py-[70px]",
@@ -66,7 +66,61 @@ _id: item?._id,
       age: item?.personalDetails?.age || "",
       totalMovies: item?.analyticsEngagement?.totalMovies || 0,
       totalAwards: item?.analyticsEngagement?.totalAwards || 0,
-      link: `/celebrity/${item?.identityProfile?.slug}`,
+link: (() => {
+
+ const professions = (
+  item?.professionalIdentity?.professions || []
+).map((p) => p?.name?.toLowerCase());
+
+console.log("PROFESSIONS =>", professions);
+
+  let profileLink = `/profiles/${
+    item?.identityProfile?.slug || ""
+  }`;
+
+  // only actor
+  if (
+    (professions.includes("actor") ||
+      professions.includes("actors")) &&
+    !(
+      professions.includes("politician") ||
+      professions.includes("politicians")
+    )
+  ) {
+    profileLink = `/profile-actor/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  // only politician
+  else if (
+    (professions.includes("politician") ||
+      professions.includes("politicians")) &&
+    !(
+      professions.includes("actor") ||
+      professions.includes("actors")
+    )
+  ) {
+    profileLink = `/profile-politician/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  // both
+  else if (
+    (professions.includes("actor") ||
+      professions.includes("actors")) &&
+    (professions.includes("politician") ||
+      professions.includes("politicians"))
+  ) {
+    profileLink = `/profiles/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  return profileLink;
+
+})(),
     })),
   };
   const Collectionbox = {

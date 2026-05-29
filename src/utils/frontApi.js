@@ -155,4 +155,11 @@ export const unfollowCelebrity = (userId, celebrityId, token) => {
 export const getFollowedCelebrities = (userId) => {
   return frontApi.get(`/follow/followed/${userId}`);
 };
+
+export const getFollowedCelebritiesall = (userId) => {
+  return frontApi.get(`/allfollowed/${userId}`);
+};
+
+
+
 export default frontApi;

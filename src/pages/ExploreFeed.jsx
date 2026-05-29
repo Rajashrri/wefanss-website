@@ -6,8 +6,11 @@ import Card2 from "../component/card/Card2";
 import { NavLink } from "react-router-dom";
 import img12 from "../../public/feed/1.png"
 import toast from "react-hot-toast";
+import { getFollowedCelebritiesall } from "../utils/frontApi";
+
 import {
   changePasswordApi,
+  
 } from "../utils/userApi";
 
 
@@ -456,320 +459,118 @@ export function Profilepage() {
 
 
 export function FollowedCelebrities() {
-   const actorsData = [
-  {
-    id: 1,
-    name: "Chris Evans",
-    gender: "Male",
-    language: ["English"],
-    age: 42,
-    totalMovies: 38,
-    cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 15,
-    img: "/catogary/cat1.jpg",
-    link:"/profiles"
-  },
-  {
-    id: 2,
-    name: "Florence Pugh",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 38,
-    totalMovies: 30,
-    totalAwards: 25,
-     img: "/catogary/cat2.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },{
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
+  const [actorsData, setActorsData] = useState([]);
 
-      ];
+const user = JSON.parse(localStorage.getItem("user"));
+
+const fetchFollowedCelebrities = async () => {
+  try {
+
+    if (!user?._id) return;
+
+    const response = await getFollowedCelebritiesall(user?._id);
+
+    console.log("FOLLOWED =>", response.data);
+
+    if (response?.data?.success) {
+
+      const formattedData = response.data.data.map((item) => ({
+        _id: item?._id,
+
+        name: item?.identityProfile?.name,
+
+        gender: item?.personalDetails?.gender || "N/A",
+
+        language:
+          item?.professionalIdentity?.languages || [],
+
+        age:
+          item?.personalDetails?.age || "",
+
+        totalMovies:
+          item?.analyticsEngagement?.totalMovies || 0,
+
+        totalAwards:
+          item?.analyticsEngagement?.totalAwards || 0,
+
+        img:
+          item?.identityProfile?.image,
+
+link: (() => {
+
+ const professions = (
+  item?.professionalIdentity?.professions || []
+).map((p) => p?.name?.toLowerCase());
+
+console.log("PROFESSIONS =>", professions);
+
+  let profileLink = `/profiles/${
+    item?.identityProfile?.slug || ""
+  }`;
+
+  // only actor
+  if (
+    (professions.includes("actor") ||
+      professions.includes("actors")) &&
+    !(
+      professions.includes("politician") ||
+      professions.includes("politicians")
+    )
+  ) {
+    profileLink = `/profile-actor/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  // only politician
+  else if (
+    (professions.includes("politician") ||
+      professions.includes("politicians")) &&
+    !(
+      professions.includes("actor") ||
+      professions.includes("actors")
+    )
+  ) {
+    profileLink = `/profile-politician/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  // both
+  else if (
+    (professions.includes("actor") ||
+      professions.includes("actors")) &&
+    (professions.includes("politician") ||
+      professions.includes("politicians"))
+  ) {
+    profileLink = `/profiles/${
+      item?.identityProfile?.slug || ""
+    }`;
+  }
+
+  return profileLink;
+
+})(),
+
+        cardcalss:
+          "lg:col-span-1 md:col-span-2 sm:col-span-3 col-span-6",
+      }));
+
+      setActorsData(formattedData);
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
+
+useEffect(() => {
+
+  fetchFollowedCelebrities();
+
+}, []);
   
   return (<>
     <div className=''>
@@ -791,17 +592,21 @@ export function FollowedCelebrities() {
 
         {/* Center Scroll Area */}
         <div className="flex-1 h-full md:overflow-y-auto p-6 space-y-[50px]  no-scrollbar">
-          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">Followed Celebrvbbities</h2>
+          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">Followed Celebrities</h2>
           <div className="grid grid-cols-6 md:px-[50px] gap-[20px] h-fit">
             {
-              actorsData.map((item)=>(
-                <div className="md:col-span-2 sm:col-span-3 col-span-6">
-
-
-                <CatogeriesCard key={item.id} data={item} />
-                </div>
-              ))
-            }
+  actorsData.map((item) => (
+    <div
+      key={item._id}
+      className="md:col-span-2 sm:col-span-3 col-span-6"
+    >
+      <CatogeriesCard
+        data={item}
+        refreshFollowed={fetchFollowedCelebrities}
+      />
+    </div>
+  ))
+}
           </div>
          
         </div>
@@ -1139,15 +944,19 @@ export function CollectionsDetails() {
           <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] mb-[8px]">Collection 1</h2>
           <p className="text-center primary-font text-[16px] text-[#757575]">{actorsData.length} Celebrities</p>
           <div className="grid grid-cols-6 md:px-[50px] gap-[20px] h-fit">
-            {
-              actorsData.map((item)=>(
-                <div className="md:col-span-2 sm:col-span-3 col-span-6">
+           {
+  actorsData.map((item) => (
+    <div className="md:col-span-2 sm:col-span-3 col-span-6">
 
+      <CatogeriesCard
+        key={item._id || item.id}
+        data={item}
+        refreshFollowed={fetchFollowedCelebrities}
+      />
 
-                <CatogeriesCard key={item.id} data={item} />
-                </div>
-              ))
-            }
+    </div>
+  ))
+}
           </div>
          
         </div>
