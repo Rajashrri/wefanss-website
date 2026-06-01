@@ -7,12 +7,12 @@ import { NavLink,useParams  } from "react-router-dom";
 import img12 from "../../public/feed/1.png"
 import toast from "react-hot-toast";
 import { getFollowedCelebritiesall,getUserCollections,getCollectionDetails
-} from "../utils/frontApi";
+} from "../utils/userApi";
 
 import {
   changePasswordApi,
   
-} from "../utils/userApi";
+} from "../utils/userloginApi";
 
 
 const Sidebar = () => {

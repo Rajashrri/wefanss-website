@@ -22,7 +22,7 @@ const Card2 = ({data}) => {
         {/* Buttons */}
                 <div className="mt-4 flex justify-start items-center gap-[10px]">
                  
-                  <Link to={data.link} className="px-6 h-[42px] py-2 flex w-fit rounded-[24px] primary-font text-[16px] text-[#4285F4] border-[#4285F4] border items-center gap-2 bg-[#fff]">View Collection</Link>
+                  <Link to={`/collection-details/${data.link}`} className="px-6 h-[42px] py-2 flex w-fit rounded-[24px] primary-font text-[16px] text-[#4285F4] border-[#4285F4] border items-center gap-2 bg-[#fff]">View Collection</Link>
                 </div>
 
       </div>

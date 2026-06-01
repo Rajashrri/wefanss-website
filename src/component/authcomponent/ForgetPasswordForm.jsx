@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import FormHeading from "./FormHeading";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { forgotPasswordApi } from "../../utils/userApi";
+import { forgotPasswordApi } from "../../utils/userloginApi";
 
 const ForgetPasswordForm = () => {
   const [email, setEmail] = useState("");

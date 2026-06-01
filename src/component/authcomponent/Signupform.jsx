@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FormHeading from "./FormHeading";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../utils/userApi";
+import { registerUser } from "../../utils/userloginApi";
 import toast from "react-hot-toast";
 const Signupform = () => {
   const navigate = useNavigate();

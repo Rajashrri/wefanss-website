@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 import {
   verifyRegisterOtp,
   resendRegisterOtp,
-} from "../../utils/userApi";
+} from "../../utils/userloginApi";
 
 const Otpform = () => {
 

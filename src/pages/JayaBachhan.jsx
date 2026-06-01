@@ -30,9 +30,11 @@ import {
   getLatestListenByCelebrity,
   getFeaturedMoviesByCelebrity,
   getFeaturedSeriesByCelebrity,
-  addRecentView
 } from "../utils/frontApi";
-
+import {
+// ✅ add
+  addRecentView
+} from "../utils/userApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const getImageUrl = (path) => {

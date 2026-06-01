@@ -1,7 +1,7 @@
 import Button from '../Button'
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getSavedCountApi,getFollowedCountApi  } from "../../utils/frontApi";
+import { getSavedCountApi,getFollowedCountApi  } from "../../utils/userApi";
 const UserProfile = () => {
     const [followedCount, setFollowedCount] = useState(0);
 

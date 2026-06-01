@@ -3,7 +3,7 @@ import FormHeading from "./FormHeading";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import { resetPasswordApi } from "../../utils/userApi";
+import { resetPasswordApi } from "../../utils/userloginApi";
 
 const ResetPasswordForm = () => {
   const navigate = useNavigate();

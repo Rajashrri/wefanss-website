@@ -4,7 +4,7 @@ import ViewedCelebritiesSlider from '../component/dashboardComp/ViewedCelebritie
 import Collection from '../component/dashboardComp/Collection'
 import Card3 from '../component/card/Card3'
 import Button from '../component/Button'
-import { getFollowedCelebrities,getRecentViews,getHomeCollections } from "../utils/frontApi";
+import { getFollowedCelebrities,getRecentViews,getHomeCollections } from "../utils/userApi";
 
 const UserDashboard = () => {
 
@@ -175,7 +175,7 @@ const fetchCollections =
           response.data.data.map(
             (item) => ({
               id: item._id,
-
+   link: item.slug,
               collectionName:
                 item.name,
 

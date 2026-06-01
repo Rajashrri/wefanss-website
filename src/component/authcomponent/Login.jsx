@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import FormHeading from "./FormHeading";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { loginUser,googleLoginUser  } from "../../utils/userApi";
+import { loginUser,googleLoginUser  } from "../../utils/userloginApi";
 import { GoogleLogin } from "@react-oauth/google";
 
 const Loginform = () => {

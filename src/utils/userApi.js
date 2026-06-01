@@ -8,52 +8,70 @@ const userApi = axios.create({
   },
 });
 
-// ================= REGISTER =================
-export const registerUser = (data) => {
-  return userApi.post("/register", data);
-};
 
-// ================= VERIFY OTP =================
-export const verifyRegisterOtp = (data) => {
-  return userApi.post("/verify-register-otp", data);
+// -------------------------------------- user dashboard -------------------------------------------------------------------------------
+
+
+export const getSavedCountApi = (userId) => {
+  return userApi.get(
+    `/saved-count/${userId}`
+  );
 };
-export const resendRegisterOtp = (data) => {
-  return userApi.post(
-    "/resend-register-otp",
-    data
+  
+
+export const getFollowedCountApi = (userId) => {
+  return userApi.get(
+    `followed-count/${userId}`
   );
 };
 
-// ================= LOGIN =================
-export const loginUser = (data) => {
-  return userApi.post("/login", data);
+
+// ================= FOLLOWED CELEBRITIES =================
+
+export const getFollowedCelebrities = (userId) => {
+  return userApi.get(`/follow/followed/${userId}`);
 };
 
-
-// Google Login API
-export const googleLoginUser = (data) => {
-  return userApi.post("/google-login", data);
+export const getFollowedCelebritiesall = (userId) => {
+  return userApi.get(`/allfollowed/${userId}`);
 };
 
-export const forgotPasswordApi = (data) => {
-  return userApi.post("/forgot-password", data);
-};
-// ================= VERIFY FORGOT OTP =================
-export const verifyForgotOtp = (data) => {
-  return userApi.post("/verify-forgot-otp", data);
-};
-// ================= RESEND FORGOT OTP =================
-export const resendForgotOtp = (data) => {
-  return userApi.post("/resend-forgot-otp", data);
-};
-export const resetPasswordApi = (data) => {
-  return userApi.post("/reset-password", data);
-};
+// ================= RECENT VIEW =================
 
-export const changePasswordApi = (data) => {
+export const addRecentView = (data, token) => {
   return userApi.post(
-    "/change-password",
-    data
+    "/recent-view/add",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 };
+
+export const getRecentViews = (userId) => {
+  return userApi.get(`/recent-view/${userId}`);
+};
+
+export const getHomeCollections =
+  (userId) => {
+    return userApi.get(
+      `/collectionhome/${userId}`
+    );
+  };
+
+  export const getUserCollections = (
+  userId
+) => {
+  return userApi.get(
+    `allcollection/${userId}`
+  );
+};
+export const getCollectionDetails =
+  (slug) => {
+    return userApi.get(
+      `/collection-details/${slug}`
+    );
+  };
 export default userApi;

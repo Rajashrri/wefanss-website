@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import {
   verifyForgotOtp,
   resendForgotOtp,
-} from "../../utils/userApi";
+} from "../../utils/userloginApi";
 
 const ForgotOtpForm = () => {
   const navigate = useNavigate();
