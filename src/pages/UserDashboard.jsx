@@ -4,14 +4,17 @@ import ViewedCelebritiesSlider from '../component/dashboardComp/ViewedCelebritie
 import Collection from '../component/dashboardComp/Collection'
 import Card3 from '../component/card/Card3'
 import Button from '../component/Button'
-import { getFollowedCelebrities,getRecentViews } from "../utils/frontApi";
-
+import { getFollowedCelebrities,getRecentViews,getHomeCollections } from "../utils/frontApi";
 
 const UserDashboard = () => {
 
 const [followedCelebrities, setFollowedCelebrities] = useState([]);
 const [recentViews, setRecentViews] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
+
+const [collectionData, setCollectionData] =
+  useState([]);
+
 
   // ================= FETCH FOLLOWED =================
   const fetchFollowedCelebrities = async () => {
@@ -31,6 +34,7 @@ const [recentViews, setRecentViews] = useState([]);
   useEffect(() => {
     fetchFollowedCelebrities();
       fetchRecentViews();
+      fetchCollections();
 
   }, []);
 
@@ -151,47 +155,67 @@ console.log("PROFESSIONS =>", professions);
 })(),
     })),
   };
-  const Collectionbox = {
-  title:"Followed Celebrities",
-  btnlink:"/",
-   btnclass:"h-fit text-[20px] primary-font !font-[500] !px-[24px] !py-[10px]",
-  cardClass:"py-[70px] pt-[20px]",
-  slider:[
-        {
-    id: 1,
-    collectionName: "Collection 1",
-    dis: "24 Celebrities",
-    cardcalss:"md:w-[24%]",
- 
-     img: "/all.png",
-  },
-  {
-    id: 2,
-    collectionName: "Collection 2",
-    dis: "24 Celebrities",
-    cardcalss:"md:w-[24%]",
- 
-     img: "/all.png",
-  },
-  {
-    id: 3,
-   collectionName: "Collection 3",
-    dis: "24 Celebrities",
-    cardcalss:"md:w-[24%]",
- 
-     img: "/all.png",
-  },
-  {
-    id: 4,
-     collectionName: "Collection 4",
-    dis: "24 Celebrities",
-    cardcalss:"md:w-[24%]",
- 
-     img: "/all.png",
-  },
-  
-        ]
-}
+
+
+const fetchCollections =
+  async () => {
+
+    try {
+
+      const response =
+        await getHomeCollections(
+          user?._id
+        );
+
+      if (
+        response.data.success
+      ) {
+
+        const formatted =
+          response.data.data.map(
+            (item) => ({
+              id: item._id,
+
+              collectionName:
+                item.name,
+
+              dis: `${
+                item
+                  ?.celebrities
+                  ?.length || 0
+              } Celebrities`,
+
+              cardcalss:
+                "md:w-[24%]",
+
+              img: "/all.png",
+            })
+          );
+
+        setCollectionData(
+          formatted
+        );
+      }
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+const Collectionbox = {
+  title: "My Collections",
+
+  btnlink: "/my-collections",
+
+  btnclass:
+    "h-fit text-[20px] primary-font !font-[500] !px-[24px] !py-[10px]",
+
+  cardClass:
+    "py-[70px] pt-[20px]",
+
+  slider: collectionData,
+};
  const items= [
     {
       id: 1,

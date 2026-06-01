@@ -8,13 +8,22 @@ import {
   checkFollowStatus,
   unfollowCelebrity
 } from "../../utils/frontApi";
+import {
+  createCollectionApi,
+  getUserCollections,
+  saveToCollectionApi,
+} from "../../utils/collectionApi";
 const CatogeriesCard = ({ data, refreshFollowed }) => {
     const [shareLink, setShareLink] = useState(false);
   const [saveCollection, setSaveCollection] = useState(false);
   const [createCollection, setCreateCollection] = useState(false);
 const [follow, setFollow] = useState(false);  // false = not following
   // true = following
-
+const [collections, setCollections] =
+  useState([]);
+const [searchCollection, setSearchCollection] = useState("");
+const [collectionName, setCollectionName] =
+  useState("");
   const navigate = useNavigate();
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
@@ -103,6 +112,7 @@ const res = await unfollowCelebrity(
   }
 };
 
+
   // ================= CHECK ALREADY FOLLOWING =================
 
 const getFollowStatus = async () => {
@@ -128,6 +138,120 @@ useEffect(() => {
   getFollowStatus();
 }, [celebrityId]);
 
+const filteredCollections = collections.filter((item) =>
+  item.name
+    ?.toLowerCase()
+    .includes(searchCollection.toLowerCase())
+);
+
+const handleSearchCollection = () => {
+  // optional API call or console
+  console.log("Searching:", searchCollection);
+};
+const handleCreateCollection =
+  async () => {
+
+    try {
+
+      const response =
+        await createCollectionApi(
+          {
+            userId: user._id,
+
+            name: collectionName,
+
+            celebrityId:
+              data?._id || data?.id,
+          },
+          token
+        );
+
+      if (response.data.success) {
+
+        toast.success(
+          "Collection Created"
+        );
+
+        setCollectionName("");
+
+        setCreateCollection(false);
+
+        fetchCollections();
+      }
+
+    } catch (error) {
+
+      toast.error(
+        error?.response?.data
+          ?.message ||
+          "Something went wrong"
+      );
+    }
+  };
+
+
+  const handleSaveToCollection =
+  async (collectionId) => {
+
+    try {
+
+      const response =
+        await saveToCollectionApi(
+          {
+            collectionId,
+
+            celebrityId:
+              data?._id || data?.id,
+
+            userId: user?._id,
+          },
+          token
+        );
+
+      if (response.data.success) {
+
+        toast.success(
+          "Saved to collection"
+        );
+
+        setSaveCollection(false);
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      toast.error(
+        error?.response?.data
+          ?.message ||
+          "Something went wrong"
+      );
+    }
+  };
+const fetchCollections = async () => {
+
+  try {
+
+    if (!user?._id) return;
+
+    const response =
+      await getUserCollections(
+        user._id
+      );
+
+    if (response.data.success) {
+
+      setCollections(
+        response.data.data
+      );
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
   // Close all popups helper
   const closeAll = () => {
     setShareLink(false);
@@ -222,15 +346,28 @@ useEffect(() => {
   )}
 </button>
         {/* SAVE */}
-        <button
-          onClick={() => {
-            closeAll();
-            setSaveCollection(!saveCollection);
-          }}
-          className="px-4 h-[42px] rounded-[24px] bg-white border border-[#4285F4] flex items-center"
-        >
-          <Bookmark color="#4285F4" />
-        </button>
+      <button
+  onClick={() => {
+
+    if (!token || !user?._id) {
+
+      toast.error("Please login first");
+
+      navigate("/login");
+
+      return;
+    }
+
+    fetchCollections();
+
+    closeAll();
+
+    setSaveCollection(!saveCollection);
+  }}
+  className="px-4 h-[42px] rounded-[24px] bg-white border border-[#4285F4] flex items-center"
+>
+  <Bookmark color="#4285F4" />
+</button>
 
         {/* SHARE */}
         <button
@@ -298,45 +435,80 @@ useEffect(() => {
          <div className='pt-4 py-6 px-3'>
         <h3 className="text-[#1E1E1E] primary-font text-[14px] font-[500] text-center">Save</h3>
         <div className='relative mt-[12px]'>
-          <input
-            type="search"
-            placeholder='Search'
-            //   value={search}
+        <input
+  type="search"
+  placeholder="Search Collection"
+  value={searchCollection}
+  onChange={(e) =>
+    setSearchCollection(e.target.value)
+  }
+  className="bg-[#fff] h-[40px] w-full border border-[#D9D9D9] p-5 rounded-[24px] outline-none"
+/>
 
-            className='bg-[#fff] h-[40px] w-full border border-[#D9D9D9] p-5 rounded-[24px] outline-none'
-          />
-
-          <button className=' absolute top-[0px] right-[0px] z-20 px-[30px] text-[#FFFFFF] rounded-[100px] w-fit h-[43px] flex items-center justify-center'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M12.7998 12.7998L9.8998 9.8998M11.4665 6.13314C11.4665 9.07866 9.07866 11.4665 6.13314 11.4665C3.18762 11.4665 0.799805 9.07866 0.799805 6.13314C0.799805 3.18762 3.18762 0.799805 6.13314 0.799805C9.07866 0.799805 11.4665 3.18762 11.4665 6.13314Z" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
+          <button
+  onClick={handleSearchCollection}
+  className="absolute top-0 right-0 z-20 px-[30px] w-fit h-[43px] flex items-center justify-center"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+  >
+    <path
+      d="M12.7998 12.7998L9.8998 9.8998M11.4665 6.13314C11.4665 9.07866 9.07866 11.4665 6.13314 11.4665C3.18762 11.4665 0.799805 9.07866 0.799805 6.13314C0.799805 3.18762 3.18762 0.799805 6.13314 0.799805C9.07866 0.799805 11.4665 3.18762 11.4665 6.13314Z"
+      stroke="#1E1E1E"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</button>
         </div>
         <h4 className='mt-[12px] primary-font text-[#757575] text-[12px]'>All Collections</h4>
-        <ul className=" mt-[8px] flex flex-col gap-[8px]">
-          <li className="group">
-            <Link className="flex border border-[#fff] group-hover:border-[#4285F4] rounded-[8px] transition-all duration-300 bg-[#fff] p-1 w-full justify-between items-center" >
-              <h3 className="flex gap-2 primary-font text-[14px] font-[600] items-center"><img className='h-[48px] w-[48px] object-cover' src="/actor/profile.png" alt="" />
-                <span>Collection1</span></h3>
+      <ul className="mt-[8px] flex flex-col gap-[8px]">
 
-            </Link>
-          </li>
-          <li className="group">
-            <Link className="flex border border-[#fff] group-hover:border-[#4285F4] rounded-[8px] transition-all duration-300 bg-[#fff] p-1 w-full justify-between items-center" >
-              <h3 className="flex gap-2 primary-font text-[14px] font-[600] items-center"><img className='h-[48px] w-[48px] object-cover' src="/actor/profile.png" alt="" />
-                <span>Collection2</span></h3>
+  {filteredCollections.map((item) => (
 
-            </Link>
-          </li>
-          <li className="group">
-            <Link className="flex border border-[#fff] group-hover:border-[#4285F4] rounded-[8px] transition-all duration-300 bg-[#fff] p-1 w-full justify-between items-center" >
-              <h3 className="flex gap-2 primary-font text-[14px] font-[600] items-center"><img className='h-[48px] w-[48px] object-cover' src="/actor/profile.png" alt="" />
-                <span>Collection3</span></h3>
+    <li
+      key={item._id}
+      className="group"
+    >
 
-            </Link>
-          </li>
+      <button
+        onClick={() =>
+          handleSaveToCollection(
+            item._id
+          )
+        }
+        className="flex border border-[#fff] group-hover:border-[#4285F4] rounded-[8px] transition-all duration-300 bg-[#fff] p-1 w-full justify-between items-center"
+      >
 
-        </ul>
+        <h3 className="flex gap-2 primary-font text-[14px] font-[600] items-center">
+
+          <img
+            className="h-[48px] w-[48px] object-cover"
+            src="/actor/profile.png"
+            alt=""
+          />
+
+          <span>{item.name}</span>
+
+        </h3>
+
+      </button>
+
+    </li>
+  ))}
+
+    {/* No Result */}
+  {filteredCollections.length === 0 && (
+    <li className="text-center text-gray-500 py-3">
+      No Collection Found
+    </li>
+  )}
+</ul>
       </div>
 
       <button onClick={() => { setCreateCollection(!createCollection), setSaveCollection(!saveCollection) }} type="button" className='bg-[#4285F4] hover:cursor-pointer flex justify-center w-full p-2 items-center gap-[8px] text-[#fff] primary-font text-[16px] font-[600]' ><span className='bg-[#fff] block h-[40px] w-[40px] flex items-center justify-center rounded-[8px]'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -352,18 +524,24 @@ useEffect(() => {
 
         <h3 className="text-center text-sm font-medium">Enter Collection Name</h3>
 
-        <input
-          type="text"
-          placeholder="Name"
-          className="bg-[#fff] h-[40px] w-full border border-[#D9D9D9] p-5 rounded-[24px] outline-none mt-5"
-        />
+       <input
+  type="text"
+  placeholder="Name"
+  value={collectionName}
+  onChange={(e) =>
+    setCollectionName(
+      e.target.value
+    )
+  }
+  className="bg-[#fff] h-[40px] w-full border border-[#D9D9D9] p-5 rounded-[24px] outline-none mt-5"
+/>
 
-        <button
-          onClick={() => setCreateCollection(false)}
-          className="bg-[#4285F4] hover:cursor-pointer mt-[12px] rounded-[16px] flex justify-center w-full p-2 items-center gap-[8px] text-[#fff] primary-font text-[16px] font-[600]"
-        >
-          Create
-        </button>
+       <button
+  onClick={handleCreateCollection}
+  className="bg-[#4285F4] hover:cursor-pointer mt-[12px] rounded-[16px] flex justify-center w-full p-2 items-center gap-[8px] text-[#fff] primary-font text-[16px] font-[600]"
+>
+  Create
+</button>
       </div>
 
     </div>

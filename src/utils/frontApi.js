@@ -178,4 +178,37 @@ export const getRecentViews = (userId) => {
   return frontApi.get(`/recent-view/${userId}`);
 };
 
+export const getHomeCollections =
+  (userId) => {
+    return frontApi.get(
+      `/collectionhome/${userId}`
+    );
+  };
+
+  export const getUserCollections = (
+  userId
+) => {
+  return frontApi.get(
+    `allcollection/${userId}`
+  );
+};
+export const getCollectionDetails =
+  (slug) => {
+    return frontApi.get(
+      `/collection-details/${slug}`
+    );
+  };
+
+export const getSavedCountApi = (userId) => {
+  return frontApi.get(
+    `/saved-count/${userId}`
+  );
+};
+  
+
+export const getFollowedCountApi = (userId) => {
+  return frontApi.get(
+    `followed-count/${userId}`
+  );
+};
 export default frontApi;

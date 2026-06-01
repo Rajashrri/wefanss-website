@@ -140,7 +140,7 @@ function App() {
             />
             <Route path="/my-collections" element={<MyCollections />} />
             <Route
-              path="/collection-details"
+              path="/collection-details/:slug"
               element={<CollectionsDetails />}
             />
             <Route path="/change-password" element={<ChangePassword />} />

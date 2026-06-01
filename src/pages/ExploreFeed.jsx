@@ -3,10 +3,11 @@ import UserProfile from "../component/dashboardComp/UserProfile";
 import Button from "../component/Button";
 import CatogeriesCard from "../component/catogeries/CatogeriesCard";
 import Card2 from "../component/card/Card2";
-import { NavLink } from "react-router-dom";
+import { NavLink,useParams  } from "react-router-dom";
 import img12 from "../../public/feed/1.png"
 import toast from "react-hot-toast";
-import { getFollowedCelebritiesall } from "../utils/frontApi";
+import { getFollowedCelebritiesall,getUserCollections,getCollectionDetails
+} from "../utils/frontApi";
 
 import {
   changePasswordApi,
@@ -618,352 +619,245 @@ useEffect(() => {
 }
 
 export function MyCollections() {
-    const Collectionbox = {
-  title:"Followed Celebrities",
-  btnlink:"/",
-  cardClass:"py-[70px] pt-[20px]",
-  slider:[
-        {
-    id: 1,
-    collectionName: "Collection 1",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",  
-     img: "/all.png",
-  },
-  {
-    id: 2,
-    collectionName: "Collection 2",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
-    link:"/collection-details",
-     img: "/all.png",
-  },
-  {
-    id: 3,
-   collectionName: "Collection 3",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",
-     img: "/all.png",
-  },
-  {
-    id: 4,
-     collectionName: "Collection 4",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",
-     img: "/all.png",
-  },
-     {
-    id: 1,
-    collectionName: "Collection 1",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",
-     img: "/all.png",
-  },
-  {
-    id: 2,
-    collectionName: "Collection 2",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",
-     img: "/all.png",
-  },
-  {
-    id: 3,
-   collectionName: "Collection 3",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
- link:"/collection-details",
-     img: "/all.png",
-  },
-  {
-    id: 4,
-     collectionName: "Collection 4",
-    dis: "24 Celebrities",
-    cardcalss:"md:col-span-2 sm:col-span-3 col-span-6",
-    link:"/collection-details",
-     img: "/all.png",
-  },
-  
-        ]
-}
-
-  
-  return (<>
-    <div className=''>
-    <ul className='flex gap-2 px-6 py-2 bg-[#4285F4]'>
-      <li className='text-[#fff] ptimary-font text-[12px]'><a href="#!">Home</a></li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>/</li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>My Collections</li>
-    </ul>
+  const [collections, setCollections] = useState([]);
 
 
-  </div>
-      <div className=" md:h-screen bodyslide p-4 flex flex-col overflow-hidden ">
+
+
+const [collection, setCollection] =
+  useState(null);
+
+
+
+
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
+
+
+
+  const fetchCollections = async () => {
+    try {
+      if (!user?._id) return;
+
+      const response = await getUserCollections(
+        user._id
+      );
+
+      if (response?.data?.success) {
+       const formatted =
+  response.data.data.map((item) => ({
+    _id: item._id,
+    slug: item.slug,
+    collectionName: item.name,
+    dis: `${item?.celebrities?.length || 0} Celebrities`,
+    img: "/all.png",
+    cardcalss:
+      "md:col-span-2 sm:col-span-3 col-span-6",
+    link: `/collection-details/${item.slug}`,
+  }));
+
+        setCollections(formatted);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCollections();
     
+  },[]);
 
-      <div className="flex maomcontflex  flex-1 overflow-hidden">
-        <div className="">
-          <Sidebar />
-        </div>
-
-        {/* Center Scroll Area */}
-        <div className="flex-1 h-full md:overflow-y-auto md:p-6 pt-[36px] space-y-[50px]  no-scrollbar">
-          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">My Collections</h2>
-          <div className="grid grid-cols-6 md:px-[50px] paddmone gap-[20px] h-fit">
- {
-                      Collectionbox.slider.map((item)=>(
-                // <div className="md:col-span-2 sm:col-span-3 col-span-6">
-                   
-                        <Card2 data={item} />
-                    
-                // </div>
-                ))
-                    }
-
-           
-          </div>
-         
-        </div>
-
-      
+  return (
+    <>
+      {/* Top Bar */}
+      <div>
+        <ul className="flex gap-2 px-6 py-2 bg-[#4285F4]">
+          <li className="text-[#fff] text-[12px]">
+            Home
+          </li>
+          <li className="text-[#fff] text-[12px]">
+            /
+          </li>
+          <li className="text-[#fff] text-[12px]">
+            My Collections
+          </li>
+        </ul>
       </div>
-    </div></>
+
+      <div className="md:h-screen bodyslide p-4 flex flex-col overflow-hidden">
+        <div className="flex maomcontflex flex-1 overflow-hidden">
+
+          {/* Sidebar */}
+          <div>
+            <Sidebar />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 h-full md:overflow-y-auto p-6 no-scrollbar">
+
+            <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] md:mb-[50px] mb-[32px]">
+              My Collections
+            </h2>
+
+            {collections.length > 0 ? (
+              <div className="grid grid-cols-6 md:px-[50px] gap-[20px]">
+                {collections.map((item) => (
+                  <Card2
+                    key={item._id}
+                    data={item}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-[#757575] text-[18px]">
+                No Collections Found
+              </div>
+            )}
+
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
-
 export function CollectionsDetails() {
-   const actorsData = [
+  const { slug } = useParams();
 
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 5,
-    name: "Scarlett Johansson",
-    gender: "Female",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    totalAwards: 28,
-     img: "/catogary/cat3.jpg",
-      link:"/profiles"
-  },
-  {
-    id: 6,
-    name: "Chris Hemsworth",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat6.jpg",
-      link:"/profiles"
-  },
-   {
-    id: 3,
-    name: "Tom Hiddleston",
-    gender: "Male",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi"],
-    age: 58,
-    totalMovies: 45,
-    totalAwards: 40,
-      img: "/catogary/cat5.png",
-       link:"/profiles"
-  },
-  {
-    id: 4,
-    name: "Priyanka Chopra",
-    gender: "Female",
-     cardcalss:"lg:col-span-1 md:md:col-span-2 sm:col-span-3 col-span-6 col-span-4",
-    language: ["Hindi", "English"],
-    age: 41,
-    totalMovies: 35,
-    totalAwards: 28,
-     img: "/catogary/cat4.jpg",
-      link:"/profiles"
-  },
+  const [collectionDetails, setCollectionDetails] =
+    useState(null);
 
-      ];
-  
-  return (<>
-    <div className=''>
-    <ul className='flex gap-2 px-6 py-2 bg-[#4285F4]'>
-      <li className='text-[#fff] ptimary-font text-[12px]'><a href="#!">Home</a></li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>/</li>
-      <li className='text-[#fff] ptimary-font text-[12px]'>Collections Details</li>
-    </ul>
+  const [actorsData, setActorsData] =
+    useState([]);
 
+  const fetchCollectionDetails = async () => {
+    try {
+      const response =
+        await getCollectionDetails(slug);
 
-  </div>
-    <div className=" md:h-screen bodyslide p-4 flex flex-col overflow-hidden ">
-    
+      if (response?.data?.success) {
+        const data = response.data.data;
 
-      <div className="flex maomcontflex  flex-1 overflow-hidden">
-        <div className="">
+        setCollectionDetails(data);
+
+        const formattedCelebrities =
+          data?.celebrities?.map((item) => ({
+            _id: item?._id,
+            name: item?.identityProfile?.name,
+            gender:
+              item?.personalDetails?.gender ||
+              "N/A",
+            language:
+              item?.professionalIdentity
+                ?.languages || [],
+            age:
+              item?.personalDetails?.age ||
+              "",
+            totalMovies:
+              item?.analyticsEngagement
+                ?.totalMovies || 0,
+            totalAwards:
+              item?.analyticsEngagement
+                ?.totalAwards || 0,
+            img:
+              item?.identityProfile?.image,
+
+            link: (() => {
+              const professions = (
+                item?.professionalIdentity
+                  ?.professions || []
+              ).map((p) =>
+                p?.name?.toLowerCase()
+              );
+
+              let profileLink = `/profiles/${
+                item?.identityProfile?.slug || ""
+              }`;
+
+              if (
+                professions.includes(
+                  "actor"
+                ) &&
+                !professions.includes(
+                  "politician"
+                )
+              ) {
+                profileLink = `/profile-actor/${
+                  item?.identityProfile?.slug ||
+                  ""
+                }`;
+              } else if (
+                professions.includes(
+                  "politician"
+                ) &&
+                !professions.includes(
+                  "actor"
+                )
+              ) {
+                profileLink = `/profile-politician/${
+                  item?.identityProfile?.slug ||
+                  ""
+                }`;
+              }
+
+              return profileLink;
+            })(),
+          })) || [];
+
+        setActorsData(
+          formattedCelebrities
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (slug) {
+      fetchCollectionDetails();
+    }
+  }, [slug]);
+
+  return (
+    <>
+      <div className="md:h-screen bodyslide p-4 flex flex-col overflow-hidden">
+        <div className="flex maomcontflex flex-1 overflow-hidden">
+
           <Sidebar />
-        </div>
 
-        {/* Center Scroll Area */}
-        <div className="flex-1 h-full md:overflow-y-auto p-6 space-y-[50px]  no-scrollbar">
-          <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] mb-[8px]">Collection 1</h2>
-          <p className="text-center primary-font text-[16px] text-[#757575]">{actorsData.length} Celebrities</p>
-          <div className="grid grid-cols-6 md:px-[50px] gap-[20px] h-fit">
-           {
-  actorsData.map((item) => (
-    <div className="md:col-span-2 sm:col-span-3 col-span-6">
+          <div className="flex-1 h-full md:overflow-y-auto p-6 no-scrollbar">
 
-      <CatogeriesCard
-        key={item._id || item.id}
-        data={item}
-        refreshFollowed={fetchFollowedCelebrities}
-      />
+            <h2 className="text-center md:text-[48px] text-[36px] text-[#4285F4] berlin font-[400] mb-[8px]">
+              {collectionDetails?.name}
+            </h2>
 
-    </div>
-  ))
-}
+            <p className="text-center primary-font text-[16px] text-[#757575] mb-10">
+              {actorsData.length} Celebrities
+            </p>
+
+            <div className="grid grid-cols-6 md:px-[50px] gap-[20px]">
+
+              {actorsData.map((item) => (
+                <div
+                  key={item._id}
+                  className="md:col-span-2 sm:col-span-3 col-span-6"
+                >
+                  <CatogeriesCard
+                    data={item}
+                  />
+                </div>
+              ))}
+
+            </div>
+
           </div>
-         
         </div>
-
-      
       </div>
-    </div></>
+    </>
   );
 }
 
