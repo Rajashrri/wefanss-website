@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import CelebritySlider from "../component/catogeries/CelebritySlider";
 import FilterCatogeries from "../component/catogeries/FilterCatogeries";
 import Pagination from "../component/Pagination";
+import { useParams } from "react-router-dom";
 
 const Categories = () => {
   useEffect(() => {
@@ -10,6 +11,9 @@ const Categories = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { slug } = useParams();
+
+
 
   return (
     <>
@@ -19,7 +23,13 @@ const Categories = () => {
           <li className="text-white text-[12px]">/</li>
           <li className="text-white text-[12px]">Celebrites</li>
           <li className="text-white text-[12px]">/</li>
-          <li className="text-white text-[12px]">Actors</li>
+          <li className="text-white text-[12px]"><li className="text-white text-[12px]">
+  {slug === "actor" || slug === "actors"
+    ? "Actor"
+    : slug === "politician" || slug === "politicians"
+    ? "Politician"
+    : slug}
+</li></li>
         </ul>
       </div>
 

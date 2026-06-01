@@ -740,7 +740,7 @@ saveRecentView(item?._id);
           <li className="text-[#fff] ptimary-font text-[12px]">/</li>
           <li className="text-[#fff] ptimary-font text-[12px]">Celebrites</li>
           <li className="text-[#fff] ptimary-font text-[12px]">/</li>
-          <li className="text-[#fff] ptimary-font text-[12px]">Actors</li>
+          <li className="text-[#fff] ptimary-font text-[12px]">Politician</li>
           <li className="text-[#fff] ptimary-font text-[12px]">/</li>
           <li className="text-[#fff] ptimary-font text-[12px]">
             {ActorData?.Name || ""}
