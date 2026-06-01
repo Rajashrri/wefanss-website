@@ -656,7 +656,7 @@ const [collection, setCollection] =
     img: "/all.png",
     cardcalss:
       "md:col-span-2 sm:col-span-3 col-span-6",
-    link: `/collection-details/${item.slug}`,
+    link: item.slug,
   }));
 
         setCollections(formatted);
