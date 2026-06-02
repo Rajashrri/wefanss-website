@@ -33,6 +33,47 @@ const [collectionName, setCollectionName] =
   const token = localStorage.getItem("token");
 const celebrityId = data?._id || data?.id;
 
+
+
+//share
+
+const celebrityUrl = `${window.location.origin}${data.link}`;
+
+const handleShare = (platform) => {
+  const encodedUrl = encodeURIComponent(celebrityUrl);
+  const encodedTitle = encodeURIComponent(data.name);
+
+  let shareUrl = "";
+
+  switch (platform) {
+    case "facebook":
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+      break;
+
+    case "twitter":
+      shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+      break;
+
+    case "linkedin":
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+      break;
+
+    case "whatsapp":
+      shareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
+      break;
+
+    case "copy":
+      navigator.clipboard.writeText(celebrityUrl);
+      toast.success("Link copied");
+      return;
+
+    default:
+      return;
+  }
+
+  window.open(shareUrl, "_blank", "width=600,height=500");
+};
+
   // ================= FOLLOW CLICK =================
 
 const handleFollow = async () => {
@@ -389,39 +430,59 @@ const fetchCollections = async () => {
   <ul className="mt-5 flex flex-wrap gap-[10px]">
 
         <li className="group">
-          <Link className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center" >
-            <img src="/share/Facebook.png" alt="" />
-            <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-              <span>Facebook</span></h3>
-          </Link>
+         <Link
+  onClick={() => handleShare("facebook")}
+  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+>
+  <img src="/share/Facebook.png" alt="" />
+  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+    <span>Facebook</span>
+  </h3>
+</Link>
         </li>
         <li className="group">
-          <Link className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center" >
-            <img src="/share/Twitter.png" className='h-[24px] w-[24px]' alt="" />
-            <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-              <span>X</span></h3>
-          </Link>
+        <Link
+  onClick={() => handleShare("twitter")}
+  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+>
+  <img src="/share/Twitter.png" className="h-[24px] w-[24px]" alt="" />
+  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+    <span>X</span>
+  </h3>
+</Link>
         </li>
         <li className="group">
-          <Link className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center" >
-            <img src="/share/Linkedin.png" alt="" />
-            <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-              <span>Linkedin</span></h3>
-          </Link>
+         <Link
+  onClick={() => handleShare("linkedin")}
+  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+>
+  <img src="/share/Linkedin.png" alt="" />
+  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+    <span>Linkedin</span>
+  </h3>
+</Link>
         </li>
         <li className="group">
-          <Link className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center" >
-            <img src="/share/Whatsapp.png" alt="" />
-            <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-              <span>Whatsapp</span></h3>
-          </Link>
+         <Link
+  onClick={() => handleShare("whatsapp")}
+  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+>
+  <img src="/share/Whatsapp.png" alt="" />
+  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+    <span>Whatsapp</span>
+  </h3>
+</Link>
         </li>
         <li className="group">
-          <Link className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center" >
-            <img src="/share/copy.svg" alt="" />
-            <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-              <span>Copy Link</span></h3>
-          </Link>
+        <Link
+  onClick={() => handleShare("copy")}
+  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+>
+  <img src="/share/copy.svg" alt="" />
+  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+    <span>Copy Link</span>
+  </h3>
+</Link>
         </li>
 
       </ul>
