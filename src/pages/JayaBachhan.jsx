@@ -32,8 +32,8 @@ import {
   getFeaturedSeriesByCelebrity,
 } from "../utils/frontApi";
 import {
-// ✅ add
-  addRecentView
+  // ✅ add
+  addRecentView,
 } from "../utils/userApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -211,7 +211,7 @@ export default function JayaBachhan() {
     Biography: "", // ✅ add
     Roles: [],
     gallery: [],
-
+    slug: "",
     Rank: "",
     Languages: [],
     BirthDate: "",
@@ -220,32 +220,27 @@ export default function JayaBachhan() {
     discription: "",
   });
 
-  
   const saveRecentView = async (celebrityId) => {
-  try {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
+      // login nahi hai to save mat karo
+      if (!user?._id || !token || !celebrityId) return;
 
-    // login nahi hai to save mat karo
-    if (!user?._id || !token || !celebrityId) return;
+      await addRecentView(
+        {
+          userId: user._id,
+          celebrityId,
+        },
+        token,
+      );
 
-    await addRecentView(
-      {
-        userId: user._id,
-        celebrityId,
-      },
-      token
-    );
-
-    console.log("Recent View Saved");
-
-  } catch (error) {
-
-    console.log("Recent View Error", error);
-
-  }
-};
+      console.log("Recent View Saved");
+    } catch (error) {
+      console.log("Recent View Error", error);
+    }
+  };
   const sidebarData = [
     {
       id: 1,
@@ -281,7 +276,7 @@ export default function JayaBachhan() {
       id: 2,
       type: "hitSongs",
       title: "Featured Movies",
-          link: `/movies/${slug}`,
+      link: `/movies/${slug}`,
       items: featuredMovies.map((movie) => ({
         id: movie._id,
         name: movie.title,
@@ -294,7 +289,7 @@ export default function JayaBachhan() {
       id: 3,
       type: "hitSongs",
       title: "Featured Series",
-                link: `/webseries/${slug}`,
+      link: `/webseries/${slug}`,
       items: featuredSeries.map((series) => ({
         id: series._id,
         name: series.title,
@@ -334,7 +329,7 @@ export default function JayaBachhan() {
       id: 5,
       type: "Elections",
       title: "Positions Held",
-            link: `/positions-held/${slug}`,
+      link: `/positions-held/${slug}`,
 
       items: possitionItems.slice(0, 3).map((item, index) => ({
         id: item._id || index,
@@ -539,6 +534,7 @@ export default function JayaBachhan() {
         title: "Personal Details",
         type: "personalDetails",
         Name: item?.identityProfile?.name || "",
+        slug: item?.identityProfile?.slug || "",
         gallery: item?.identityProfile?.gallery || [],
         Biography: item?.identityProfile?.biography || "",
         // ✅ role ki jagah profession show karo
@@ -591,7 +587,7 @@ export default function JayaBachhan() {
 
         isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
       });
-saveRecentView(item?._id);
+      saveRecentView(item?._id);
       // ✅ fetch related personalities here
       if (item?._id) {
         fetchRelatedPersonalities(item._id);
@@ -767,9 +763,9 @@ saveRecentView(item?._id);
           <li className="text-[#fff] ptimary-font text-[12px]">Celebrites</li>
           <li className="text-[#fff] ptimary-font text-[12px]">/</li>
           <li className="text-[#fff] ptimary-font text-[12px]">Actor</li>
-                    <li className="text-[#fff] ptimary-font text-[12px]">/</li>
+          <li className="text-[#fff] ptimary-font text-[12px]">/</li>
 
-                    <li className="text-[#fff] ptimary-font text-[12px]">Politician</li>
+          <li className="text-[#fff] ptimary-font text-[12px]">Politician</li>
 
           <li className="text-[#fff] ptimary-font text-[12px]">/</li>
           <li className="text-[#fff] ptimary-font text-[12px]">

@@ -30,8 +30,8 @@ import {
   getLatestListenByCelebrity,
 } from "../utils/frontApi";
 import {
-// ✅ add
-  addRecentView
+  // ✅ add
+  addRecentView,
 } from "../utils/userApi";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -234,7 +234,7 @@ export default function EknathShinde() {
     Biography: "", // ✅ add
     Roles: [],
     gallery: [],
-
+    slug: "",
     Rank: "",
     Languages: [],
     BirthDate: "",
@@ -243,33 +243,27 @@ export default function EknathShinde() {
     discription: "",
   });
 
-
-  
   const saveRecentView = async (celebrityId) => {
-  try {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
+      // login nahi hai to save mat karo
+      if (!user?._id || !token || !celebrityId) return;
 
-    // login nahi hai to save mat karo
-    if (!user?._id || !token || !celebrityId) return;
+      await addRecentView(
+        {
+          userId: user._id,
+          celebrityId,
+        },
+        token,
+      );
 
-    await addRecentView(
-      {
-        userId: user._id,
-        celebrityId,
-      },
-      token
-    );
-
-    console.log("Recent View Saved");
-
-  } catch (error) {
-
-    console.log("Recent View Error", error);
-
-  }
-};
+      console.log("Recent View Saved");
+    } catch (error) {
+      console.log("Recent View Error", error);
+    }
+  };
   const sidebarData = [
     {
       id: 1,
@@ -527,6 +521,8 @@ export default function EknathShinde() {
         title: "Personal Details",
         type: "personalDetails",
         Name: item?.identityProfile?.name || "",
+        slug: item?.identityProfile?.slug || "",
+
         gallery: item?.identityProfile?.gallery || [],
         Biography: item?.identityProfile?.biography || "",
         // ✅ role ki jagah profession show karo
@@ -579,7 +575,7 @@ export default function EknathShinde() {
 
         isCareerOngoing: item?.professionalIdentity?.isCareerOngoing || false,
       });
-saveRecentView(item?._id);
+      saveRecentView(item?._id);
       // ✅ fetch related personalities here
       if (item?._id) {
         fetchRelatedPersonalities(item._id);

@@ -206,7 +206,7 @@ export default function AkshayProfile() {
     Biography: "", // ✅ add
     Roles: [],
     gallery: [],
-
+slug:"",
     Rank: "",
     Languages: [],
     BirthDate: "",
@@ -466,6 +466,7 @@ export default function AkshayProfile() {
         title: "Personal Details",
         type: "personalDetails",
         Name: item?.identityProfile?.name || "",
+         slug: item?.identityProfile?.slug || "",
         gallery: item?.identityProfile?.gallery || [],
         Biography: item?.identityProfile?.biography || "",
         // ✅ role ki jagah profession show karo
