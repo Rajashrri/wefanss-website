@@ -52,7 +52,6 @@ const getCelebrities = async () => {
             p?.name?.toLowerCase()
           ) || [];
 
-        console.log("professions", professions);
 
     let profileLink = `/profiles/${item?.identityProfile?.slug || ""}`;
 

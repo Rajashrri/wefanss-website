@@ -167,7 +167,6 @@ const getFollowStatus = async () => {
       celebrityId
     );
 
-    console.log("FOLLOW STATUS =>", response.data);
 
     setFollow(!!response?.data?.isFollowing);
 
@@ -187,7 +186,6 @@ const filteredCollections = collections.filter((item) =>
 
 const handleSearchCollection = () => {
   // optional API call or console
-  console.log("Searching:", searchCollection);
 };
 const handleCreateCollection =
   async () => {

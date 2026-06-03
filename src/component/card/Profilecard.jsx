@@ -36,10 +36,7 @@ const Profilecard = ({ ActorData, refreshFollowed }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const celebrityId = ActorData?._id || ActorData?.id;
-  console.log("celebrityId", celebrityId);
-
-  console.log("ActorData", ActorData);
-  console.log("slug", ActorData.slug);
+  
 
   //share
 
@@ -78,7 +75,6 @@ const Profilecard = ({ ActorData, refreshFollowed }) => {
     const encodedTitle = encodeURIComponent(
       ActorData?.identityProfile?.name || "",
     );
-    console.log("name", ActorData.Name);
 
     let shareUrl = "";
 
@@ -196,7 +192,6 @@ const Profilecard = ({ ActorData, refreshFollowed }) => {
     try {
       const response = await checkFollowStatus(user?._id, celebrityId);
 
-      console.log("FOLLOW STATUS =>", response.data);
 
       setFollow(!!response?.data?.isFollowing);
     } catch (error) {
@@ -213,7 +208,6 @@ const Profilecard = ({ ActorData, refreshFollowed }) => {
 
   const handleSearchCollection = () => {
     // optional API call or console
-    console.log("Searching:", searchCollection);
   };
   const handleCreateCollection = async () => {
     try {
