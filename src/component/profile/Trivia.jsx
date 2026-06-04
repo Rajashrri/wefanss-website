@@ -121,7 +121,7 @@ const Trivia = () => {
                   setSelected(item);
                   setOpen(false);
                 }}
-                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-center cursor-pointer rounded-[8px]"
+                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-left cursor-pointer rounded-[8px]"
               >
                 {item}
               </li>
