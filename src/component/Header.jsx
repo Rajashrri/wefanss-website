@@ -48,9 +48,9 @@ const handleLogout = () => {
             to={`/${item.url}`}
           >
             {item.name === "Actor"
-              ? "Actors"
+              ? "Actor"
               : item.name === "Politician"
-              ? "Politicians"
+              ? "Politician"
               : item.name}
           </Link>
         </li>
