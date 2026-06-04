@@ -488,7 +488,7 @@ font-size: 200px;
 .catogeryslider .swiper-slide.swiper-slide-prev{}
 
 .viewedcelebritiesslider {
-  overflow: auto;
+  overflow: visible !important;
 }
 @media (max-width:1230px) {
   .catslider h1{
