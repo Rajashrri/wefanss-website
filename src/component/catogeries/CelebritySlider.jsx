@@ -30,39 +30,35 @@ export default function CelebritySlider({ data, refreshFollowed }) {
   const [slides, setSlides] = useState([]);
   const [followStatus, setFollowStatus] = useState({});
   const { slug } = useParams();
-const getProfileLink = (item) => {
-  const professions =
-    item?.professionalIdentity?.professions?.map((p) =>
-      p?.name?.toLowerCase()
-    ) || [];
+  const getProfileLink = (item) => {
+    const professions =
+      item?.professionalIdentity?.professions?.map((p) =>
+        p?.name?.toLowerCase(),
+      ) || [];
 
-  // only actor
-  if (
-    (professions.includes("actor") ||
-      professions.includes("actors")) &&
-    !(
-      professions.includes("politician") ||
-      professions.includes("politicians")
-    )
-  ) {
-    return `/profile-actor/${item?.identityProfile?.slug || ""}`;
-  }
+    // only actor
+    if (
+      (professions.includes("actor") || professions.includes("actors")) &&
+      !(
+        professions.includes("politician") ||
+        professions.includes("politicians")
+      )
+    ) {
+      return `/profile-actor/${item?.identityProfile?.slug || ""}`;
+    }
 
-  // only politician
-  if (
-    (professions.includes("politician") ||
-      professions.includes("politicians")) &&
-    !(
-      professions.includes("actor") ||
-      professions.includes("actors")
-    )
-  ) {
-    return `/profile-politician/${item?.identityProfile?.slug || ""}`;
-  }
+    // only politician
+    if (
+      (professions.includes("politician") ||
+        professions.includes("politicians")) &&
+      !(professions.includes("actor") || professions.includes("actors"))
+    ) {
+      return `/profile-politician/${item?.identityProfile?.slug || ""}`;
+    }
 
-  // actor + politician OR default
-  return `/profiles/${item?.identityProfile?.slug || ""}`;
-};
+    // actor + politician OR default
+    return `/profiles/${item?.identityProfile?.slug || ""}`;
+  };
   // logged in user
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
@@ -77,17 +73,12 @@ const getProfileLink = (item) => {
   const navigate = useNavigate();
   //share
 
+  const handleShare = (platform, item) => {
+    const profileLink = getProfileLink(item);
 
-const handleShare = (platform, item) => {
-      const profileLink = getProfileLink(item);
-
-  const celebrityUrl =
-    `${window.location.origin}${profileLink}`;
-  const encodedUrl = encodeURIComponent(celebrityUrl);
-  const encodedTitle = encodeURIComponent(
-    item?.identityProfile?.name || ""
-  );
-
+    const celebrityUrl = `${window.location.origin}${profileLink}`;
+    const encodedUrl = encodeURIComponent(celebrityUrl);
+    const encodedTitle = encodeURIComponent(item?.identityProfile?.name || "");
 
     let shareUrl = "";
 
@@ -537,19 +528,20 @@ const handleShare = (platform, item) => {
                         </h3>
                         <ul className="mt-5 flex flex-wrap gap-[10px]">
                           <li className="group">
-                           <button
-  type="button"
-  onClick={() => handleShare("facebook", item)}
-  className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
->
-  <img src="/share/Facebook.png" alt="" />
-  <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
-    <span>Facebook</span>
-  </h3>
-</button>
+                            <button
+                              type="button"
+                              onClick={() => handleShare("facebook", item)}
+                              className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
+                            >
+                              <img src="/share/Facebook.png" alt="" />
+                              <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
+                                <span>Facebook</span>
+                              </h3>
+                            </button>
                           </li>
                           <li className="group">
-                            <Link
+                            <button
+                              type="button"
                               onClick={() => handleShare("twitter", item)}
                               className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
                             >
@@ -561,10 +553,11 @@ const handleShare = (platform, item) => {
                               <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
                                 <span>X</span>
                               </h3>
-                            </Link>
+                            </button>
                           </li>
                           <li className="group">
-                            <Link
+                            <button
+                              type="button"
                               onClick={() => handleShare("linkedin", item)}
                               className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
                             >
@@ -572,11 +565,11 @@ const handleShare = (platform, item) => {
                               <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
                                 <span>Linkedin</span>
                               </h3>
-                            </Link>
+                            </button>{" "}
                           </li>
                           <li className="group">
-                         <button
-  type="button"
+                            <button
+                              type="button"
                               onClick={() => handleShare("whatsapp", item)}
                               className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
                             >
@@ -584,10 +577,11 @@ const handleShare = (platform, item) => {
                               <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
                                 <span>Whatsapp</span>
                               </h3>
-                          </button>
+                            </button>
                           </li>
                           <li className="group">
-                            <Link
+                            <button
+                              type="button"
                               onClick={() => handleShare("copy", item)}
                               className="flex flex-col transition-all duration-300 group-hover:bg-[#F4FBFF] p-2 w-full justify-between items-center"
                             >
@@ -595,7 +589,7 @@ const handleShare = (platform, item) => {
                               <h3 className="flex text-[8px] mt-[6px] gap-2 primary-font font-[500] items-center">
                                 <span>Copy Link</span>
                               </h3>
-                            </Link>
+                            </button>{" "}
                           </li>
                         </ul>
                       </div>
