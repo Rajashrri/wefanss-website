@@ -61,7 +61,7 @@ const handleLogout = () => {
         </ul>
         <div className="lg:w-[200px] flex justify-end">
 
-      {isLoggedIn ? (
+      {/* {isLoggedIn ? (
         <button
           onClick={handleLogout}
           className="bg-[#0F4F72] text-white px-6 h-[48px] rounded-[8px]"
@@ -74,13 +74,41 @@ const handleLogout = () => {
           btnclass=""
           btntext="Login"
         />
-      )}
+      )} */}
 
-      <img
+      {/* <img
         src="../menu.svg"
         className="md:hidden block ml-3"
         alt=""
-      />
+      /> */}
+      <div className="relative group cursor-pointer">
+        <img
+          src="../../public/dash-pro.png"
+          className="block ml-3 h-12"
+          alt=""
+        />
+
+        <div className="absolute right-[-80%] min-w-[200px] top-[60px] bg-white p-8 z-50 opacity-0 invisible translate-y-[-20px] transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+          <ul className="text-center">
+            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3"><a href="">My Profile</a></li>
+            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3">
+               {isLoggedIn ? (
+            <a
+              onClick={handleLogout}
+              
+            >
+              Logout
+            </a>
+          ) : (
+            <a
+              href="/login"
+            >Login</a>
+          )} 
+            </li>
+            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3"><a href="">User Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
       </div>
