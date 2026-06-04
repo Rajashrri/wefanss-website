@@ -45,7 +45,7 @@ const handleLogout = () => {
         <li key={item._id}>
           <Link
             className="primary-font text-[16px] font-[500] text-[#1E1E1E]"
-            to={`/${item.url}`}
+            to={`/${item.slug}`}
           >
             {item.name === "Actor"
               ? "Actor"
