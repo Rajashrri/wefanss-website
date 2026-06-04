@@ -489,7 +489,7 @@ const fetchCollections = async () => {
 
     
       <div className={`absolute z-[111] rounded-[16px] overflow-hidden pt-5 left-0 top-[100%] mt-2 w-[280px] bg-[#F4FBFF]  rounded-[12px] shadow transition-all duration-300
-        ${saveCollection ? "opacity-100 block translate-y-0" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
+        ${saveCollection ? "opacity-100 block translate-y-[-100%]" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
 
          <div className='pt-4 py-6 px-3'>
         <h3 className="text-[#1E1E1E] primary-font text-[14px] font-[500] text-center">Save</h3>
@@ -579,7 +579,7 @@ const fetchCollections = async () => {
 
    
       <div className={`absolute z-[111] left-0 top-[100%] mt-2 w-[280px] bg-[#F4FBFF] p-4 rounded-[12px] shadow transition-all duration-300
-        ${createCollection ? "opacity-100 block translate-y-0" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
+        ${createCollection ? "opacity-100 block translate-y-[-100%]" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
 
         <h3 className="text-center text-sm font-medium">Enter Collection Name</h3>
 
