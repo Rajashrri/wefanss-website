@@ -422,7 +422,7 @@ const fetchCollections = async () => {
 
    
       <div className={`absolute z-[111] left-0 top-[100%] mt-2 w-[260px] bg-white p-4 rounded-[12px] shadow transition-all duration-300
-        ${shareLink ? "opacity-100 block translate-y-0" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
+        ${shareLink ? "opacity-100 block translate-y-[-100%]" : "opacity-0 hidden -translate-y-3 pointer-events-none"}`}>
 
         <h3 className="text-center text-sm font-medium">Share to</h3>
   <ul className="mt-5 flex flex-wrap gap-[10px]">
