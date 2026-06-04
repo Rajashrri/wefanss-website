@@ -134,15 +134,16 @@ const Trivia = () => {
       {filteredTrivia?.length > 0 ? (
         filteredTrivia.map((item) => (
           <div key={item._id}>
+               {/* ✅ CATEGORY NAME */}
+            <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">
+              {item.categoryName}
+            </h4>
             {/* TITLE */}
             <h3 className="berlin text-[20px] font-[400] text-[#1E1E1E]">
               {item.title}
             </h3>
 
-            {/* ✅ CATEGORY NAME */}
-            <h4 className="primary-font text-[16px] font-[500] text-[#1E1E1E] my-2">
-              {item.categoryName}
-            </h4>
+         
 
             {/* IMAGE */}
             {item.media && (
