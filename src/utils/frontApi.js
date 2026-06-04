@@ -149,7 +149,9 @@ export const unfollowCelebrity = (userId, celebrityId, token) => {
     }
   );
 };
-
+export const getCelebritiesBySlider = (slug) => {
+  return frontApi.get(`/slider/${slug}`);
+};
 
 
 export default frontApi;

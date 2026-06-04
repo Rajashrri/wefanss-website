@@ -110,6 +110,12 @@ else if (
               new Date(item.personalDetails.dob).getFullYear()
             : 25,
 
+
+            
+          imgf: item?.identityProfile?.featuredImage
+? `${API_BASE}${item.identityProfile.featuredImage}`
+            : "/catogary/cat1.jpg",
+
           img: item?.identityProfile?.categoryImage
             ? `${API_BASE}${item.identityProfile.categoryImage}`
             : "/catogary/cat1.jpg",
