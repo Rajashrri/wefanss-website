@@ -486,6 +486,10 @@ font-size: 200px;
   z-index: 11;
  }
 .catogeryslider .swiper-slide.swiper-slide-prev{}
+
+.viewedcelebritiesslider {
+  overflow: auto;
+}
 @media (max-width:1230px) {
   .catslider h1{
         font-size: 150px;
