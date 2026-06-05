@@ -113,7 +113,7 @@ const Trivia = () => {
 
         {/* DROPDOWN */}
         {open && (
-          <ul className="absolute left-0 mt-2 p-1 w-full bg-white rounded-[8px] shadow-lg overflow-hidden z-50">
+          <ul className="absolute left-0 mt-2 p-1 w-full min-w-[200px] bg-white rounded-[8px] shadow-lg overflow-hidden z-50">
             {categoryOptions.map((item, index) => (
               <li
                 key={index}
@@ -121,7 +121,7 @@ const Trivia = () => {
                   setSelected(item);
                   setOpen(false);
                 }}
-                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-center cursor-pointer rounded-[8px]"
+                className="bg-[#fff] px-[24px] py-[12px] berlin text-[16px] font-[300] hover:bg-[#F4FBFF] text-left cursor-pointer rounded-[8px]"
               >
                 {item}
               </li>
