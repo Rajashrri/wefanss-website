@@ -165,7 +165,7 @@ function App() {
             <Route path="/claim-profile" element={<ClaimProfile />} />
             <Route path="/about" element={<About />} />
             <Route path="/search-result" element={<SearchResult />} />
-            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gallery/:slug" element={<Gallery />} />
             <Route path="/no-search-found" element={<NoSearcfound />} />
             <Route path="/contact" element={<Contact />} />
 
