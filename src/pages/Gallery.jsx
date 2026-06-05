@@ -27,7 +27,10 @@ const fetchGallery = async () => {
   } catch (err) {
     console.log(err);
   }
-};const fetchGallery = async () => {
+};
+
+
+const fetchGallery = async () => {
   try {
     const res = await getCelebrityBySlug(slug);
 
