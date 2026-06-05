@@ -74,4 +74,23 @@ export const getCollectionDetails =
       `/collection-details/${slug}`
     );
   };
+
+
+  // ================= PROFILE =================
+
+export const getProfile = (userId) => {
+  return userApi.get(`/profile/${userId}`);
+};
+export const updateProfile = (userId, data) => {
+  return userApi.patch(
+    `/profile/update/${userId}`,
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
 export default userApi;
