@@ -3,17 +3,32 @@ import React, { useEffect, useState } from "react";
 import { Link,useNavigate } from 'react-router-dom'
 import Button from './Button'
 import { getProfession } from "../utils/frontApi";
+import { getProfile } from "../utils/userApi";
 
 const Header = () => {
     const [professionData, setProfessionData] = useState([]);
+  const [profile, setProfile] = useState(null);
 
     const navigate = useNavigate();
   // ✅ CHECK LOGIN
   const isLoggedIn = localStorage.getItem("token");
  useEffect(() => {
     fetchProfession();
+    fetchProfile();
   }, []);
+ const fetchProfile = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
 
+      const res = await getProfile(user._id);
+
+      if (res?.data?.success) {
+        setProfile(res.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const fetchProfession = async () => {
     try {
       const res = await getProfession();
@@ -81,34 +96,43 @@ const handleLogout = () => {
         className="md:hidden block ml-3"
         alt=""
       /> */}
-      <div className="relative group cursor-pointer">
-        <img
-          src="../../dash-pro.png"
-          className="block ml-3 h-12"
-          alt=""
-        />
+    {isLoggedIn ? (
+  <div className="relative group cursor-pointer">
+    <img
+      src={
+          profile?.profileImage
+            ? `${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}`
+            : "../../dash-pro.png"
+        }
+      className="block ml-3 h-12"
+      alt="Profile"
+    />
 
-        <div className="absolute right-[-80%] min-w-[200px] top-[60px] bg-white p-8 z-50 opacity-0 invisible translate-y-[-20px] transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
-          <ul className="text-center">
-            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3"><a href="/profile">My Profile</a></li>
-            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3">
-               {isLoggedIn ? (
-            <a
-              onClick={handleLogout}
-              
-            >
-              Logout
-            </a>
-          ) : (
-            <a
-              href="/login"
-            >Login</a>
-          )} 
-            </li>
-            <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3"><a href="/user-dashboard">User Dashboard</a></li>
-          </ul>
-        </div>
-      </div>
+    <div className="absolute right-[-80%] min-w-[200px] top-[60px] bg-white p-8 z-50 opacity-0 invisible translate-y-[-20px] transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+      <ul className="text-center">
+          {/* User Name */}
+    <li className="primary-font text-[18px] font-[600] text-[#1E1E1E] mb-4 border-b pb-3">
+      {profile?.name || "User"}
+    </li>
+        <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3">
+          <a href="/profile">My Profile</a>
+        </li>
+
+        <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3">
+          <a href="/user-dashboard">User Dashboard</a>
+        </li>
+
+        <li className="primary-font text-[16px] font-[500] text-[#1E1E1E] mb-3">
+          <button onClick={handleLogout}>
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+) : (
+ <a class="bg-[#4285F4] px-[30px] py-[12px] primary-font font-semibold leading-[19px] text-[#FFFFFF] rounded-[100px] justify-center items-center w-fit  flex " href="/login" data-discover="true">Login</a>
+)}
     </div>
 
       </div>

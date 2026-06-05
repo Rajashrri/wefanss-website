@@ -1,7 +1,7 @@
 import Button from '../Button'
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getSavedCountApi,getFollowedCountApi  } from "../../utils/userApi";
+import { getSavedCountApi,getFollowedCountApi,getProfile  } from "../../utils/userApi";
 const UserProfile = () => {
     const [followedCount, setFollowedCount] = useState(0);
 
@@ -9,6 +9,7 @@ const UserProfile = () => {
   const user = JSON.parse(
     localStorage.getItem("user")
   );
+  const [profile, setProfile] = useState(null);
 
 
 const getSavedCount = async () => {
@@ -46,16 +47,36 @@ useEffect(() => {
   if (user?._id) {
     getSavedCount();
     getFollowedCount();
+        fetchProfile();
+
   }
 }, [user?._id]);
 
+
+ const fetchProfile = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      const res = await getProfile(user._id);
+
+      if (res?.data?.success) {
+        setProfile(res.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
       // ================= GET USER =================
 
   return (
     <div className='max-w-[684px] px-[20px] md:gap-9 gap-4 m-auto grid md:grid-cols-3 grid-cols-4 py-[60px]'>
         <div className="md:col-span-1 col-span-2">
             <div className='relative' >
-                <img src="/dash-pro.png" className='rounded-full w-full overflow-hidden border border-[#34C759] border-[4px] p-1' alt="" />
+                <img src={
+          profile?.profileImage
+            ? `${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}`
+            : "../../dash-pro.png"
+        } className='rounded-full w-full overflow-hidden border border-[#34C759] border-[4px] p-1' alt="" />
                 <h3 className='p-2 text-[#34C759] primary-font text-[14px] font-[500] px-3 m-auto absolute bottom-0 left-[38%] bg-[#F3FFF6] w-fit rounded-[8px]'>80%</h3>
             </div>
             <div className='mt-6  md:flex hidden justify-center'>
