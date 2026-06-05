@@ -30,22 +30,7 @@ const fetchGallery = async () => {
 };
 
 
-const fetchGallery = async () => {
-  try {
-    const res = await getCelebrityBySlug(slug);
 
-    console.log("API FULL =>", res);
-
-    const data = res?.data?.data;   // ✅ IMPORTANT FIX
-
-    if (data) {
-      setCelebrity(data);
-      setGallery(data?.identityProfile?.gallery || []);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
 
   return (
     <>
