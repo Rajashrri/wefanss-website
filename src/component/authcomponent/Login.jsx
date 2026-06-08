@@ -17,6 +17,8 @@ const Loginform = () => {
 
  const handleSuccess = async (credentialResponse) => {
   try {
+     console.log("GOOGLE SUCCESS");
+
     const res = await googleLoginUser({
       credential: credentialResponse.credential,
     });
@@ -29,21 +31,22 @@ const Loginform = () => {
     window.location.href = "/profile";
 
   } catch (error) {
+  console.log("Google Login Error:", error.response?.data);
 
-    const data = error?.response?.data;
+  const data = error?.response?.data;
 
-    if (data?.needRegister) {
-      toast.error("Please register first");
-      setTimeout(() => {
-        navigate("/register");
-      }, 1500);
-      return;
-    }
+  if (data?.needRegister) {
+    toast.error(data.message);
 
-    toast.error(
-      data?.message || "Google login failed"
-    );
+    setTimeout(() => {
+      navigate("/register");
+    }, 5000);
+
+    return;
   }
+
+  toast.error(data?.message || "Google login failed");
+}
 };
 
   const [errors, setErrors] = useState({});
